@@ -1,0 +1,64 @@
+---
+import { getCollection } from 'astro:content';
+import DocsLayout from '../../layouts/DocsLayout.astro';
+
+const tutorials = await getCollection('tutorials', ({ data }) => !data.draft);
+
+// Sort by order, then by title
+tutorials.sort((a, b) => {
+  const orderDiff = (a.data.order || 999) - (b.data.order || 999);
+  if (orderDiff !== 0) return orderDiff;
+  return a.data.title.localeCompare(b.data.title);
+});
+
+const difficultyColors = {
+  beginner: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+  intermediate: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+  advanced: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+};
+---
+
+<DocsLayout title="Tutorials" description="Step-by-step guides and tutorials" type="tutorials">
+  {
+    tutorials.length > 0 ? (
+      <div class="grid gap-6">
+        {tutorials.map((tutorial) => (
+          <a
+            href={`/tutorials/${tutorial.id}`}
+            class="block p-6 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary-500 dark:hover:border-primary-500 transition-colors"
+          >
+            <div class="flex flex-wrap items-center gap-3 mb-2">
+              <h2 class="text-lg font-semibold">{tutorial.data.title}</h2>
+              {tutorial.data.difficulty && (
+                <span
+                  class={`px-2 py-0.5 text-xs font-medium rounded-full ${difficultyColors[tutorial.data.difficulty]}`}
+                >
+                  {tutorial.data.difficulty.charAt(0).toUpperCase() + tutorial.data.difficulty.slice(1)}
+                </span>
+              )}
+            </div>
+            {tutorial.data.description && (
+              <p class="text-gray-600 dark:text-gray-400">{tutorial.data.description}</p>
+            )}
+            <div class="flex flex-wrap items-center gap-4 mt-3 text-sm text-gray-500 dark:text-gray-500">
+              {tutorial.data.duration && <span>Duration: {tutorial.data.duration}</span>}
+              {tutorial.data.tags && tutorial.data.tags.length > 0 && (
+                <div class="flex flex-wrap gap-2">
+                  {tutorial.data.tags.slice(0, 3).map((tag) => (
+                    <span class="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-800 rounded-full">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </a>
+        ))}
+      </div>
+    ) : (
+      <p class="text-gray-600 dark:text-gray-400">
+        No tutorials yet. Add MDX files to <code>src/content/tutorials/</code> to get started.
+      </p>
+    )
+  }
+</DocsLayout>

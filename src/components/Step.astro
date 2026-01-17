@@ -1,0 +1,18 @@
+---
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<div class="step relative [counter-increment:step]">
+  <div class="absolute -left-[calc(1.5rem+1px)] -translate-x-1/2 w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 border-2 border-primary-500 flex items-center justify-center text-sm font-semibold text-primary-700 dark:text-primary-300 before:content-[counter(step)]">
+  </div>
+  <div>
+    <h3 class="font-semibold text-lg mb-2 mt-0">{title}</h3>
+    <div class="text-gray-700 dark:text-gray-300 [&>p]:mb-3 [&>p:last-child]:mb-0">
+      <slot />
+    </div>
+  </div>
+</div>

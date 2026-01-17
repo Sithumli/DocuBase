@@ -1,0 +1,93 @@
+---
+interface Props {
+  labels: string[];
+  defaultIndex?: number;
+}
+
+const { labels, defaultIndex = 0 } = Astro.props;
+const tabsId = `tabs-${Math.random().toString(36).substring(7)}`;
+---
+
+<div class="my-6" data-tabs={tabsId}>
+  <div class="flex gap-1 border-b border-gray-200 dark:border-gray-700" role="tablist">
+    {labels.map((label, index) => (
+      <button
+        type="button"
+        role="tab"
+        class:list={[
+          'tab-button px-4 py-2 text-sm font-medium rounded-t-lg transition-colors',
+          'hover:bg-gray-50 dark:hover:bg-gray-800',
+          'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-inset',
+          index === defaultIndex
+            ? 'text-primary-600 dark:text-primary-400 border-b-2 border-primary-600 dark:border-primary-400 -mb-px bg-white dark:bg-gray-900'
+            : 'text-gray-600 dark:text-gray-400',
+        ]}
+        data-tab-index={index}
+        aria-selected={index === defaultIndex}
+        id={`${tabsId}-tab-${index}`}
+        aria-controls={`${tabsId}-panel-${index}`}
+      >
+        {label}
+      </button>
+    ))}
+  </div>
+  <div class="tab-panels mt-4">
+    <slot />
+  </div>
+</div>
+
+<script>
+  function initTabs() {
+    document.querySelectorAll('[data-tabs]').forEach((container) => {
+      const tabs = container.querySelectorAll('.tab-button');
+      const panelsContainer = container.querySelector('.tab-panels');
+
+      if (!panelsContainer) return;
+
+      const panels = Array.from(panelsContainer.children) as HTMLElement[];
+
+      // Initialize panels - hide all except first
+      panels.forEach((panel, index) => {
+        if (index === 0) {
+          panel.classList.remove('hidden');
+        } else {
+          panel.classList.add('hidden');
+        }
+      });
+
+      tabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          const index = parseInt(tab.getAttribute('data-tab-index') || '0', 10);
+
+          // Update tab styles
+          tabs.forEach((t, i) => {
+            if (i === index) {
+              t.classList.add('text-primary-600', 'dark:text-primary-400', 'border-b-2', 'border-primary-600', 'dark:border-primary-400', '-mb-px', 'bg-white', 'dark:bg-gray-900');
+              t.classList.remove('text-gray-600', 'dark:text-gray-400');
+              t.setAttribute('aria-selected', 'true');
+            } else {
+              t.classList.remove('text-primary-600', 'dark:text-primary-400', 'border-b-2', 'border-primary-600', 'dark:border-primary-400', '-mb-px', 'bg-white', 'dark:bg-gray-900');
+              t.classList.add('text-gray-600', 'dark:text-gray-400');
+              t.setAttribute('aria-selected', 'false');
+            }
+          });
+
+          // Update panel visibility
+          panels.forEach((panel, i) => {
+            if (i === index) {
+              panel.classList.remove('hidden');
+            } else {
+              panel.classList.add('hidden');
+            }
+          });
+        });
+      });
+    });
+  }
+
+  // Initialize on page load
+  initTabs();
+
+  // Re-initialize after Astro page transitions
+  document.addEventListener('astro:page-load', initTabs);
+</script>

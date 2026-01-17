@@ -1,0 +1,30 @@
+{
+  "name": "docubase",
+  "type": "module",
+  "version": "0.0.1",
+  "description": "A general-purpose documentation template for web projects",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.3.13",
+    "@tailwindcss/vite": "^4.1.18",
+    "astro": "^5.16.11",
+    "tailwindcss": "^4.1.18"
+  },
+  "devDependencies": {
+    "@storybook/addon-essentials": "^8.4.0",
+    "@storybook/addon-interactions": "^8.4.0",
+    "@storybook/addon-links": "^8.4.0",
+    "@storybook/blocks": "^8.4.0",
+    "@storybook/html": "^8.4.0",
+    "@storybook/html-vite": "^8.4.0",
+    "@storybook/test": "^8.4.0",
+    "storybook": "^8.4.0"
+  }
+}
