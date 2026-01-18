@@ -13,51 +13,8 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
-
-const difficultyColors = {
-  beginner: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-  intermediate: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-  advanced: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-};
 ---
 
 <DocsLayout title={entry.data.title} description={entry.data.description} type="tutorials">
-  <div class="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
-    <div class="flex flex-wrap items-center gap-4">
-      {entry.data.difficulty && (
-        <span class={`px-2 py-1 text-xs font-medium rounded-full ${difficultyColors[entry.data.difficulty]}`}>
-          {entry.data.difficulty.charAt(0).toUpperCase() + entry.data.difficulty.slice(1)}
-        </span>
-      )}
-      {entry.data.duration && (
-        <span class="text-sm text-gray-600 dark:text-gray-400">
-          Duration: {entry.data.duration}
-        </span>
-      )}
-    </div>
-    {
-      entry.data.prerequisites && entry.data.prerequisites.length > 0 && (
-        <div class="mt-4">
-          <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Prerequisites:</h4>
-          <ul class="mt-1 text-sm text-gray-600 dark:text-gray-400 list-disc list-inside">
-            {entry.data.prerequisites.map((prereq) => (
-              <li>{prereq}</li>
-            ))}
-          </ul>
-        </div>
-      )
-    }
-    {
-      entry.data.tags && entry.data.tags.length > 0 && (
-        <div class="flex flex-wrap gap-2 mt-4">
-          {entry.data.tags.map((tag) => (
-            <span class="px-2 py-1 text-xs font-medium bg-gray-100 dark:bg-gray-800 rounded-full">
-              {tag}
-            </span>
-          ))}
-        </div>
-      )
-    }
-  </div>
   <Content />
 </DocsLayout>
