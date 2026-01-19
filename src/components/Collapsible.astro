@@ -64,7 +64,7 @@ const collapsibleId = id || `collapsible-${hashString(title)}`;
     if ((window as any).__collapsibleInitialized) return;
     (window as any).__collapsibleInitialized = true;
 
-    document.addEventListener('click', (e) => {
+    function handleCollapsibleClick(e: Event) {
       const trigger = (e.target as HTMLElement).closest('.collapsible-trigger');
       if (!trigger) return;
 
@@ -79,6 +79,24 @@ const collapsibleId = id || `collapsible-${hashString(title)}`;
       trigger.setAttribute('aria-expanded', String(!isExpanded));
       content.classList.toggle('hidden');
       icon.classList.toggle('rotate-180');
-    });
+    }
+
+    function initCollapsibles() {
+      // Ensure initial state is consistent with aria-expanded attributes
+      document.querySelectorAll('[data-collapsible]').forEach((collapsible) => {
+        const trigger = collapsible.querySelector('.collapsible-trigger');
+        const content = collapsible.querySelector('.collapsible-content');
+        const icon = collapsible.querySelector('.collapsible-icon');
+        if (!trigger || !content || !icon) return;
+
+        const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
+        content.classList.toggle('hidden', !isExpanded);
+        icon.classList.toggle('rotate-180', isExpanded);
+      });
+    }
+
+    document.addEventListener('click', handleCollapsibleClick);
+    initCollapsibles();
+    document.addEventListener('astro:page-load', initCollapsibles);
   })();
 </script>
