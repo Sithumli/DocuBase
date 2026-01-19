@@ -1,0 +1,31 @@
+---
+interface TocItem {
+  title: string;
+  href: string;
+  depth?: number;
+}
+
+interface Props {
+  items: TocItem[];
+  title?: string;
+}
+
+const { items, title = "On this page" } = Astro.props;
+---
+
+<div class="text-sm">
+  <p class="font-medium text-gray-900 mb-3">{title}</p>
+  <nav class="space-y-2">
+    {items.map((item) => (
+      <a
+        href={item.href}
+        class:list={[
+          "block text-gray-500 hover:text-gray-900 transition-colors",
+          item.depth && item.depth > 1 && "ml-3",
+        ]}
+      >
+        {item.title}
+      </a>
+    ))}
+  </nav>
+</div>

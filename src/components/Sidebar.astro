@@ -1,0 +1,49 @@
+---
+interface SidebarItem {
+  title: string;
+  href: string;
+  items?: SidebarItem[];
+}
+
+interface Props {
+  items: SidebarItem[];
+  currentPath?: string;
+}
+
+const { items, currentPath = "" } = Astro.props;
+---
+
+<nav class="space-y-1">
+  {items.map((item) => (
+    <div>
+      <a
+        href={item.href}
+        class:list={[
+          "block py-2 text-sm transition-colors",
+          currentPath === item.href
+            ? "text-gray-900 font-medium"
+            : "text-gray-600 hover:text-gray-900",
+        ]}
+      >
+        {item.title}
+      </a>
+      {item.items && item.items.length > 0 && (
+        <div class="ml-4 space-y-1">
+          {item.items.map((subItem) => (
+            <a
+              href={subItem.href}
+              class:list={[
+                "block py-1.5 text-sm transition-colors",
+                currentPath === subItem.href
+                  ? "text-gray-900 font-medium"
+                  : "text-gray-500 hover:text-gray-900",
+              ]}
+            >
+              {subItem.title}
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  ))}
+</nav>

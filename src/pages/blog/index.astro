@@ -1,9 +1,41 @@
 ---
-import DocsLayout from '../../layouts/DocsLayout.astro';
+import '../../styles/global.css';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import BlogCard from '../../components/BlogCard.astro';
 ---
 
-<DocsLayout title="Blog" description="Latest posts and updates" type="blog">
-  <button class="px-4 py-2 bg-primary-600 text-white rounded-full hover:bg-primary-700 transition-colors">
-    Blog
-  </button>
-</DocsLayout>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Blog | DocuBase</title>
+  </head>
+  <body class="min-h-screen flex flex-col bg-white text-gray-900">
+    <Header currentPath="/blog" />
+
+    <main class="flex-1">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="max-w-3xl mx-auto">
+          <div class="flex gap-12">
+            <h1 class="text-2xl font-bold text-gray-900 shrink-0 sticky top-24 self-start">2026</h1>
+
+            <div class="flex-1 space-y-4">
+              <BlogCard
+                title="Pilot"
+                description="Build documentation that scales with your product. A modern, structured documentation template designed for clarity, consistency, and long-term growth."
+                date="Jan 19, 2026"
+                readTime="10 min read"
+                href="/blog/pilot"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <Footer />
+  </body>
+</html>
