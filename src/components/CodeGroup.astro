@@ -1,10 +1,37 @@
 ---
+/**
+ * CodeGroup - A tabbed code block component
+ *
+ * @prop {string[]} labels - Tab labels (must match number of slotted children)
+ * @prop {string} [id] - Optional unique ID for the group
+ *
+ * Usage:
+ * <CodeGroup labels={["JavaScript", "TypeScript"]}>
+ *   <div>JS code here</div>
+ *   <div>TS code here</div>
+ * </CodeGroup>
+ *
+ * Note: The number of labels must match the number of direct children in the slot.
+ */
 interface Props {
   labels: string[];
+  id?: string;
 }
 
-const { labels } = Astro.props;
-const groupId = `code-group-${Math.random().toString(36).substring(7)}`;
+const { labels, id } = Astro.props;
+
+// Create deterministic ID from labels hash
+function hashString(str: string): string {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return Math.abs(hash).toString(36);
+}
+
+const groupId = id || `code-group-${hashString(labels.join('-'))}`;
 ---
 
 <div class="my-6 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden" data-code-group={groupId}>
@@ -33,53 +60,65 @@ const groupId = `code-group-${Math.random().toString(36).substring(7)}`;
 </div>
 
 <script>
-  function initCodeGroups() {
-    document.querySelectorAll('[data-code-group]').forEach((group) => {
+  (function() {
+    // Guard to prevent duplicate listeners
+    if ((window as any).__codeGroupInitialized) return;
+    (window as any).__codeGroupInitialized = true;
+
+    // Use event delegation
+    document.addEventListener('click', (e) => {
+      const tab = (e.target as HTMLElement).closest('.code-group-tab');
+      if (!tab) return;
+
+      const group = tab.closest('[data-code-group]');
+      if (!group) return;
+
       const tabs = group.querySelectorAll('.code-group-tab');
       const panels = group.querySelector('.code-group-panels');
-
       if (!panels) return;
 
       const panelDivs = Array.from(panels.children) as HTMLElement[];
+      const index = parseInt(tab.getAttribute('data-tab-index') || '0', 10);
 
-      // Initialize first panel as active
-      if (panelDivs[0]) {
-        panelDivs[0].classList.add('active');
-      }
+      tabs.forEach((t, i) => {
+        if (i === index) {
+          t.classList.add('text-primary-600', 'dark:text-primary-400', 'border-b-2', 'border-primary-600', 'dark:border-primary-400', '-mb-px', 'bg-white', 'dark:bg-gray-900');
+          t.classList.remove('text-gray-600', 'dark:text-gray-400');
+          t.setAttribute('aria-selected', 'true');
+        } else {
+          t.classList.remove('text-primary-600', 'dark:text-primary-400', 'border-b-2', 'border-primary-600', 'dark:border-primary-400', '-mb-px', 'bg-white', 'dark:bg-gray-900');
+          t.classList.add('text-gray-600', 'dark:text-gray-400');
+          t.setAttribute('aria-selected', 'false');
+        }
+      });
 
-      tabs.forEach((tab) => {
-        tab.addEventListener('click', () => {
-          const index = parseInt(tab.getAttribute('data-tab-index') || '0', 10);
-
-          // Update tab styles
-          tabs.forEach((t, i) => {
-            if (i === index) {
-              t.classList.add('text-primary-600', 'dark:text-primary-400', 'border-b-2', 'border-primary-600', 'dark:border-primary-400', '-mb-px', 'bg-white', 'dark:bg-gray-900');
-              t.classList.remove('text-gray-600', 'dark:text-gray-400');
-              t.setAttribute('aria-selected', 'true');
-            } else {
-              t.classList.remove('text-primary-600', 'dark:text-primary-400', 'border-b-2', 'border-primary-600', 'dark:border-primary-400', '-mb-px', 'bg-white', 'dark:bg-gray-900');
-              t.classList.add('text-gray-600', 'dark:text-gray-400');
-              t.setAttribute('aria-selected', 'false');
-            }
-          });
-
-          // Update panel visibility
-          panelDivs.forEach((panel, i) => {
-            if (i === index) {
-              panel.classList.add('active');
-            } else {
-              panel.classList.remove('active');
-            }
-          });
-        });
+      panelDivs.forEach((panel, i) => {
+        panel.classList.toggle('active', i === index);
       });
     });
-  }
 
-  // Initialize on page load
-  initCodeGroups();
+    function initCodeGroupPanels() {
+      document.querySelectorAll('[data-code-group]').forEach((group) => {
+        const tabs = group.querySelectorAll('.code-group-tab');
+        const panels = group.querySelector('.code-group-panels');
+        if (!panels) return;
 
-  // Re-initialize after Astro page transitions
-  document.addEventListener('astro:page-load', initCodeGroups);
+        const panelCount = panels.children.length;
+        const tabCount = tabs.length;
+
+        // Validate that tabs and panels match
+        if (tabCount !== panelCount && import.meta.env.DEV) {
+          console.warn(
+            `[CodeGroup] Mismatch: ${tabCount} labels but ${panelCount} content panels in group "${group.getAttribute('data-code-group')}". Each label should have a corresponding content block.`
+          );
+        }
+
+        const firstPanel = panels.children[0] as HTMLElement;
+        if (firstPanel) firstPanel.classList.add('active');
+      });
+    }
+
+    initCodeGroupPanels();
+    document.addEventListener('astro:page-load', initCodeGroupPanels);
+  })();
 </script>

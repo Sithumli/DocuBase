@@ -2,10 +2,23 @@
 interface Props {
   labels: string[];
   defaultIndex?: number;
+  id?: string;
 }
 
-const { labels, defaultIndex = 0 } = Astro.props;
-const tabsId = `tabs-${Math.random().toString(36).substring(7)}`;
+const { labels, defaultIndex = 0, id } = Astro.props;
+
+// Create deterministic ID from labels hash
+function hashString(str: string): string {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return Math.abs(hash).toString(36);
+}
+
+const tabsId = id || `tabs-${hashString(labels.join('-'))}`;
 ---
 
 <div class="my-6" data-tabs={tabsId}>
@@ -14,6 +27,7 @@ const tabsId = `tabs-${Math.random().toString(36).substring(7)}`;
       <button
         type="button"
         role="tab"
+        tabindex={index === defaultIndex ? 0 : -1}
         class:list={[
           'tab-button px-4 py-2 text-sm font-medium rounded-t-lg transition-colors',
           'hover:bg-gray-50 dark:hover:bg-gray-800',
@@ -37,57 +51,97 @@ const tabsId = `tabs-${Math.random().toString(36).substring(7)}`;
 </div>
 
 <script>
-  function initTabs() {
-    document.querySelectorAll('[data-tabs]').forEach((container) => {
-      const tabs = container.querySelectorAll('.tab-button');
-      const panelsContainer = container.querySelector('.tab-panels');
+  (function() {
+    // Guard to prevent duplicate listeners
+    if ((window as any).__tabsInitialized) return;
+    (window as any).__tabsInitialized = true;
 
-      if (!panelsContainer) return;
+    function activateTab(container: Element, index: number) {
+      const tabs = Array.from(container.querySelectorAll('.tab-button')) as HTMLElement[];
+      const panelsContainer = container.querySelector('.tab-panels');
+      if (!panelsContainer || !tabs.length) return;
 
       const panels = Array.from(panelsContainer.children) as HTMLElement[];
 
-      // Initialize panels - hide all except first
-      panels.forEach((panel, index) => {
-        if (index === 0) {
-          panel.classList.remove('hidden');
+      tabs.forEach((t, i) => {
+        if (i === index) {
+          t.classList.add('text-primary-600', 'dark:text-primary-400', 'border-b-2', 'border-primary-600', 'dark:border-primary-400', '-mb-px', 'bg-white', 'dark:bg-gray-900');
+          t.classList.remove('text-gray-600', 'dark:text-gray-400');
+          t.setAttribute('aria-selected', 'true');
+          t.setAttribute('tabindex', '0');
+          t.focus();
         } else {
-          panel.classList.add('hidden');
+          t.classList.remove('text-primary-600', 'dark:text-primary-400', 'border-b-2', 'border-primary-600', 'dark:border-primary-400', '-mb-px', 'bg-white', 'dark:bg-gray-900');
+          t.classList.add('text-gray-600', 'dark:text-gray-400');
+          t.setAttribute('aria-selected', 'false');
+          t.setAttribute('tabindex', '-1');
         }
       });
 
-      tabs.forEach((tab) => {
-        tab.addEventListener('click', () => {
-          const index = parseInt(tab.getAttribute('data-tab-index') || '0', 10);
+      panels.forEach((panel, i) => {
+        panel.classList.toggle('hidden', i !== index);
+      });
+    }
 
-          // Update tab styles
-          tabs.forEach((t, i) => {
-            if (i === index) {
-              t.classList.add('text-primary-600', 'dark:text-primary-400', 'border-b-2', 'border-primary-600', 'dark:border-primary-400', '-mb-px', 'bg-white', 'dark:bg-gray-900');
-              t.classList.remove('text-gray-600', 'dark:text-gray-400');
-              t.setAttribute('aria-selected', 'true');
-            } else {
-              t.classList.remove('text-primary-600', 'dark:text-primary-400', 'border-b-2', 'border-primary-600', 'dark:border-primary-400', '-mb-px', 'bg-white', 'dark:bg-gray-900');
-              t.classList.add('text-gray-600', 'dark:text-gray-400');
-              t.setAttribute('aria-selected', 'false');
-            }
-          });
+    // Click handler
+    document.addEventListener('click', (e) => {
+      const tab = (e.target as HTMLElement).closest('.tab-button');
+      if (!tab) return;
 
-          // Update panel visibility
-          panels.forEach((panel, i) => {
-            if (i === index) {
-              panel.classList.remove('hidden');
-            } else {
-              panel.classList.add('hidden');
-            }
-          });
+      const container = tab.closest('[data-tabs]');
+      if (!container) return;
+
+      const index = parseInt(tab.getAttribute('data-tab-index') || '0', 10);
+      activateTab(container, index);
+    });
+
+    // Keyboard navigation handler
+    document.addEventListener('keydown', (e) => {
+      const tab = (e.target as HTMLElement).closest('.tab-button');
+      if (!tab) return;
+
+      const container = tab.closest('[data-tabs]');
+      if (!container) return;
+
+      const tabs = Array.from(container.querySelectorAll('.tab-button')) as HTMLElement[];
+      const currentIndex = parseInt(tab.getAttribute('data-tab-index') || '0', 10);
+      let newIndex = currentIndex;
+
+      switch (e.key) {
+        case 'ArrowLeft':
+          newIndex = currentIndex > 0 ? currentIndex - 1 : tabs.length - 1;
+          e.preventDefault();
+          break;
+        case 'ArrowRight':
+          newIndex = currentIndex < tabs.length - 1 ? currentIndex + 1 : 0;
+          e.preventDefault();
+          break;
+        case 'Home':
+          newIndex = 0;
+          e.preventDefault();
+          break;
+        case 'End':
+          newIndex = tabs.length - 1;
+          e.preventDefault();
+          break;
+        default:
+          return;
+      }
+
+      activateTab(container, newIndex);
+    });
+
+    function initTabPanels() {
+      document.querySelectorAll('[data-tabs]').forEach((container) => {
+        const panelsContainer = container.querySelector('.tab-panels');
+        if (!panelsContainer) return;
+        Array.from(panelsContainer.children).forEach((panel, index) => {
+          (panel as HTMLElement).classList.toggle('hidden', index !== 0);
         });
       });
-    });
-  }
+    }
 
-  // Initialize on page load
-  initTabs();
-
-  // Re-initialize after Astro page transitions
-  document.addEventListener('astro:page-load', initTabs);
+    initTabPanels();
+    document.addEventListener('astro:page-load', initTabPanels);
+  })();
 </script>

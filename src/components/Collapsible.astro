@@ -2,10 +2,23 @@
 interface Props {
   title: string;
   defaultOpen?: boolean;
+  id?: string;
 }
 
-const { title, defaultOpen = false } = Astro.props;
-const collapsibleId = `collapsible-${Math.random().toString(36).substring(7)}`;
+const { title, defaultOpen = false, id } = Astro.props;
+
+// Create deterministic ID from title hash
+function hashString(str: string): string {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return Math.abs(hash).toString(36);
+}
+
+const collapsibleId = id || `collapsible-${hashString(title)}`;
 ---
 
 <div class="my-4 border border-gray-200 dark:border-gray-700 rounded-lg" data-collapsible={collapsibleId}>
@@ -46,27 +59,26 @@ const collapsibleId = `collapsible-${Math.random().toString(36).substring(7)}`;
 </div>
 
 <script>
-  function initCollapsibles() {
-    document.querySelectorAll('[data-collapsible]').forEach((collapsible) => {
-      const trigger = collapsible.querySelector('.collapsible-trigger');
+  (function() {
+    // Guard to prevent duplicate listeners
+    if ((window as any).__collapsibleInitialized) return;
+    (window as any).__collapsibleInitialized = true;
+
+    document.addEventListener('click', (e) => {
+      const trigger = (e.target as HTMLElement).closest('.collapsible-trigger');
+      if (!trigger) return;
+
+      const collapsible = trigger.closest('[data-collapsible]');
+      if (!collapsible) return;
+
       const content = collapsible.querySelector('.collapsible-content');
       const icon = collapsible.querySelector('.collapsible-icon');
+      if (!content || !icon) return;
 
-      if (!trigger || !content || !icon) return;
-
-      trigger.addEventListener('click', () => {
-        const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
-
-        trigger.setAttribute('aria-expanded', String(!isExpanded));
-        content.classList.toggle('hidden');
-        icon.classList.toggle('rotate-180');
-      });
+      const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
+      trigger.setAttribute('aria-expanded', String(!isExpanded));
+      content.classList.toggle('hidden');
+      icon.classList.toggle('rotate-180');
     });
-  }
-
-  // Initialize on page load
-  initCollapsibles();
-
-  // Re-initialize after Astro page transitions
-  document.addEventListener('astro:page-load', initCollapsibles);
+  })();
 </script>
