@@ -1,0 +1,182 @@
+---
+title: Getting Started
+description: Learn how to set up and use DocuBase for your documentation needs
+order: 1
+category: Introduction
+---
+
+import Callout from '../../components/Callout.astro';
+import CodeGroup from '../../components/CodeGroup.astro';
+import Tabs from '../../components/Tabs.astro';
+import Steps from '../../components/Steps.astro';
+import Step from '../../components/Step.astro';
+
+Welcome to DocuBase! This guide will help you get started with creating documentation for your web projects.
+
+## Prerequisites
+
+Before you begin, make sure you have the following installed:
+
+- Node.js 18 or higher
+- pnpm package manager
+- A code editor (VS Code recommended)
+
+<Callout type="tip" title="Using a different package manager?">
+While we recommend pnpm, you can also use npm or yarn. Just replace `pnpm` commands with your preferred package manager.
+</Callout>
+
+## Installation
+
+<Steps>
+  <Step title="Clone the repository">
+    Start by cloning the DocuBase template to your local machine:
+
+    ```bash
+    git clone https://github.com/your-repo/docubase.git my-docs
+    cd my-docs
+    ```
+  </Step>
+
+  <Step title="Install dependencies">
+    Install all required dependencies using pnpm:
+
+    ```bash
+    pnpm install
+    ```
+  </Step>
+
+  <Step title="Start the development server">
+    Run the development server to see your documentation site:
+
+    ```bash
+    pnpm dev
+    ```
+
+    Your site will be available at `http://localhost:4321`.
+  </Step>
+</Steps>
+
+## Project Structure
+
+Here's an overview of the project structure:
+
+```
+src/
+├── content/
+│   ├── docs/           # Documentation pages
+│   ├── blog/           # Blog posts
+│   └── tutorials/      # Tutorials and guides
+├── layouts/
+│   └── DocsLayout.astro
+├── components/         # Reusable components
+└── pages/
+    └── index.astro
+```
+
+## Creating Content
+
+### Documentation Pages
+
+Create new documentation pages by adding MDX files to `src/content/docs/`:
+
+```mdx
+---
+title: My Page Title
+description: A brief description
+order: 1
+category: Getting Started
+---
+
+Your content here...
+```
+
+### Blog Posts
+
+Add blog posts to `src/content/blog/`:
+
+```mdx
+---
+title: My Blog Post
+description: Post description
+pubDate: 2024-01-15
+author: Your Name
+tags: [announcement, feature]
+---
+
+Post content here...
+```
+
+### Tutorials
+
+Create tutorials in `src/content/tutorials/`:
+
+```mdx
+---
+title: Tutorial Title
+description: What you'll learn
+difficulty: beginner
+duration: 30 minutes
+prerequisites: [Basic JavaScript]
+tags: [javascript, basics]
+---
+
+Tutorial content here...
+```
+
+## Using Components
+
+DocuBase includes several built-in components for your MDX content:
+
+<Tabs labels={["Callouts", "Code Groups", "Collapsible"]}>
+  <div>
+    Use callouts to highlight important information:
+
+    ```mdx
+    <Callout type="warning">
+      This is a warning message.
+    </Callout>
+    ```
+
+    Available types: `note`, `tip`, `warning`, `danger`, `info`
+  </div>
+  <div>
+    Group related code snippets with tabs:
+
+    ```mdx
+    <CodeGroup labels={["npm", "pnpm", "yarn"]}>
+      <div>npm install package</div>
+      <div>pnpm add package</div>
+      <div>yarn add package</div>
+    </CodeGroup>
+    ```
+  </div>
+  <div>
+    Create expandable sections:
+
+    ```mdx
+    <Collapsible title="Click to expand">
+      Hidden content here...
+    </Collapsible>
+    ```
+  </div>
+</Tabs>
+
+## Building for Production
+
+When you're ready to deploy, build your site:
+
+```bash
+pnpm build
+```
+
+The output will be in the `dist/` directory, ready to deploy to any static hosting provider.
+
+<Callout type="info">
+DocuBase is optimized for static deployment on platforms like Cloudflare Pages, GitHub Pages, Vercel, and Netlify.
+</Callout>
+
+## Next Steps
+
+- Explore the [Components](/docs/components) documentation
+- Read the Configuration guide
+- Check out the [Tutorials](/tutorials) for hands-on examples

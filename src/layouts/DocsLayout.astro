@@ -1,0 +1,54 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  type?: 'docs' | 'blog' | 'tutorials';
+}
+
+const { title, description, type = 'docs' } = Astro.props;
+const siteTitle = 'DocuBase';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description || `${title} - ${siteTitle}`} />
+    <title>{title} | {siteTitle}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body class="min-h-screen flex flex-col bg-white text-gray-900">
+    <Header currentPath={Astro.url.pathname} />
+
+    <div class="flex-1 container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex gap-8 py-8">
+        <aside class="hidden lg:block w-56 shrink-0">
+          <nav class="sticky top-24 space-y-1">
+            <slot name="sidebar" />
+          </nav>
+        </aside>
+
+        <main class="flex-1 min-w-0">
+          <slot name="breadcrumb" />
+          <article class="max-w-none">
+            <slot />
+          </article>
+        </main>
+
+        <aside class="hidden xl:block w-48 shrink-0">
+          <div class="sticky top-24">
+            <slot name="toc" />
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <Footer />
+  </body>
+</html>

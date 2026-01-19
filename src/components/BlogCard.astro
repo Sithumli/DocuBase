@@ -1,0 +1,40 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  date: string;
+  readTime?: string;
+  image?: string;
+  href: string;
+}
+
+const { title, description, date, readTime = "10 min read", image, href } = Astro.props;
+---
+
+<a
+  href={href}
+  class="flex gap-6 p-4 bg-white border border-gray-200 rounded-2xl hover:border-gray-300 hover:shadow-sm transition-all"
+>
+  <div class="w-32 h-24 bg-gray-100 rounded-lg shrink-0">
+    {image ? (
+      <img src={image} alt={title} class="w-full h-full object-cover rounded-lg" />
+    ) : (
+      <div class="w-full h-full bg-gray-200 rounded-lg" />
+    )}
+  </div>
+
+  <div class="flex-1 min-w-0">
+    <h3 class="font-semibold text-gray-900 mb-1">{title}</h3>
+    <p class="text-xs text-gray-600 mb-2">{description}</p>
+    <div class="flex items-center gap-3 text-xs text-gray-500">
+      <span>{date}</span>
+      <span class="flex items-center gap-1">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" stroke-width="2" />
+          <path stroke-linecap="round" stroke-width="2" d="M12 6v6l4 2" />
+        </svg>
+        {readTime}
+      </span>
+    </div>
+  </div>
+</a>

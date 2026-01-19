@@ -1,0 +1,97 @@
+---
+interface TocItem {
+  title: string;
+  href: string;
+  depth?: number;
+}
+
+interface Props {
+  items: TocItem[];
+  title?: string;
+}
+
+const { items, title = "On this page" } = Astro.props;
+---
+
+<div class="text-sm" data-toc>
+  <p class="font-medium text-gray-900 dark:text-gray-100 mb-3">{title}</p>
+  <nav class="space-y-2">
+    {items.map((item) => (
+      <a
+        href={item.href}
+        class:list={[
+          "toc-link block text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors",
+          item.depth && item.depth > 1 && "ml-3",
+        ]}
+        data-toc-link={item.href}
+      >
+        {item.title}
+      </a>
+    ))}
+  </nav>
+</div>
+
+<script>
+  (function() {
+    if ((window as any).__tocInitialized) return;
+    (window as any).__tocInitialized = true;
+
+    function initTocHighlighting() {
+      const tocContainers = document.querySelectorAll('[data-toc]');
+      if (!tocContainers.length) return;
+
+      const headingIds = new Set<string>();
+      tocContainers.forEach(toc => {
+        toc.querySelectorAll('[data-toc-link]').forEach(link => {
+          const href = link.getAttribute('data-toc-link');
+          if (href?.startsWith('#')) {
+            headingIds.add(href.slice(1));
+          }
+        });
+      });
+
+      const headings = Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6'))
+        .filter(h => h.id && headingIds.has(h.id)) as HTMLElement[];
+
+      if (!headings.length) return;
+
+      function updateActiveLink(activeId: string) {
+        tocContainers.forEach(toc => {
+          toc.querySelectorAll('[data-toc-link]').forEach(link => {
+            const href = link.getAttribute('data-toc-link');
+            const isActive = href === `#${activeId}`;
+            link.classList.toggle('text-primary-600', isActive);
+            link.classList.toggle('dark:text-primary-400', isActive);
+            link.classList.toggle('font-medium', isActive);
+            link.classList.toggle('text-gray-500', !isActive);
+            link.classList.toggle('dark:text-gray-400', !isActive);
+          });
+        });
+      }
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          const visibleHeadings = entries
+            .filter(entry => entry.isIntersecting)
+            .map(entry => entry.target);
+
+          if (visibleHeadings.length > 0) {
+            const topHeading = visibleHeadings.reduce((top, heading) => {
+              return heading.getBoundingClientRect().top < top.getBoundingClientRect().top ? heading : top;
+            });
+            updateActiveLink(topHeading.id);
+          }
+        },
+        {
+          rootMargin: '-80px 0px -70% 0px',
+          threshold: 0,
+        }
+      );
+
+      headings.forEach(heading => observer.observe(heading));
+    }
+
+    initTocHighlighting();
+    document.addEventListener('astro:page-load', initTocHighlighting);
+  })();
+</script>

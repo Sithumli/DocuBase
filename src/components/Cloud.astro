@@ -1,0 +1,27 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+---
+
+<div class={`relative ${className}`}>
+  <!-- Cloud: horizontal row of big blurred circles -->
+  <svg class="absolute inset-0 w-full h-full overflow-visible" viewBox="0 0 600 160" preserveAspectRatio="xMidYMid meet" style="filter: blur(4px);">
+    <!-- One row of overlapping circles with varying vertical positions -->
+    <circle cx="50" cy="85" r="80" fill="#d4eef7" />
+    <circle cx="150" cy="65" r="85" fill="#d4eef7" />
+    <circle cx="260" cy="85" r="90" fill="#d4eef7" />
+    <circle cx="380" cy="70" r="95" fill="#d4eef7" />
+    <circle cx="490" cy="85" r="90" fill="#d4eef7" />
+    <circle cx="570" cy="65" r="85" fill="#d4eef7" />
+  </svg>
+
+  <!-- Content -->
+  <div class="relative z-10 flex items-center justify-center min-h-[160px] px-16 py-10">
+    <div class="max-w-lg text-center">
+      <slot />
+    </div>
+  </div>
+</div>

@@ -1,0 +1,265 @@
+---
+title: Components
+description: Reusable MDX components included with DocuBase
+order: 2
+category: Reference
+---
+
+import Callout from '../../components/Callout.astro';
+import CodeGroup from '../../components/CodeGroup.astro';
+import Tabs from '../../components/Tabs.astro';
+import Collapsible from '../../components/Collapsible.astro';
+import Example from '../../components/Example.astro';
+import Steps from '../../components/Steps.astro';
+import Step from '../../components/Step.astro';
+
+DocuBase includes a set of reusable, framework-agnostic components designed for documentation and technical writing.
+
+## Callout
+
+Callouts are used to highlight important information, warnings, tips, and notes.
+
+### Usage
+
+```mdx
+import Callout from '../../components/Callout.astro';
+
+<Callout type="note">
+  This is a note callout.
+</Callout>
+```
+
+### Types
+
+<Callout type="note">
+  **Note**: Use this for general information.
+</Callout>
+
+<Callout type="tip">
+  **Tip**: Use this for helpful suggestions.
+</Callout>
+
+<Callout type="warning">
+  **Warning**: Use this for potential issues.
+</Callout>
+
+<Callout type="danger">
+  **Danger**: Use this for critical warnings.
+</Callout>
+
+<Callout type="info">
+  **Info**: Use this for informational content.
+</Callout>
+
+### Custom Title
+
+```mdx
+<Callout type="tip" title="Pro Tip">
+  You can customize the callout title!
+</Callout>
+```
+
+<Callout type="tip" title="Pro Tip">
+  You can customize the callout title!
+</Callout>
+
+## Tabs
+
+Tabs allow you to organize content into switchable panels.
+
+### Usage
+
+```mdx
+import Tabs from '../../components/Tabs.astro';
+
+<Tabs labels={["Tab 1", "Tab 2", "Tab 3"]}>
+  <div>Content for Tab 1</div>
+  <div>Content for Tab 2</div>
+  <div>Content for Tab 3</div>
+</Tabs>
+```
+
+### Example
+
+<Tabs labels={["React", "Vue", "Svelte"]}>
+  <div>
+    ```jsx
+    function Button({ children }) {
+      return <button>{children}</button>;
+    }
+    ```
+  </div>
+  <div>
+    ```vue
+    <template>
+      <button><slot /></button>
+    </template>
+    ```
+  </div>
+  <div>
+    ```svelte
+    <button>
+      <slot />
+    </button>
+    ```
+  </div>
+</Tabs>
+
+## CodeGroup
+
+CodeGroup is similar to Tabs but specifically designed for code snippets.
+
+### Usage
+
+```mdx
+import CodeGroup from '../../components/CodeGroup.astro';
+
+<CodeGroup labels={["npm", "pnpm", "yarn"]}>
+  <div>```bash
+npm install package-name
+```</div>
+  <div>```bash
+pnpm add package-name
+```</div>
+  <div>```bash
+yarn add package-name
+```</div>
+</CodeGroup>
+```
+
+### Example
+
+<CodeGroup labels={["npm", "pnpm", "yarn"]}>
+  <div>
+    ```bash
+    npm install astro
+    ```
+  </div>
+  <div>
+    ```bash
+    pnpm add astro
+    ```
+  </div>
+  <div>
+    ```bash
+    yarn add astro
+    ```
+  </div>
+</CodeGroup>
+
+## Collapsible
+
+Collapsible sections help hide content that isn't immediately necessary.
+
+### Usage
+
+```mdx
+import Collapsible from '../../components/Collapsible.astro';
+
+<Collapsible title="Click to expand">
+  This content is hidden by default.
+</Collapsible>
+```
+
+### Example
+
+<Collapsible title="Show advanced options">
+  These are the advanced configuration options:
+
+  - `debug`: Enable debug mode
+  - `verbose`: Enable verbose logging
+  - `timeout`: Set request timeout in milliseconds
+</Collapsible>
+
+<Collapsible title="Already expanded" defaultOpen={true}>
+  This section starts expanded because `defaultOpen` is set to `true`.
+</Collapsible>
+
+## Steps
+
+Steps are perfect for tutorials and guides that have sequential instructions.
+
+### Usage
+
+```mdx
+import Steps from '../../components/Steps.astro';
+import Step from '../../components/Step.astro';
+
+<Steps>
+  <Step title="First Step">
+    Instructions for the first step.
+  </Step>
+  <Step title="Second Step">
+    Instructions for the second step.
+  </Step>
+</Steps>
+```
+
+### Example
+
+<Steps>
+  <Step title="Install the package">
+    Run the installation command in your terminal.
+  </Step>
+  <Step title="Configure your project">
+    Update your configuration file with the required settings.
+  </Step>
+  <Step title="Start building">
+    You're all set! Start creating amazing documentation.
+  </Step>
+</Steps>
+
+## Example
+
+The Example component provides a container for showcasing interactive examples.
+
+### Usage
+
+```mdx
+import Example from '../../components/Example.astro';
+
+<Example title="Button Example" description="A simple button component">
+  <button>Click me</button>
+</Example>
+```
+
+### Example
+
+<Example title="Interactive Counter" description="A demonstration of the Example component">
+  <div class="flex items-center gap-4">
+    <button class="px-4 py-2 bg-primary-600 text-white rounded hover:bg-primary-700">
+      Click me
+    </button>
+    <span>Button with Tailwind styling</span>
+  </div>
+</Example>
+
+## Creating Custom Components
+
+You can create your own components by adding `.astro` files to `src/components/`:
+
+```astro
+---
+// src/components/MyComponent.astro
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<div class="my-component">
+  <h3>{title}</h3>
+  <slot />
+</div>
+```
+
+Then import and use in your MDX:
+
+```mdx
+import MyComponent from '../../components/MyComponent.astro';
+
+<MyComponent title="Hello">
+  Content goes here
+</MyComponent>
+```

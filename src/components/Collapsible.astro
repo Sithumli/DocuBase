@@ -1,0 +1,102 @@
+---
+interface Props {
+  title: string;
+  defaultOpen?: boolean;
+  id?: string;
+}
+
+const { title, defaultOpen = false, id } = Astro.props;
+
+// Create deterministic ID from title hash
+function hashString(str: string): string {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return Math.abs(hash).toString(36);
+}
+
+const collapsibleId = id || `collapsible-${hashString(title)}`;
+---
+
+<div class="my-4 border border-gray-200 dark:border-gray-700 rounded-lg" data-collapsible={collapsibleId}>
+  <button
+    type="button"
+    class="collapsible-trigger w-full flex items-center justify-between px-4 py-3 text-left font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-inset"
+    aria-expanded={defaultOpen}
+    aria-controls={`${collapsibleId}-content`}
+  >
+    <span>{title}</span>
+    <svg
+      class:list={[
+        'collapsible-icon h-5 w-5 text-gray-500 transition-transform',
+        defaultOpen && 'rotate-180',
+      ]}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+        clip-rule="evenodd"
+      />
+    </svg>
+  </button>
+  <div
+    id={`${collapsibleId}-content`}
+    class:list={[
+      'collapsible-content px-4 pb-4 overflow-hidden transition-all',
+      !defaultOpen && 'hidden',
+    ]}
+  >
+    <div class="pt-2 border-t border-gray-200 dark:border-gray-700">
+      <slot />
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // Guard to prevent duplicate listeners
+    if ((window as any).__collapsibleInitialized) return;
+    (window as any).__collapsibleInitialized = true;
+
+    function handleCollapsibleClick(e: Event) {
+      const trigger = (e.target as HTMLElement).closest('.collapsible-trigger');
+      if (!trigger) return;
+
+      const collapsible = trigger.closest('[data-collapsible]');
+      if (!collapsible) return;
+
+      const content = collapsible.querySelector('.collapsible-content');
+      const icon = collapsible.querySelector('.collapsible-icon');
+      if (!content || !icon) return;
+
+      const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
+      trigger.setAttribute('aria-expanded', String(!isExpanded));
+      content.classList.toggle('hidden');
+      icon.classList.toggle('rotate-180');
+    }
+
+    function initCollapsibles() {
+      // Ensure initial state is consistent with aria-expanded attributes
+      document.querySelectorAll('[data-collapsible]').forEach((collapsible) => {
+        const trigger = collapsible.querySelector('.collapsible-trigger');
+        const content = collapsible.querySelector('.collapsible-content');
+        const icon = collapsible.querySelector('.collapsible-icon');
+        if (!trigger || !content || !icon) return;
+
+        const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
+        content.classList.toggle('hidden', !isExpanded);
+        icon.classList.toggle('rotate-180', isExpanded);
+      });
+    }
+
+    document.addEventListener('click', handleCollapsibleClick);
+    initCollapsibles();
+    document.addEventListener('astro:page-load', initCollapsibles);
+  })();
+</script>
