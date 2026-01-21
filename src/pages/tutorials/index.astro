@@ -1,52 +1,16 @@
 ---
+import { getCollection, render } from 'astro:content';
 import DocsLayout from '../../layouts/DocsLayout.astro';
-import Sidebar from '../../components/Sidebar.astro';
-import TableOfContents from '../../components/TableOfContents.astro';
-import Breadcrumb from '../../components/Breadcrumb.astro';
 
-const sidebarItems = [
-  { title: "Getting Started", href: "/tutorials" },
-  { title: "Basic Tutorial", href: "/tutorials/basic" },
-  { title: "Advanced Tutorial", href: "/tutorials/advanced" },
-];
+// Get the index tutorial
+const tutorials = await getCollection('tutorials');
+const indexTutorial = tutorials.find(tutorial => tutorial.id === 'index');
 
-const tocItems = [
-  { title: "Overview", href: "#overview" },
-  { title: "Prerequisites", href: "#prerequisites" },
-];
+if (!indexTutorial) {
+  throw new Error('Index tutorial not found');
+}
+
+const { Content, headings } = await render(indexTutorial);
 ---
 
-<DocsLayout title="Tutorials" description="Learn how to use DocuBase" type="tutorials">
-  <Sidebar slot="sidebar" items={sidebarItems} currentPath="/tutorials" />
-
-  <TableOfContents slot="toc" items={tocItems} />
-
-  <Breadcrumb
-    slot="breadcrumb"
-    items={[
-      { label: "Tutorials", href: "/tutorials" },
-      { label: "Getting Started" },
-    ]}
-  />
-
-  <div class="mt-4">
-    <h1 class="text-3xl font-bold text-gray-900 mb-4">Tutorials</h1>
-    <p class="text-gray-600 mb-8">
-      Learn how to use DocuBase with step-by-step tutorials.
-    </p>
-
-    <section id="overview">
-      <h2 class="text-xl font-bold text-gray-900 mb-4">Overview</h2>
-      <p class="text-gray-600 mb-4">
-        These tutorials will guide you through using DocuBase effectively.
-      </p>
-    </section>
-
-    <section id="prerequisites" class="mt-8">
-      <h2 class="text-xl font-bold text-gray-900 mb-4">Prerequisites</h2>
-      <p class="text-gray-600">
-        Before starting, make sure you have completed the Quick Start guide.
-      </p>
-    </section>
-  </div>
-</DocsLayout>
+<DocsLayout entry={indexTutorial} headings={headings} Content={Content} type="tutorials" />
