@@ -1,8 +1,32 @@
 ---
+import { getCollection } from 'astro:content';
 import '../../styles/global.css';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import BlogCard from '../../components/BlogCard.astro';
+
+// Get all blog posts
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const sortedPosts = allPosts.sort((a, b) =>
+  b.data.pubDate.getTime() - a.data.pubDate.getTime()
+);
+
+// Group posts by year
+const postsByYear = sortedPosts.reduce((acc, post) => {
+  const year = post.data.pubDate.getFullYear();
+  if (!acc[year]) {
+    acc[year] = [];
+  }
+  acc[year].push(post);
+  return acc;
+}, {} as Record<number, typeof sortedPosts>);
+
+// Calculate read time
+function calculateReadTime(content: string): number {
+  const wordsPerMinute = 200;
+  const words = content.trim().split(/\s+/).length;
+  return Math.ceil(words / wordsPerMinute);
+}
 ---
 
 <!doctype html>
@@ -12,6 +36,7 @@ import BlogCard from '../../components/BlogCard.astro';
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
     <title>Blog | DocuBase</title>
+    <meta name="description" content="Read the latest updates, tutorials, and insights about DocuBase" />
   </head>
   <body class="min-h-screen flex flex-col bg-white text-gray-900">
     <Header currentPath="/blog" />
@@ -19,19 +44,36 @@ import BlogCard from '../../components/BlogCard.astro';
     <main class="flex-1">
       <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div class="max-w-3xl mx-auto">
-          <div class="flex gap-12">
-            <h1 class="text-2xl font-bold text-gray-900 shrink-0 sticky top-24 self-start">2026</h1>
+          {Object.entries(postsByYear)
+            .sort(([a], [b]) => Number(b) - Number(a))
+            .map(([year, posts]) => (
+              <div class="flex gap-12 mb-12">
+                <h2 class="text-2xl font-bold text-gray-900 shrink-0 sticky top-24 self-start">
+                  {year}
+                </h2>
 
-            <div class="flex-1 space-y-4">
-              <BlogCard
-                title="Pilot"
-                description="Build documentation that scales with your product. A modern, structured documentation template designed for clarity, consistency, and long-term growth."
-                date="Jan 19, 2026"
-                readTime="10 min read"
-                href="/blog/pilot"
-              />
-            </div>
-          </div>
+                <div class="flex-1 space-y-4">
+                  {posts.map((post) => (
+                    <BlogCard
+                      title={post.data.title}
+                      description={post.data.description || ''}
+                      date={post.data.pubDate.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })}
+                      readTime={`${calculateReadTime(post.body)} min read`}
+                      href={`/blog/${post.id}`}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))
+          }
+
+          {sortedPosts.length === 0 && (
+            <p class="text-center text-gray-600">No blog posts yet. Check back soon!</p>
+          )}
         </div>
       </div>
     </main>

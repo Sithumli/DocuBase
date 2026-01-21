@@ -11,3 +11,59 @@
 html, body {
   font-family: "Comfortaa", system-ui, sans-serif;
 }
+
+/* Content Headings - applies ONLY to article content areas */
+article.prose h1 {
+  font-size: 2.5rem; /* 40px */
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 1.5rem;
+  scroll-margin-top: 6rem;
+}
+
+article.prose h2 {
+  font-size: 1.25rem; /* 20px */
+  font-weight: 700;
+  color: #111827;
+  margin-top: 3rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e5e7eb;
+  scroll-margin-top: 6rem;
+}
+
+article.prose h3 {
+  font-size: 1rem; /* 16px */
+  font-weight: 600;
+  color: #111827;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  scroll-margin-top: 6rem;
+}
+
+article.prose h4 {
+  font-size: 0.875rem; /* 14px */
+  font-weight: 600;
+  color: #1f2937;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  scroll-margin-top: 6rem;
+}
+
+article.prose p {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: #374151;
+  margin-bottom: 1.25rem;
+}
+
+article.prose ul, article.prose ol {
+  margin-bottom: 1.25rem;
+  padding-left: 1.5rem;
+}
+
+article.prose li {
+  margin-bottom: 0.5rem;
+  color: #374151;
+  line-height: 1.75;
+}

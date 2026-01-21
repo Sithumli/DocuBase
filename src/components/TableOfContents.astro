@@ -3,33 +3,181 @@ interface TocItem {
   title: string;
   href: string;
   depth?: number;
+  children?: TocItem[];
 }
 
 interface Props {
   items: TocItem[];
   title?: string;
+  showBorder?: boolean;
+  centered?: boolean;
+  nested?: boolean;
+  collapsible?: boolean;
 }
 
-const { items, title = "On this page" } = Astro.props;
+const { items, title = "On this Topic", showBorder = true, centered = false, nested = false, collapsible = false } = Astro.props;
 ---
 
-<div class="text-sm" data-toc>
-  <p class="font-medium text-gray-900 dark:text-gray-100 mb-3">{title}</p>
-  <nav class="space-y-2">
-    {items.map((item) => (
-      <a
-        href={item.href}
-        class:list={[
-          "toc-link block text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors",
-          item.depth && item.depth > 1 && "ml-3",
-        ]}
-        data-toc-link={item.href}
-      >
-        {item.title}
-      </a>
-    ))}
-  </nav>
+<div class:list={[
+  "text-sm", 
+  showBorder && "border-l border-gray-200 pl-4",
+  collapsible && "toc-collapsible-wrapper"
+]} data-toc data-toc-contextual={nested ? "true" : "false"}>
+  {collapsible && (
+    <div class="toc-collapsible-box border border-gray-200 rounded-[20px] p-4">
+      <div class="toc-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </div>
+      <div class="toc-content">
+        <p class="font-semibold mb-4 text-base" style="color: #000000;">{title}</p>
+        <nav class="space-y-2.5">
+          {nested ? (
+            items.map((item) => (
+              <div data-h2-section data-h2-id={item.href.slice(1)}>
+                <a
+                  href={item.href}
+                  class="toc-link block transition-all duration-200 transform font-medium"
+                  style="color: #000000;"
+                  data-toc-link={item.href}
+                >
+                  {item.title}
+                </a>
+                {item.children && item.children.length > 0 && (
+                  <div class="ml-4 mt-1.5 space-y-1.5">
+                    {item.children.map((child) => (
+                      <a
+                        href={child.href}
+                        class="toc-link block transition-all duration-200 transform text-sm"
+                        style="color: #000000;"
+                        data-toc-link={child.href}
+                      >
+                        {child.title}
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))
+          ) : (
+            items.map((item) => (
+              <a
+                href={item.href}
+                class:list={[
+                  "toc-link block transition-all duration-200 transform",
+                  item.depth === 2 && "font-medium",
+                  item.depth === 3 && "ml-4 text-sm",
+                ]}
+                style="color: #000000;"
+                data-toc-link={item.href}
+              >
+                {item.title}
+              </a>
+            ))
+          )}
+        </nav>
+      </div>
+    </div>
+  )}
+  
+  {!collapsible && (
+    <>
+      <p class="font-semibold mb-4 text-base" style="color: #000000;">{title}</p>
+      <nav class="space-y-2.5">
+        {nested ? (
+          items.map((item) => (
+            <div data-h2-section data-h2-id={item.href.slice(1)}>
+              <a
+                href={item.href}
+                class="toc-link block transition-all duration-200 transform font-medium"
+                style="color: #000000;"
+                data-toc-link={item.href}
+              >
+                {item.title}
+              </a>
+              {item.children && item.children.length > 0 && (
+                <div class="ml-4 mt-1.5 space-y-1.5">
+                  {item.children.map((child) => (
+                    <a
+                      href={child.href}
+                      class="toc-link block transition-all duration-200 transform text-sm"
+                      style="color: #000000;"
+                      data-toc-link={child.href}
+                    >
+                      {child.title}
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))
+        ) : (
+          items.map((item) => (
+            <a
+              href={item.href}
+              class:list={[
+                "toc-link block transition-all duration-200 transform",
+                item.depth === 2 && "font-medium",
+                item.depth === 3 && "ml-4 text-sm",
+              ]}
+              style="color: #000000;"
+              data-toc-link={item.href}
+            >
+              {item.title}
+            </a>
+          ))
+        )}
+      </nav>
+    </>
+  )}
 </div>
+
+<style>
+  .toc-collapsible-wrapper {
+    width: 14rem;
+  }
+
+  .toc-collapsible-box {
+    width: 14rem;
+    transition: width 0.4s ease-in-out;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .toc-collapsible-box:not(:hover) {
+    width: 2rem;
+  }
+
+  .toc-icon {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    color: #6b7280;
+    pointer-events: none;
+  }
+
+  .toc-collapsible-box:not(:hover) .toc-icon {
+    opacity: 1;
+  }
+
+  .toc-content {
+    width: 14rem;
+    opacity: 1;
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  .toc-collapsible-box:not(:hover) .toc-content {
+    opacity: 0;
+    pointer-events: none;
+  }
+</style>
 
 <script>
   (function() {
@@ -60,13 +208,88 @@ const { items, title = "On this page" } = Astro.props;
           toc.querySelectorAll('[data-toc-link]').forEach(link => {
             const href = link.getAttribute('data-toc-link');
             const isActive = href === `#${activeId}`;
-            link.classList.toggle('text-primary-600', isActive);
-            link.classList.toggle('dark:text-primary-400', isActive);
-            link.classList.toggle('font-medium', isActive);
-            link.classList.toggle('text-gray-500', !isActive);
-            link.classList.toggle('dark:text-gray-400', !isActive);
+            link.classList.toggle('font-bold', isActive);
+            link.classList.toggle('translate-x-2', isActive);
+            link.classList.toggle('font-normal', !isActive);
           });
         });
+      }
+
+      // Add click handlers for TOC navigation
+      tocContainers.forEach(toc => {
+        toc.querySelectorAll('[data-toc-link]').forEach(link => {
+          link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const href = link.getAttribute('data-toc-link');
+            if (href?.startsWith('#')) {
+              const targetId = href.slice(1);
+              const targetElement = document.getElementById(targetId);
+              if (targetElement) {
+                targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                updateActiveLink(targetId);
+                history.pushState(null, '', href);
+              }
+            }
+          });
+        });
+      });
+
+      // Dynamic context-aware TOC (show only current section and its children)
+      function updateContextualToc(activeH2Id: string) {
+        const rightTocContainer = document.querySelector('[data-toc-contextual="true"]');
+        if (!rightTocContainer) return;
+
+        // Hide all H2 sections
+        rightTocContainer.querySelectorAll('[data-h2-section]').forEach(section => {
+          (section as HTMLElement).style.display = 'none';
+        });
+
+        // Show only the active H2 section
+        const activeSection = rightTocContainer.querySelector(`[data-h2-id="${activeH2Id}"]`);
+        if (activeSection) {
+          (activeSection as HTMLElement).style.display = 'block';
+        }
+      }
+
+      // Track current H2 for contextual TOC
+      const contextualToc = document.querySelector('[data-toc-contextual="true"]');
+      if (contextualToc) {
+        const h2Headings = Array.from(document.querySelectorAll('article h2[id], main h2[id]')) as HTMLElement[];
+
+        if (h2Headings.length > 0) {
+          let currentActiveH2: string | null = null;
+
+          function findCurrentH2() {
+            const scrollPos = window.scrollY + 120;
+            
+            // Find which H2 section we're currently in
+            for (let i = h2Headings.length - 1; i >= 0; i--) {
+              const h2 = h2Headings[i];
+              if (h2.offsetTop <= scrollPos) {
+                return h2.id;
+              }
+            }
+            
+            // Default to first section if we're above all headings
+            return h2Headings[0]?.id || null;
+          }
+
+          function onScroll() {
+            const newActiveH2 = findCurrentH2();
+            if (newActiveH2 && newActiveH2 !== currentActiveH2) {
+              currentActiveH2 = newActiveH2;
+              updateContextualToc(newActiveH2);
+            }
+          }
+
+          window.addEventListener('scroll', onScroll, { passive: true });
+          
+          // Initialize with first section
+          if (h2Headings[0]?.id) {
+            currentActiveH2 = h2Headings[0].id;
+            updateContextualToc(h2Headings[0].id);
+          }
+        }
       }
 
       const observer = new IntersectionObserver(

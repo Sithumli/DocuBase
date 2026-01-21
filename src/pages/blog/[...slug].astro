@@ -1,6 +1,9 @@
 ---
 import { getCollection, render } from 'astro:content';
 import DocsLayout from '../../layouts/DocsLayout.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import ReadTime from '../../components/ReadTime.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog', ({ data }) => !data.draft);
@@ -12,9 +15,97 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
+
+// Convert headings to TOC format for left sidebar (flat list)
+const leftTocItems = headings
+  .filter((heading) => heading.depth <= 3)
+  .map((heading) => ({
+    title: heading.text,
+    href: `#${heading.slug}`,
+    depth: heading.depth,
+  }));
+
+// Convert headings to hierarchical TOC for right sidebar
+const rightTocItems: Array<{
+  title: string;
+  href: string;
+  depth: number;
+  children: Array<{ title: string; href: string; depth: number }>;
+}> = [];
+
+let currentH2: typeof rightTocItems[0] | null = null;
+
+headings.forEach((heading) => {
+  if (heading.depth === 2) {
+    currentH2 = {
+      title: heading.text,
+      href: `#${heading.slug}`,
+      depth: 2,
+      children: []
+    };
+    rightTocItems.push(currentH2);
+  } else if (heading.depth === 3 && currentH2) {
+    currentH2.children.push({
+      title: heading.text,
+      href: `#${heading.slug}`,
+      depth: 3,
+    });
+  }
+});
+
+// Calculate read time (rough estimate: 200 words per minute)
+const wordsPerMinute = 200;
+const content = entry.body;
+const words = content.trim().split(/\s+/).length;
+const readTime = Math.ceil(words / wordsPerMinute);
 ---
 
 <DocsLayout title={entry.data.title} description={entry.data.description} type="blog">
-  <Content />
+  <TableOfContents slot="sidebar" items={leftTocItems} title={entry.data.title} showBorder={false} centered={false} collapsible={true} />
+
+  <TableOfContents slot="toc" items={rightTocItems} nested={true} />
+
+  <Breadcrumb
+    slot="breadcrumb"
+    items={[
+      { label: "Blog", href: "/blog" },
+      { label: entry.data.title },
+    ]}
+  />
+
+  <div class="mt-4">
+    <h1 class="font-bold text-gray-900 mb-2" style="font-size: 40px;">{entry.data.title}</h1>
+    {entry.data.description && (
+      <p class="text-lg text-gray-600 mb-4">{entry.data.description}</p>
+    )}
+
+    <div class="flex items-center gap-4 text-sm text-gray-500 mb-8">
+      {entry.data.pubDate && (
+        <time datetime={entry.data.pubDate.toISOString()}>
+          {entry.data.pubDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          })}
+        </time>
+      )}
+      {entry.data.author && <span>by {entry.data.author}</span>}
+      <ReadTime minutes={readTime} />
+    </div>
+
+    {entry.data.tags && entry.data.tags.length > 0 && (
+      <div class="flex gap-2 mb-8">
+        {entry.data.tags.map(tag => (
+          <span class="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">
+            {tag}
+          </span>
+        ))}
+      </div>
+    )}
+
+    <article class="prose prose-gray max-w-none">
+      <Content />
+    </article>
+  </div>
 </DocsLayout>

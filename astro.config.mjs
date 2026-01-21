@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import rehypeSlug from 'rehype-slug';
 
 import tailwindcss from '@tailwindcss/vite';
 import mdx from '@astrojs/mdx';
@@ -11,8 +12,13 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
   },
-  integrations: [mdx()],
+  integrations: [
+    mdx({
+      rehypePlugins: [rehypeSlug],
+    })
+  ],
   markdown: {
+    rehypePlugins: [rehypeSlug],
     shikiConfig: {
       theme: 'github-dark',
       wrap: true,

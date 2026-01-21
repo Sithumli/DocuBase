@@ -27,14 +27,14 @@ const siteTitle = 'DocuBase';
     <Header currentPath={Astro.url.pathname} />
 
     <div class="flex-1 container mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex gap-8 py-8">
-        <aside class="hidden lg:block w-56 shrink-0">
-          <nav class="sticky top-24 space-y-1">
+      <div class="flex gap-8 py-12 layout-container">
+        <aside class="hidden lg:block shrink-0 sidebar-slot">
+          <div class="sticky top-28">
             <slot name="sidebar" />
-          </nav>
+          </div>
         </aside>
 
-        <main class="flex-1 min-w-0">
+        <main class="flex-1 min-w-0 main-slot">
           <slot name="breadcrumb" />
           <article class="max-w-none">
             <slot />
@@ -42,7 +42,7 @@ const siteTitle = 'DocuBase';
         </main>
 
         <aside class="hidden xl:block w-48 shrink-0">
-          <div class="sticky top-24">
+          <div class="sticky top-28">
             <slot name="toc" />
           </div>
         </aside>
@@ -50,5 +50,19 @@ const siteTitle = 'DocuBase';
     </div>
 
     <Footer />
+
+    <style>
+      .sidebar-slot {
+        transition: margin-right 0.4s ease-in-out;
+      }
+
+      .sidebar-slot:has(.toc-collapsible-box:not(:hover)) {
+        margin-right: -12rem;
+      }
+
+      .main-slot {
+        transition: margin-left 0.4s ease-in-out;
+      }
+    </style>
   </body>
 </html>
