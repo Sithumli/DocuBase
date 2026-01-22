@@ -80,7 +80,7 @@ function getIcon(label: string): string | null {
     })}
   </div>
   <div class:list={[
-      'tab-panels p-4 rounded-tr-lg rounded-br-lg rounded-bl-lg bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100',
+      'tab-panels p-4 rounded-tr-lg rounded-br-lg rounded-bl-lg bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 [&_p]:!text-gray-800 dark:[&_p]:!text-gray-100 [&_li]:!text-gray-800 dark:[&_li]:!text-gray-100',
       defaultIndex !== 0 && 'rounded-tl-lg'
     ]}>
     <slot />

@@ -41,7 +41,7 @@ const collapsibleId = id || `collapsible-${hashString(title)}`;
       !defaultOpen && 'hidden',
     ]}
   >
-    <div class="px-4 pb-4 pt-1 ml-9 text-sm leading-relaxed text-gray-800 dark:text-gray-200 [&_li]:text-gray-800 [&_li]:dark:text-gray-200 [&_p]:text-gray-800 [&_p]:dark:text-gray-200 [&_code]:text-gray-900 [&_code]:dark:text-gray-100">
+    <div class="px-4 pb-4 pt-1 ml-9 text-sm leading-relaxed text-gray-800 dark:text-gray-200 [&_p]:!text-gray-800 dark:[&_p]:!text-gray-200 [&_li]:!text-gray-800 dark:[&_li]:!text-gray-200">
       <slot />
     </div>
   </div>

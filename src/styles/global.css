@@ -9,7 +9,7 @@ html, body {
   font-family: "Comfortaa", system-ui, sans-serif;
 }
 
-article.prose h1 {
+:where(article.prose) h1 {
   font-size: 2.25rem;
   font-weight: 700;
   color: rgb(17 24 39);
@@ -17,7 +17,7 @@ article.prose h1 {
   scroll-margin-top: 6rem;
 }
 
-article.prose h2 {
+:where(article.prose) h2 {
   font-size: 1.25rem;
   font-weight: 700;
   color: rgb(17 24 39);
@@ -29,7 +29,7 @@ article.prose h2 {
   scroll-margin-top: 6rem;
 }
 
-article.prose h3 {
+:where(article.prose) h3 {
   font-size: 1rem;
   font-weight: 600;
   color: rgb(17 24 39);
@@ -38,7 +38,7 @@ article.prose h3 {
   scroll-margin-top: 6rem;
 }
 
-article.prose h4 {
+:where(article.prose) h4 {
   font-size: 0.875rem;
   font-weight: 600;
   color: rgb(31 41 55);
@@ -47,32 +47,32 @@ article.prose h4 {
   scroll-margin-top: 6rem;
 }
 
-article.prose p {
+:where(article.prose) p {
   font-size: 1rem;
   line-height: 1.75;
   color: rgb(0 0 0);
   margin-bottom: 1.25rem;
 }
 
-article.prose ul, article.prose ol {
+:where(article.prose) ul, :where(article.prose) ol {
   margin-bottom: 1.25rem;
   padding-left: 1.5rem;
 }
 
-article.prose li {
+:where(article.prose) li {
   margin-bottom: 0.5rem;
   color: rgb(55 65 81);
   line-height: 1.75;
 }
 
-article.prose pre {
+:where(article.prose) pre {
   position: relative;
   border-radius: 15px;
   padding: 1.25rem;
   margin: 1.5rem 0;
 }
 
-article.prose pre code {
+:where(article.prose) pre code {
   padding: 0;
 }
 
@@ -89,7 +89,7 @@ article.prose pre code {
   transition: opacity 0.2s, background 0.2s;
 }
 
-article.prose pre:hover .code-copy-btn {
+:where(article.prose) pre:hover .code-copy-btn {
   opacity: 1;
 }
 
@@ -106,9 +106,3 @@ article.prose pre:hover .code-copy-btn {
   color: #22c55e;
 }
 
-.tab-panels p,
-.tab-panels li,
-.collapsible-content p,
-.collapsible-content li {
-  color: inherit !important;
-}
