@@ -1,18 +1,22 @@
 ---
-interface Props {
-  title: string;
-}
+import type { StepProps } from '@/types';
 
-const { title } = Astro.props;
+const { title } = Astro.props as StepProps;
 ---
 
 <div class="step relative [counter-increment:step]">
-  <!-- Step number indicator: displays step number via CSS counter (before:content-[counter(step)]) -->
-  <div class="absolute -left-[calc(1.5rem+1px)] -translate-x-1/2 w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 border-2 border-primary-500 flex items-center justify-center text-sm font-semibold text-primary-700 dark:text-primary-300 before:content-[counter(step)]" />
+  <div class="absolute -left-[calc(1.5rem+1px)] -translate-x-1/2 w-8 h-8 rounded-full bg-transparent border-2 border-primary-500 flex items-center justify-center text-sm font-semibold text-primary-700 dark:text-primary-300 before:content-[counter(step)] z-10" />
+  <div class="step-line absolute -left-[calc(1.5rem+1px)] -translate-x-1/2 top-10 w-0.5 rounded-full bg-gray-300 dark:bg-gray-700" style="height: calc(100% - 0.5rem);" />
   <div>
-    <h3 class="font-semibold text-lg mb-2 mt-0">{title}</h3>
+    <h3 class="font-semibold text-lg mb-2 mt-0 leading-8">{title}</h3>
     <div class="text-gray-700 dark:text-gray-300 [&>p]:mb-3 [&>p:last-child]:mb-0">
       <slot />
     </div>
   </div>
 </div>
+
+<style>
+  .step:last-child .step-line {
+    display: none;
+  }
+</style>

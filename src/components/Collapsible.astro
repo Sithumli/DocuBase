@@ -1,58 +1,47 @@
 ---
-interface Props {
-  title: string;
-  defaultOpen?: boolean;
-  id?: string;
-}
+import type { CollapsibleProps } from '@/types';
+import { hashString } from '@/utils';
+import { DEFAULTS } from '@/types/constants';
 
-const { title, defaultOpen = false, id } = Astro.props;
-
-// Create deterministic ID from title hash
-function hashString(str: string): string {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash;
-  }
-  return Math.abs(hash).toString(36);
-}
+const { title, defaultOpen = DEFAULTS.COLLAPSIBLE.defaultOpen, id } = Astro.props as CollapsibleProps;
 
 const collapsibleId = id || `collapsible-${hashString(title)}`;
 ---
 
-<div class="my-4 border border-gray-200 dark:border-gray-700 rounded-lg" data-collapsible={collapsibleId}>
+<div class="collapsible my-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm overflow-hidden" data-collapsible={collapsibleId}>
   <button
     type="button"
-    class="collapsible-trigger w-full flex items-center justify-between px-4 py-3 text-left font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-inset"
+    class="collapsible-trigger w-full flex items-center gap-3 px-4 py-3 text-left font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
     aria-expanded={defaultOpen}
     aria-controls={`${collapsibleId}-content`}
   >
-    <span>{title}</span>
-    <svg
-      class:list={[
-        'collapsible-icon h-5 w-5 text-gray-500 transition-transform',
-        defaultOpen && 'rotate-180',
-      ]}
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 20 20"
-      fill="currentColor"
-    >
-      <path
-        fill-rule="evenodd"
-        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-        clip-rule="evenodd"
-      />
-    </svg>
+    <span class="collapsible-icon-wrapper flex items-center justify-center w-6 h-6 rounded-md bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 transition-transform duration-200 pointer-events-none">
+      <svg
+        class:list={[
+          'collapsible-icon h-4 w-4 transition-transform duration-200',
+          defaultOpen && 'rotate-90',
+        ]}
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+          clip-rule="evenodd"
+        />
+      </svg>
+    </span>
+    <span class="flex-1 pointer-events-none">{title}</span>
   </button>
   <div
     id={`${collapsibleId}-content`}
     class:list={[
-      'collapsible-content px-4 pb-4 overflow-hidden transition-all',
+      'collapsible-content overflow-hidden transition-all duration-200',
       !defaultOpen && 'hidden',
     ]}
   >
-    <div class="pt-2 border-t border-gray-200 dark:border-gray-700">
+    <div class="px-4 pb-4 pt-1 ml-9 text-sm leading-relaxed text-gray-800 dark:text-gray-200 [&_p]:!text-gray-800 dark:[&_p]:!text-gray-200 [&_li]:!text-gray-800 dark:[&_li]:!text-gray-200">
       <slot />
     </div>
   </div>
@@ -78,7 +67,7 @@ const collapsibleId = id || `collapsible-${hashString(title)}`;
       const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
       trigger.setAttribute('aria-expanded', String(!isExpanded));
       content.classList.toggle('hidden');
-      icon.classList.toggle('rotate-180');
+      icon.classList.toggle('rotate-90');
     }
 
     function initCollapsibles() {
@@ -91,7 +80,7 @@ const collapsibleId = id || `collapsible-${hashString(title)}`;
 
         const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
         content.classList.toggle('hidden', !isExpanded);
-        icon.classList.toggle('rotate-180', isExpanded);
+        icon.classList.toggle('rotate-90', isExpanded);
       });
     }
 

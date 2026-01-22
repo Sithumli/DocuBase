@@ -1,75 +1,15 @@
 ---
+import { getCollection, render } from 'astro:content';
 import DocsLayout from '../../layouts/DocsLayout.astro';
-import Sidebar from '../../components/Sidebar.astro';
-import TableOfContents from '../../components/TableOfContents.astro';
-import Breadcrumb from '../../components/Breadcrumb.astro';
-import ReadTime from '../../components/ReadTime.astro';
-import DocNav from '../../components/DocNav.astro';
 
-const sidebarItems = [
-  { title: "Pilot", href: "/docs/pilot" },
-  { title: "Quick Start", href: "/docs" },
-  { title: "Installation", href: "/docs/installation" },
-  { title: "Core Concepts", href: "/docs/core-concepts" },
-];
+const docs = await getCollection('docs');
+const indexDoc = docs.find(doc => doc.id === 'index');
 
-const tocItems = [
-  { title: "Quick Start", href: "#quick-start" },
-  { title: "Installation", href: "#installation" },
-  { title: "Core Concepts", href: "#core-concepts" },
-];
+if (!indexDoc) {
+  throw new Error('Index doc not found');
+}
+
+const { Content, headings } = await render(indexDoc);
 ---
 
-<DocsLayout title="Quick Start" description="Build documentation that scales with your product." type="docs">
-  <Sidebar slot="sidebar" items={sidebarItems} currentPath="/docs" />
-
-  <TableOfContents slot="toc" items={tocItems} />
-
-  <Breadcrumb
-    slot="breadcrumb"
-    items={[
-      { label: "Getting Started", href: "/docs" },
-      { label: "Quick Start" },
-    ]}
-  />
-
-  <div class="mt-4">
-    <h1 class="text-3xl font-bold text-gray-900 mb-4">Quick Start</h1>
-    <p class="text-gray-600 mb-4">
-      Build documentation that scales with your product.
-      A modern, structured documentation template designed for
-      clarity, consistency, and long-term growth.
-    </p>
-    <ReadTime minutes={10} />
-
-    <section class="mt-12" id="phase-1">
-      <h2 class="text-xl font-bold text-gray-900 mb-4">Phase 1</h2>
-      <p class="text-gray-600 mb-4">
-        Build documentation that scales with your product.
-        A modern, structured documentation template designed for
-        clarity, consistency, and long-term growth.
-      </p>
-      <p class="text-gray-600 mb-6">
-        Build documentation that scales with your product.
-        A modern, structured documentation template designed for
-        clarity, consistency, and long-term growth.
-      </p>
-
-      <div class="bg-gray-100 rounded-lg h-12 mb-8"></div>
-    </section>
-
-    <section class="mt-8" id="phase-2">
-      <h2 class="text-xl font-bold text-gray-900 mb-4">Phase 2</h2>
-      <p class="text-gray-600">
-        Build documentation that scales with your product.
-        A modern, structured documentation template designed for
-        clarity, consistency, and long-term growth.
-      </p>
-    </section>
-
-    <DocNav
-      prev={{ label: "Previous", href: "/docs/pilot" }}
-      next={{ label: "Installation", href: "/docs/installation" }}
-    />
-  </div>
-</DocsLayout>
+<DocsLayout entry={indexDoc} headings={headings} Content={Content} type="docs" />

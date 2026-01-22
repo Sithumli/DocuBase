@@ -1,7 +1,7 @@
 ---
-interface Props {
-  githubUrl?: string;
-}
+import type { FooterProps } from '@/types';
+
+type Props = FooterProps;
 
 const { githubUrl = "https://github.com" } = Astro.props;
 const currentYear = new Date().getFullYear();

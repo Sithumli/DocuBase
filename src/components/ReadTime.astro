@@ -1,9 +1,7 @@
 ---
-interface Props {
-  minutes: number;
-}
+import type { ReadTimeProps } from '@/types';
 
-const { minutes } = Astro.props;
+const { minutes } = Astro.props as ReadTimeProps;
 ---
 
 <div class="flex items-center gap-1.5 text-sm text-gray-500">

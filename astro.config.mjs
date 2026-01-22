@@ -1,18 +1,35 @@
-// @ts-check
 import { defineConfig } from 'astro/config';
+import rehypeSlug from 'rehype-slug';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import tailwindcss from '@tailwindcss/vite';
 import mdx from '@astrojs/mdx';
 
-// https://astro.build/config
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 export default defineConfig({
-  site: 'https://your-site.com', // Update with your site URL
+  site: 'https://your-site.com', 
   output: 'static',
   vite: {
     plugins: [tailwindcss()],
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src'),
+        '@/components': path.resolve(__dirname, './src/components'),
+        '@/types': path.resolve(__dirname, './src/types'),
+        '@/utils': path.resolve(__dirname, './src/utils'),
+        '@/styles': path.resolve(__dirname, './src/styles'),
+      },
+    },
   },
-  integrations: [mdx()],
+  integrations: [
+    mdx({
+      rehypePlugins: [rehypeSlug],
+    }),
+  ],
   markdown: {
+    rehypePlugins: [rehypeSlug],
     shikiConfig: {
       theme: 'github-dark',
       wrap: true,

@@ -1,15 +1,10 @@
 ---
-interface Props {
-  currentPath?: string;
-}
+import type { HeaderProps } from '@/types';
+import { NAV_LINKS } from '@/types/constants';
 
-const { currentPath = "" } = Astro.props;
+const { currentPath = "" } = Astro.props as HeaderProps;
 
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/blog", label: "Blog" },
-  { href: "/about", label: "About" },
-];
+const navLinks = NAV_LINKS;
 ---
 
 <header class="sticky top-4 z-50 w-full">

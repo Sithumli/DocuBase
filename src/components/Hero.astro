@@ -1,51 +1,44 @@
 ---
 import Cloud from './Cloud.astro';
-
-interface Props {
-  subtitle?: string;
-  title: string;
-  highlightedText?: string;
-  description: string;
-  buttonText?: string;
-  buttonHref?: string;
-}
+import type { HeroProps } from '@/types';
+import { DEFAULTS } from '@/types/constants';
 
 const {
-  subtitle = "DocuBase",
+  subtitle = DEFAULTS.HERO.subtitle,
   title,
   highlightedText,
   description,
-  buttonText = "Get Started",
-  buttonHref = "/docs",
-} = Astro.props;
+  buttonText = DEFAULTS.HERO.buttonText,
+  buttonHref = DEFAULTS.HERO.buttonHref,
+} = Astro.props as HeroProps;
 ---
 
-<section class="py-16 md:py-24">
-  <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-    {subtitle && (
-      <p class="text-sm font-medium text-gray-600 mb-4">{subtitle}</p>
-    )}
-
-    <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-20">
-      {title}{" "}
-      {highlightedText && (
-        <span class="text-cyan-500">{highlightedText}</span>
+  <section class="py-16 md:py-24">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      {subtitle && (
+        <p class="text-sm font-medium text-gray-600 mb-4">{subtitle}</p>
       )}
-    </h1>
 
-    <div class="flex flex-col items-center">
-      <Cloud class="mb-20">
-        <p class="text-base md:text-lg text-gray-700 leading-relaxed">
-          {description}
-        </p>
-      </Cloud>
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-20">
+        {title}{" "}
+        {highlightedText && (
+          <span class="text-cyan-500">{highlightedText}</span>
+        )}
+      </h1>
 
-      <a
-        href={buttonHref}
-        class="inline-flex items-center justify-center px-6 py-2.5 bg-cyan-500 text-white text-sm font-medium rounded-full hover:bg-cyan-600 transition-colors"
-      >
-        {buttonText}
-      </a>
+      <div class="flex flex-col items-center">
+        <Cloud class="mb-20">
+          <p class="text-base md:text-lg text-gray-700 leading-relaxed">
+            {description}
+          </p>
+        </Cloud>
+
+        <a
+          href={buttonHref}
+          class="inline-flex items-center justify-center px-6 py-2.5 bg-cyan-500 text-white text-sm font-medium rounded-full hover:bg-cyan-600 transition-colors"
+        >
+          {buttonText}
+        </a>
+      </div>
     </div>
-  </div>
-</section>
+  </section>

@@ -1,17 +1,10 @@
 ---
-interface BreadcrumbItem {
-  label: string;
-  href?: string;
-}
+import type { BreadcrumbProps } from '@/types';
 
-interface Props {
-  items: BreadcrumbItem[];
-}
-
-const { items } = Astro.props;
+const { items } = Astro.props as BreadcrumbProps;
 ---
 
-<nav class="flex items-center gap-2 text-sm text-gray-500">
+<nav class="flex items-center gap-2 text-sm text-gray-500 mb-4">
   {items.map((item, index) => (
     <>
       {index > 0 && <span class="text-gray-400">&gt;</span>}
