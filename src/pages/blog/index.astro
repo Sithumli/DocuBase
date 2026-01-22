@@ -4,6 +4,8 @@ import '../../styles/global.css';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import BlogCard from '@/components/BlogCard.astro';
+import { calculateReadTime } from '@/utils/helpers';
+import { WORDS_PER_MINUTE } from '@/types/constants';
 
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
 const sortedPosts = allPosts.sort((a, b) =>
@@ -18,12 +20,6 @@ const postsByYear = sortedPosts.reduce((acc, post) => {
   acc[year].push(post);
   return acc;
 }, {} as Record<number, typeof sortedPosts>);
-
-function calculateReadTime(content: string): number {
-  const wordsPerMinute = 200;
-  const words = content.trim().split(/\s+/).length;
-  return Math.ceil(words / wordsPerMinute);
-}
 ---
 
 <!doctype html>

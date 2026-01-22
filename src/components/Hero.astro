@@ -1,17 +1,17 @@
-  ---
-  import Cloud from './Cloud.astro';
-  import type { HeroProps } from '@/types';
-  import { DEFAULTS } from '@/types/constants';
+---
+import Cloud from './Cloud.astro';
+import type { HeroProps } from '@/types';
+import { DEFAULTS } from '@/types/constants';
 
-  const {
-    subtitle = DEFAULTS.HERO.subtitle,
-    title,
-    highlightedText,
-    description,
-    buttonText = DEFAULTS.HERO.buttonText,
-    buttonHref = DEFAULTS.HERO.buttonHref,
-  } = Astro.props as HeroProps;
-  ---
+const {
+  subtitle = DEFAULTS.HERO.subtitle,
+  title,
+  highlightedText,
+  description,
+  buttonText = DEFAULTS.HERO.buttonText,
+  buttonHref = DEFAULTS.HERO.buttonHref,
+} = Astro.props as HeroProps;
+---
 
   <section class="py-16 md:py-24">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">

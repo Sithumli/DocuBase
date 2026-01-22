@@ -6,7 +6,8 @@ import TableOfContents from '@/components/TableOfContents.astro';
 import Breadcrumb from '@/components/Breadcrumb.astro';
 import ReadTime from '@/components/ReadTime.astro';
 import type { DocsLayoutProps } from '@/types';
-import { SITE_TITLE } from '@/types/constants';
+import { SITE_TITLE, WORDS_PER_MINUTE } from '@/types/constants';
+import { calculateReadTime } from '@/utils/helpers';
 
 interface ExtendedDocsLayoutProps extends DocsLayoutProps {
   entry?: any;
@@ -59,10 +60,7 @@ if (isContentBased) {
     }
   });
 
-  const wordsPerMinute = 200;
-  const content = entry.body;
-  const words = content.trim().split(/\s+/).length;
-  readTime = Math.ceil(words / wordsPerMinute);
+  readTime = calculateReadTime(entry.body, WORDS_PER_MINUTE);
 
   const typeLabel = type.charAt(0).toUpperCase() + type.slice(1);
   breadcrumbItems = [

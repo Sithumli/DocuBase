@@ -4,7 +4,7 @@ import type { TocItem } from '@/types';
 
 type Props = TableOfContentsProps;
 
-const { items, title = "On this Topic", showBorder = true, nested = false, collapsible = false } = Astro.props;
+const { items, title = "On this Topic", showBorder = true, nested = false, collapsible = false } = Astro.props as Props;
 ---
 
 <div class:list={[
