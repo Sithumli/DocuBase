@@ -19,10 +19,9 @@ const { items, currentPath = "" } = Astro.props;
       <a
         href={item.href}
         class:list={[
-          "block py-2 text-sm transition-colors",
+          "block py-2 text-sm transition-colors text-gray-900 hover:text-gray-600",
           currentPath === item.href && "font-medium"
         ]}
-        style="color: #000000;"
       >
         {item.title}
       </a>
@@ -32,10 +31,9 @@ const { items, currentPath = "" } = Astro.props;
             <a
               href={subItem.href}
               class:list={[
-                "block py-1.5 text-sm transition-colors",
+                "block py-1.5 text-sm transition-colors text-gray-900 hover:text-gray-600",
                 currentPath === subItem.href && "font-medium"
               ]}
-              style="color: #000000;"
             >
               {subItem.title}
             </a>

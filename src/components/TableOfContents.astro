@@ -19,11 +19,11 @@ const { items, title = "On this Topic", showBorder = true, centered = false, nes
 ---
 
 <div class:list={[
-  "text-sm", 
+  "text-sm",
   showBorder && "border-l border-gray-200 pl-4",
   collapsible && "toc-collapsible-wrapper"
 ]} data-toc data-toc-contextual={nested ? "true" : "false"}>
-  {collapsible && (
+  {collapsible ? (
     <div class="toc-collapsible-box border border-gray-200 rounded-[20px] p-4">
       <div class="toc-icon">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -33,15 +33,14 @@ const { items, title = "On this Topic", showBorder = true, centered = false, nes
         </svg>
       </div>
       <div class="toc-content">
-        <p class="font-semibold mb-4 text-base" style="color: #000000;">{title}</p>
+        <p class="font-semibold mb-4 text-base text-gray-900">{title}</p>
         <nav class="space-y-2.5">
           {nested ? (
             items.map((item) => (
               <div data-h2-section data-h2-id={item.href.slice(1)}>
                 <a
                   href={item.href}
-                  class="toc-link block transition-all duration-200 transform font-medium"
-                  style="color: #000000;"
+                  class="toc-link block transition-all duration-200 transform font-medium text-gray-900 hover:text-gray-600"
                   data-toc-link={item.href}
                 >
                   {item.title}
@@ -51,8 +50,7 @@ const { items, title = "On this Topic", showBorder = true, centered = false, nes
                     {item.children.map((child) => (
                       <a
                         href={child.href}
-                        class="toc-link block transition-all duration-200 transform text-sm"
-                        style="color: #000000;"
+                        class="toc-link block transition-all duration-200 transform text-sm text-gray-900 hover:text-gray-600"
                         data-toc-link={child.href}
                       >
                         {child.title}
@@ -67,11 +65,11 @@ const { items, title = "On this Topic", showBorder = true, centered = false, nes
               <a
                 href={item.href}
                 class:list={[
-                  "toc-link block transition-all duration-200 transform",
+                  "toc-link block transition-all duration-200 transform text-gray-900 hover:text-gray-600",
                   item.depth === 2 && "font-medium",
                   item.depth === 3 && "ml-4 text-sm",
                 ]}
-                style="color: #000000;"
+                style="white-space: normal; word-wrap: break-word; line-height: 1.4;"
                 data-toc-link={item.href}
               >
                 {item.title}
@@ -81,19 +79,16 @@ const { items, title = "On this Topic", showBorder = true, centered = false, nes
         </nav>
       </div>
     </div>
-  )}
-  
-  {!collapsible && (
+  ) : (
     <>
-      <p class="font-semibold mb-4 text-base" style="color: #000000;">{title}</p>
+      <p class="font-semibold mb-4 text-base text-gray-900">{title}</p>
       <nav class="space-y-2.5">
         {nested ? (
           items.map((item) => (
             <div data-h2-section data-h2-id={item.href.slice(1)}>
               <a
                 href={item.href}
-                class="toc-link block transition-all duration-200 transform font-medium"
-                style="color: #000000;"
+                class="toc-link block transition-all duration-200 transform font-medium text-gray-900 hover:text-gray-600"
                 data-toc-link={item.href}
               >
                 {item.title}
@@ -103,8 +98,7 @@ const { items, title = "On this Topic", showBorder = true, centered = false, nes
                   {item.children.map((child) => (
                     <a
                       href={child.href}
-                      class="toc-link block transition-all duration-200 transform text-sm"
-                      style="color: #000000;"
+                      class="toc-link block transition-all duration-200 transform text-sm text-gray-900 hover:text-gray-600"
                       data-toc-link={child.href}
                     >
                       {child.title}
@@ -119,11 +113,10 @@ const { items, title = "On this Topic", showBorder = true, centered = false, nes
             <a
               href={item.href}
               class:list={[
-                "toc-link block transition-all duration-200 transform",
+                "toc-link block transition-all duration-200 transform text-gray-900 hover:text-gray-600",
                 item.depth === 2 && "font-medium",
                 item.depth === 3 && "ml-4 text-sm",
               ]}
-              style="color: #000000;"
               data-toc-link={item.href}
             >
               {item.title}
@@ -142,10 +135,10 @@ const { items, title = "On this Topic", showBorder = true, centered = false, nes
 
   .toc-collapsible-box {
     width: 14rem;
-    transition: width 0.4s ease-in-out;
     overflow: hidden;
     cursor: pointer;
     position: relative;
+    transition: width 0.4s ease-in-out;
   }
 
   .toc-collapsible-box:not(:hover) {
@@ -159,7 +152,7 @@ const { items, title = "On this Topic", showBorder = true, centered = false, nes
     transform: translate(-50%, -50%);
     opacity: 0;
     transition: opacity 0.2s ease-in-out;
-    color: #6b7280;
+    color: rgb(107 114 128);
     pointer-events: none;
   }
 
@@ -261,7 +254,7 @@ const { items, title = "On this Topic", showBorder = true, centered = false, nes
 
           function findCurrentH2() {
             const scrollPos = window.scrollY + 120;
-            
+
             // Find which H2 section we're currently in
             for (let i = h2Headings.length - 1; i >= 0; i--) {
               const h2 = h2Headings[i];
@@ -269,7 +262,7 @@ const { items, title = "On this Topic", showBorder = true, centered = false, nes
                 return h2.id;
               }
             }
-            
+
             // Default to first section if we're above all headings
             return h2Headings[0]?.id || null;
           }
@@ -283,7 +276,7 @@ const { items, title = "On this Topic", showBorder = true, centered = false, nes
           }
 
           window.addEventListener('scroll', onScroll, { passive: true });
-          
+
           // Initialize with first section
           if (h2Headings[0]?.id) {
             currentActiveH2 = h2Headings[0].id;

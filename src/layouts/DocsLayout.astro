@@ -106,7 +106,7 @@ if (isContentBased) {
               <Breadcrumb items={breadcrumbItems} />
 
               <div class="mt-4">
-                <h1 class="font-bold text-gray-900 mb-2" style="font-size: 40px;">{entry.data.title}</h1>
+                <h1 class="text-4xl font-bold text-gray-900 mb-2">{entry.data.title}</h1>
                 {entry.data.description && (
                   <p class="text-lg text-gray-600 mb-4">{entry.data.description}</p>
                 )}
@@ -179,7 +179,7 @@ if (isContentBased) {
         transition: margin-right 0.4s ease-in-out;
       }
 
-      .sidebar-slot:has(.toc-collapsible-box:not(:hover)) {
+      .sidebar-slot.collapsed {
         margin-right: -12rem;
       }
 
@@ -187,5 +187,27 @@ if (isContentBased) {
         transition: margin-left 0.4s ease-in-out;
       }
     </style>
+
+    <script>
+      // Collapsible sidebar functionality with fallback for older browsers
+      (function() {
+        const sidebarSlot = document.querySelector('.sidebar-slot');
+        const tocBox = document.querySelector('.toc-collapsible-box');
+
+        if (!sidebarSlot || !tocBox) return;
+
+        // Initially collapse the sidebar
+        sidebarSlot.classList.add('collapsed');
+
+        // Handle hover events
+        tocBox.addEventListener('mouseenter', () => {
+          sidebarSlot.classList.remove('collapsed');
+        });
+
+        tocBox.addEventListener('mouseleave', () => {
+          sidebarSlot.classList.add('collapsed');
+        });
+      })();
+    </script>
   </body>
 </html>
