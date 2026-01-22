@@ -1,22 +1,9 @@
 ---
-interface Props {
-  title: string;
-  defaultOpen?: boolean;
-  id?: string;
-}
+import type { CollapsibleProps } from '@/types';
+import { hashString } from '@/utils';
+import { DEFAULTS } from '@/types/constants';
 
-const { title, defaultOpen = false, id } = Astro.props;
-
-// Create deterministic ID from title hash
-function hashString(str: string): string {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash;
-  }
-  return Math.abs(hash).toString(36);
-}
+const { title, defaultOpen = DEFAULTS.COLLAPSIBLE.defaultOpen, id } = Astro.props as CollapsibleProps;
 
 const collapsibleId = id || `collapsible-${hashString(title)}`;
 ---

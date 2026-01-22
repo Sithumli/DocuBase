@@ -1,24 +1,22 @@
 ---
 import '../styles/global.css';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import TableOfContents from '../components/TableOfContents.astro';
-import Breadcrumb from '../components/Breadcrumb.astro';
-import ReadTime from '../components/ReadTime.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import TableOfContents from '@/components/TableOfContents.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+import ReadTime from '@/components/ReadTime.astro';
+import type { DocsLayoutProps } from '@/types';
+import { SITE_TITLE } from '@/types/constants';
 
-interface Props {
-  title?: string;
-  description?: string;
-  type?: 'docs' | 'blog' | 'tutorials';
+interface ExtendedDocsLayoutProps extends DocsLayoutProps {
   entry?: any;
   headings?: any[];
   Content?: any;
 }
 
-const { title: propTitle, description: propDescription, type = 'docs', entry, headings = [], Content } = Astro.props;
-const siteTitle = 'DocuBase';
+const { title: propTitle, description: propDescription, type = 'docs', entry, headings = [], Content } = Astro.props as ExtendedDocsLayoutProps;
+const siteTitle = SITE_TITLE;
 
-// Determine if we're using the new content-based approach or the old slot-based approach
 const isContentBased = !!entry && !!headings && !!Content;
 
 let title = propTitle;
@@ -29,11 +27,9 @@ let readTime = 0;
 let breadcrumbItems: any[] = [];
 
 if (isContentBased) {
-  // Extract data from entry
   title = entry.data.title;
   description = entry.data.description;
 
-  // Convert headings to TOC format for left sidebar (flat list)
   leftTocItems = headings
     .filter((heading) => heading.depth <= 3)
     .map((heading) => ({
@@ -42,7 +38,6 @@ if (isContentBased) {
       depth: heading.depth,
     }));
 
-  // Convert headings to hierarchical TOC for right sidebar
   rightTocItems = [];
   let currentH2: any = null;
 
@@ -64,13 +59,11 @@ if (isContentBased) {
     }
   });
 
-  // Calculate read time (rough estimate: 200 words per minute)
   const wordsPerMinute = 200;
   const content = entry.body;
   const words = content.trim().split(/\s+/).length;
   readTime = Math.ceil(words / wordsPerMinute);
 
-  // Generate breadcrumb items based on type
   const typeLabel = type.charAt(0).toUpperCase() + type.slice(1);
   breadcrumbItems = [
     { label: typeLabel, href: `/${type}` },
@@ -127,7 +120,7 @@ if (isContentBased) {
 
                 {entry.data.tags && entry.data.tags.length > 0 && (
                   <div class="flex gap-2 mb-8">
-                    {entry.data.tags.map(tag => (
+                    {entry.data.tags.map((tag: string) => (
                       <span class="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">
                         {tag}
                       </span>

@@ -1,15 +1,7 @@
 ---
-interface NavItem {
-  label: string;
-  href: string;
-}
+import type { DocNavProps } from '@/types';
 
-interface Props {
-  prev?: NavItem;
-  next?: NavItem;
-}
-
-const { prev, next } = Astro.props;
+const { prev, next } = Astro.props as DocNavProps;
 ---
 
 <nav class="flex items-center justify-between pt-8 mt-8 border-t border-gray-200">

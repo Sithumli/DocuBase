@@ -1,22 +1,9 @@
 ---
-interface Props {
-  labels: string[];
-  defaultIndex?: number;
-  id?: string;
-}
+import type { TabsProps } from '@/types';
+import { hashString } from '@/utils';
+import { DEFAULTS } from '@/types/constants';
 
-const { labels, defaultIndex = 0, id } = Astro.props;
-
-// Create deterministic ID from labels hash
-function hashString(str: string): string {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash;
-  }
-  return Math.abs(hash).toString(36);
-}
+const { labels, defaultIndex = DEFAULTS.TABS.defaultIndex, id } = Astro.props as TabsProps;
 
 const tabsId = id || `tabs-${hashString(labels.join('-'))}`;
 ---

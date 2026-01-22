@@ -1,14 +1,8 @@
 ---
-interface Props {
-  title: string;
-  description: string;
-  date: string;
-  readTime?: string;
-  image?: string;
-  href: string;
-}
+import type { BlogCardProps } from '@/types';
+import { DEFAULTS } from '@/types/constants';
 
-const { title, description, date, readTime = "10 min read", image, href } = Astro.props;
+const { title, description, date, readTime = DEFAULTS.BLOG_CARD.readTime, image, href } = Astro.props as BlogCardProps;
 ---
 
 <a

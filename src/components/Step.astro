@@ -1,9 +1,7 @@
 ---
-interface Props {
-  title: string;
-}
+import type { StepProps } from '@/types';
 
-const { title } = Astro.props;
+const { title } = Astro.props as StepProps;
 ---
 
 <div class="step relative [counter-increment:step]">

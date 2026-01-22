@@ -1,17 +1,15 @@
 ---
 import { getCollection } from 'astro:content';
 import '../../styles/global.css';
-import Header from '../../components/Header.astro';
-import Footer from '../../components/Footer.astro';
-import BlogCard from '../../components/BlogCard.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import BlogCard from '@/components/BlogCard.astro';
 
-// Get all blog posts
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
 const sortedPosts = allPosts.sort((a, b) =>
   b.data.pubDate.getTime() - a.data.pubDate.getTime()
 );
 
-// Group posts by year
 const postsByYear = sortedPosts.reduce((acc, post) => {
   const year = post.data.pubDate.getFullYear();
   if (!acc[year]) {
@@ -21,7 +19,6 @@ const postsByYear = sortedPosts.reduce((acc, post) => {
   return acc;
 }, {} as Record<number, typeof sortedPosts>);
 
-// Calculate read time
 function calculateReadTime(content: string): number {
   const wordsPerMinute = 200;
   const words = content.trim().split(/\s+/).length;
@@ -62,7 +59,7 @@ function calculateReadTime(content: string): number {
                         month: 'short',
                         day: 'numeric'
                       })}
-                      readTime={`${calculateReadTime(post.body)} min read`}
+                      readTime={`${calculateReadTime(post.body || '')} min read`}
                       href={`/blog/${post.id}`}
                     />
                   ))}

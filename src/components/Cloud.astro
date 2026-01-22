@@ -1,9 +1,7 @@
 ---
-interface Props {
-  class?: string;
-}
+import type { CloudProps } from '@/types';
 
-const { class: className = "" } = Astro.props;
+const { class: className = "" } = Astro.props as CloudProps;
 ---
 
 <div class={`relative ${className}`}>

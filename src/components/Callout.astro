@@ -1,10 +1,7 @@
 ---
-interface Props {
-  type?: 'note' | 'tip' | 'warning' | 'danger' | 'info';
-  title?: string;
-}
+import type { CalloutProps } from '@/types';
 
-const { type = 'note', title } = Astro.props;
+const { type = 'note', title } = Astro.props as CalloutProps;
 
 const styles = {
   note: {

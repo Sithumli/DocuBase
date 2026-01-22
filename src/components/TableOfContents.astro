@@ -1,21 +1,10 @@
 ---
-interface TocItem {
-  title: string;
-  href: string;
-  depth?: number;
-  children?: TocItem[];
-}
+import type { TableOfContentsProps } from '@/types';
+import type { TocItem } from '@/types';
 
-interface Props {
-  items: TocItem[];
-  title?: string;
-  showBorder?: boolean;
-  centered?: boolean;
-  nested?: boolean;
-  collapsible?: boolean;
-}
+type Props = TableOfContentsProps;
 
-const { items, title = "On this Topic", showBorder = true, centered = false, nested = false, collapsible = false } = Astro.props;
+const { items, title = "On this Topic", showBorder = true, nested = false, collapsible = false } = Astro.props;
 ---
 
 <div class:list={[

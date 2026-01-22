@@ -13,23 +13,10 @@
  *
  * Note: The number of labels must match the number of direct children in the slot.
  */
-interface Props {
-  labels: string[];
-  id?: string;
-}
+import type { CodeGroupProps } from '@/types';
+import { hashString } from '@/utils';
 
-const { labels, id } = Astro.props;
-
-// Create deterministic ID from labels hash
-function hashString(str: string): string {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash;
-  }
-  return Math.abs(hash).toString(36);
-}
+const { labels, id } = Astro.props as CodeGroupProps;
 
 const groupId = id || `code-group-${hashString(labels.join('-'))}`;
 ---

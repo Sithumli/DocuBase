@@ -2,7 +2,6 @@
 import { getCollection, render } from 'astro:content';
 import DocsLayout from '../../layouts/DocsLayout.astro';
 
-// Get the index doc
 const docs = await getCollection('docs');
 const indexDoc = docs.find(doc => doc.id === 'index');
 

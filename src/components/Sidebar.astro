@@ -1,14 +1,8 @@
 ---
-interface SidebarItem {
-  title: string;
-  href: string;
-  items?: SidebarItem[];
-}
+import type { SidebarProps } from '@/types';
+import type { SidebarItem } from '@/types';
 
-interface Props {
-  items: SidebarItem[];
-  currentPath?: string;
-}
+type Props = SidebarProps;
 
 const { items, currentPath = "" } = Astro.props;
 ---

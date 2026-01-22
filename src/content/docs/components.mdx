@@ -5,13 +5,13 @@ order: 2
 category: Reference
 ---
 
-import Callout from '../../components/Callout.astro';
-import CodeGroup from '../../components/CodeGroup.astro';
-import Tabs from '../../components/Tabs.astro';
-import Collapsible from '../../components/Collapsible.astro';
-import Example from '../../components/Example.astro';
-import Steps from '../../components/Steps.astro';
-import Step from '../../components/Step.astro';
+import Callout from '@/components/Callout.astro';
+import CodeGroup from '@/components/CodeGroup.astro';
+import Tabs from '@/components/Tabs.astro';
+import Collapsible from '@/components/Collapsible.astro';
+import Example from '@/components/Example.astro';
+import Steps from '@/components/Steps.astro';
+import Step from '@/components/Step.astro';
 
 DocuBase includes a set of reusable, framework-agnostic components designed for documentation and technical writing.
 
@@ -22,7 +22,7 @@ Callouts are used to highlight important information, warnings, tips, and notes.
 ### Usage
 
 ```mdx
-import Callout from '../../components/Callout.astro';
+import Callout from '@/components/Callout.astro';
 
 <Callout type="note">
   This is a note callout.
@@ -70,7 +70,7 @@ Tabs allow you to organize content into switchable panels.
 ### Usage
 
 ```mdx
-import Tabs from '../../components/Tabs.astro';
+import Tabs from '@/components/Tabs.astro';
 
 <Tabs labels={["Tab 1", "Tab 2", "Tab 3"]}>
   <div>Content for Tab 1</div>
@@ -112,7 +112,7 @@ CodeGroup is similar to Tabs but specifically designed for code snippets.
 ### Usage
 
 ```mdx
-import CodeGroup from '../../components/CodeGroup.astro';
+import CodeGroup from '@/components/CodeGroup.astro';
 
 <CodeGroup labels={["npm", "pnpm", "yarn"]}>
   <div>```bash
@@ -154,7 +154,7 @@ Collapsible sections help hide content that isn't immediately necessary.
 ### Usage
 
 ```mdx
-import Collapsible from '../../components/Collapsible.astro';
+import Collapsible from '@/components/Collapsible.astro';
 
 <Collapsible title="Click to expand">
   This content is hidden by default.
@@ -182,8 +182,8 @@ Steps are perfect for tutorials and guides that have sequential instructions.
 ### Usage
 
 ```mdx
-import Steps from '../../components/Steps.astro';
-import Step from '../../components/Step.astro';
+import Steps from '@/components/Steps.astro';
+import Step from '@/components/Step.astro';
 
 <Steps>
   <Step title="First Step">
@@ -216,7 +216,7 @@ The Example component provides a container for showcasing interactive examples.
 ### Usage
 
 ```mdx
-import Example from '../../components/Example.astro';
+import Example from '@/components/Example.astro';
 
 <Example title="Button Example" description="A simple button component">
   <button>Click me</button>
