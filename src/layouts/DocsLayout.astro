@@ -207,10 +207,16 @@ if (isContentBased) {
 
       (function() {
         function addCopyButtons() {
+          // Check if clipboard API is available
+          if (!window.isSecureContext || !navigator.clipboard?.writeText) {
+            return;
+          }
+
           document.querySelectorAll('article.prose pre').forEach((pre) => {
             if (pre.querySelector('.code-copy-btn')) return;
 
             const btn = document.createElement('button');
+            btn.type = 'button';
             btn.className = 'code-copy-btn';
             btn.innerHTML = '<iconify-icon icon="mdi:content-copy"></iconify-icon>';
             btn.setAttribute('aria-label', 'Copy code');

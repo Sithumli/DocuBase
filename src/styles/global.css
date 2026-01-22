@@ -93,8 +93,18 @@ html, body {
   opacity: 1;
 }
 
+article.prose pre:focus-within .code-copy-btn {
+  opacity: 1;
+}
+
 .code-copy-btn:hover {
   background: rgba(255, 255, 255, 0.2);
+}
+
+.code-copy-btn:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  opacity: 1;
 }
 
 .code-copy-btn iconify-icon {

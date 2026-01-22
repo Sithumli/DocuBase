@@ -49,7 +49,7 @@ function getIcon(label: string): string | null {
 }
 ---
 
-<div class="my-6" data-tabs={tabsId}>
+<div class="my-6" data-tabs={tabsId} data-default-index={defaultIndex}>
   <div class="flex items-end gap-1" role="tablist">
     {labels.map((label, index) => {
       const icon = getIcon(label);
@@ -175,8 +175,9 @@ function getIcon(label: string): string | null {
       document.querySelectorAll('[data-tabs]').forEach((container) => {
         const panelsContainer = container.querySelector('.tab-panels');
         if (!panelsContainer) return;
+        const defaultIndex = parseInt(container.getAttribute('data-default-index') || '0', 10);
         Array.from(panelsContainer.children).forEach((panel, index) => {
-          (panel as HTMLElement).classList.toggle('hidden', index !== 0);
+          (panel as HTMLElement).classList.toggle('hidden', index !== defaultIndex);
         });
       });
     }
