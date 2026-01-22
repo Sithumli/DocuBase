@@ -67,6 +67,17 @@ article.prose li {
   line-height: 1.75;
 }
 
+/* Collapsible component dark mode text fix */
+.collapsible-content p,
+.collapsible-content li {
+  color: rgb(55 65 81);
+}
+
+.dark .collapsible-content p,
+.dark .collapsible-content li {
+  color: rgb(209 213 219);
+}
+
 article.prose pre {
   position: relative;
   border-radius: 15px;

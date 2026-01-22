@@ -112,9 +112,9 @@ CodeGroup is similar to Tabs but specifically designed for code snippets.
 ### Usage
 
 ```mdx
-import CodeGroup from '@/components/CodeGroup.astro';
+import Tabs from '@/components/Tabs.astro';
 
-<CodeGroup labels={["npm", "pnpm", "yarn"]}>
+<Tabs labels={["npm", "pnpm", "yarn"]}>
   <div>```bash
 npm install package-name
 ```</div>
@@ -124,12 +124,12 @@ pnpm add package-name
   <div>```bash
 yarn add package-name
 ```</div>
-</CodeGroup>
+</Tabs>
 ```
 
 ### Example
 
-<CodeGroup labels={["npm", "pnpm", "yarn"]}>
+<Tabs labels={["npm", "pnpm", "yarn"]}>
   <div>
     ```bash
     npm install astro
@@ -145,7 +145,7 @@ yarn add package-name
     yarn add astro
     ```
   </div>
-</CodeGroup>
+</Tabs>
 
 ## Collapsible
 
@@ -227,9 +227,7 @@ import Example from '@/components/Example.astro';
 
 <Example title="Interactive Counter" description="A demonstration of the Example component">
   <div class="flex items-center gap-4">
-    <button class="px-4 py-2 bg-primary-600 text-white rounded hover:bg-primary-700">
-      Click me
-    </button>
+    <button class="px-4 py-1.5 bg-indigo-600 text-white rounded-full border-0 text-sm cursor-pointer hover:bg-indigo-700">Click me</button>
     <span>Button with Tailwind styling</span>
   </div>
 </Example>

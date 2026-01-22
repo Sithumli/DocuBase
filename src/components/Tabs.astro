@@ -6,31 +6,78 @@ import { DEFAULTS } from '@/types/constants';
 const { labels, defaultIndex = DEFAULTS.TABS.defaultIndex, id } = Astro.props as TabsProps;
 
 const tabsId = id || `tabs-${hashString(labels.join('-'))}`;
+
+const labelIcons: Record<string, string> = {
+  javascript: 'logos:javascript',
+  js: 'logos:javascript',
+  typescript: 'logos:typescript-icon',
+  ts: 'logos:typescript-icon',
+  python: 'logos:python',
+  py: 'logos:python',
+  bash: 'codicon:terminal-bash',
+  shell: 'codicon:terminal-bash',
+  sh: 'codicon:terminal-bash',
+  terminal: 'codicon:terminal',
+  npm: 'logos:npm-icon',
+  pnpm: 'logos:pnpm',
+  yarn: 'logos:yarn',
+  bun: 'logos:bun',
+  react: 'logos:react',
+  jsx: 'logos:react',
+  tsx: 'logos:react',
+  vue: 'logos:vue',
+  svelte: 'logos:svelte-icon',
+  astro: 'logos:astro-icon',
+  html: 'logos:html-5',
+  css: 'logos:css-3',
+  json: 'logos:json',
+  rust: 'logos:rust',
+  go: 'logos:go',
+  java: 'logos:java',
+  php: 'logos:php',
+  ruby: 'logos:ruby',
+  swift: 'logos:swift',
+  kotlin: 'logos:kotlin-icon',
+  sql: 'tabler:sql',
+  docker: 'logos:docker-icon',
+  git: 'logos:git-icon',
+};
+
+function getIcon(label: string): string | null {
+  const normalizedLabel = label.toLowerCase().trim();
+  return labelIcons[normalizedLabel] || null;
+}
 ---
 
 <div class="my-6" data-tabs={tabsId}>
   <div class="flex items-end gap-1" role="tablist">
-    {labels.map((label, index) => (
-      <button
-        type="button"
-        role="tab"
-        tabindex={index === defaultIndex ? 0 : -1}
-        class:list={[
-          'tab-button relative px-4 py-2 text-sm font-medium transition-colors',
-          'rounded-t-lg',
-          'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset',
-          index === defaultIndex
-            ? 'text-primary-600 dark:text-white bg-gray-100 dark:bg-gray-800'
-            : 'text-gray-700 dark:text-gray-400 bg-transparent hover:text-gray-900 dark:hover:text-gray-200',
-        ]}
-        data-tab-index={index}
-        aria-selected={index === defaultIndex}
-        id={`${tabsId}-tab-${index}`}
-        aria-controls={`${tabsId}-panel-${index}`}
-      >
-        {label}
-      </button>
-    ))}
+    {labels.map((label, index) => {
+      const icon = getIcon(label);
+      return (
+        <button
+          type="button"
+          role="tab"
+          tabindex={index === defaultIndex ? 0 : -1}
+          class:list={[
+            'tab-button relative flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors',
+            'rounded-t-lg',
+            'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset',
+            index === defaultIndex
+              ? 'text-primary-600 dark:text-white bg-gray-100 dark:bg-gray-800'
+              : 'text-gray-700 dark:text-gray-400 bg-transparent hover:text-gray-900 dark:hover:text-gray-200',
+          ]}
+          data-tab-index={index}
+          aria-selected={index === defaultIndex}
+          id={`${tabsId}-tab-${index}`}
+          aria-controls={`${tabsId}-panel-${index}`}
+        >
+          {icon && (
+            <iconify-icon icon={icon} width="16" height="16" class="shrink-0"></iconify-icon>
+          )}
+          <span>{label}</span>
+        </button>
+      );
+    })}
   </div>
   <div class:list={[
       'tab-panels p-4 rounded-tr-lg rounded-br-lg rounded-bl-lg bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100',
