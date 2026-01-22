@@ -26,7 +26,7 @@ export default defineConfig({
   integrations: [
     mdx({
       rehypePlugins: [rehypeSlug],
-    })
+    }),
   ],
   markdown: {
     rehypePlugins: [rehypeSlug],

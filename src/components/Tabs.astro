@@ -6,40 +6,89 @@ import { DEFAULTS } from '@/types/constants';
 const { labels, defaultIndex = DEFAULTS.TABS.defaultIndex, id } = Astro.props as TabsProps;
 
 const tabsId = id || `tabs-${hashString(labels.join('-'))}`;
+
+const labelIcons: Record<string, string> = {
+  javascript: 'logos:javascript',
+  js: 'logos:javascript',
+  typescript: 'logos:typescript-icon',
+  ts: 'logos:typescript-icon',
+  python: 'logos:python',
+  py: 'logos:python',
+  bash: 'codicon:terminal-bash',
+  shell: 'codicon:terminal-bash',
+  sh: 'codicon:terminal-bash',
+  terminal: 'codicon:terminal',
+  npm: 'logos:npm-icon',
+  pnpm: 'logos:pnpm',
+  yarn: 'logos:yarn',
+  bun: 'logos:bun',
+  react: 'logos:react',
+  jsx: 'logos:react',
+  tsx: 'logos:react',
+  vue: 'logos:vue',
+  svelte: 'logos:svelte-icon',
+  astro: 'logos:astro-icon',
+  html: 'logos:html-5',
+  css: 'logos:css-3',
+  json: 'logos:json',
+  rust: 'logos:rust',
+  go: 'logos:go',
+  java: 'logos:java',
+  php: 'logos:php',
+  ruby: 'logos:ruby',
+  swift: 'logos:swift',
+  kotlin: 'logos:kotlin-icon',
+  sql: 'tabler:sql',
+  docker: 'logos:docker-icon',
+  git: 'logos:git-icon',
+};
+
+function getIcon(label: string): string | null {
+  const normalizedLabel = label.toLowerCase().trim();
+  return labelIcons[normalizedLabel] || null;
+}
 ---
 
-<div class="my-6" data-tabs={tabsId}>
-  <div class="flex gap-1 border-b border-gray-200 dark:border-gray-700" role="tablist">
-    {labels.map((label, index) => (
-      <button
-        type="button"
-        role="tab"
-        tabindex={index === defaultIndex ? 0 : -1}
-        class:list={[
-          'tab-button px-4 py-2 text-sm font-medium rounded-t-lg transition-colors',
-          'hover:bg-gray-50 dark:hover:bg-gray-800',
-          'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-inset',
-          index === defaultIndex
-            ? 'text-primary-600 dark:text-primary-400 border-b-2 border-primary-600 dark:border-primary-400 -mb-px bg-white dark:bg-gray-900'
-            : 'text-gray-600 dark:text-gray-400',
-        ]}
-        data-tab-index={index}
-        aria-selected={index === defaultIndex}
-        id={`${tabsId}-tab-${index}`}
-        aria-controls={`${tabsId}-panel-${index}`}
-      >
-        {label}
-      </button>
-    ))}
+<div class="my-6" data-tabs={tabsId} data-default-index={defaultIndex}>
+  <div class="flex items-end gap-1" role="tablist">
+    {labels.map((label, index) => {
+      const icon = getIcon(label);
+      return (
+        <button
+          type="button"
+          role="tab"
+          tabindex={index === defaultIndex ? 0 : -1}
+          class:list={[
+            'tab-button relative flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors',
+            'rounded-t-lg',
+            'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset',
+            index === defaultIndex
+              ? 'text-primary-600 dark:text-white bg-gray-100 dark:bg-gray-800'
+              : 'text-gray-700 dark:text-gray-400 bg-transparent hover:text-gray-900 dark:hover:text-gray-200',
+          ]}
+          data-tab-index={index}
+          aria-selected={index === defaultIndex}
+          id={`${tabsId}-tab-${index}`}
+          aria-controls={`${tabsId}-panel-${index}`}
+        >
+          {icon && (
+            <iconify-icon icon={icon} width="16" height="16" class="shrink-0"></iconify-icon>
+          )}
+          <span>{label}</span>
+        </button>
+      );
+    })}
   </div>
-  <div class="tab-panels mt-4">
+  <div class:list={[
+      'tab-panels p-4 rounded-tr-lg rounded-br-lg rounded-bl-lg bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 [&_p]:!text-gray-800 dark:[&_p]:!text-gray-100 [&_li]:!text-gray-800 dark:[&_li]:!text-gray-100',
+      defaultIndex !== 0 && 'rounded-tl-lg'
+    ]}>
     <slot />
   </div>
 </div>
 
 <script>
   (function() {
-    // Guard to prevent duplicate listeners
     if ((window as any).__tabsInitialized) return;
     (window as any).__tabsInitialized = true;
 
@@ -52,14 +101,14 @@ const tabsId = id || `tabs-${hashString(labels.join('-'))}`;
 
       tabs.forEach((t, i) => {
         if (i === index) {
-          t.classList.add('text-primary-600', 'dark:text-primary-400', 'border-b-2', 'border-primary-600', 'dark:border-primary-400', '-mb-px', 'bg-white', 'dark:bg-gray-900');
-          t.classList.remove('text-gray-600', 'dark:text-gray-400');
+          t.classList.add('text-primary-600', 'dark:text-white', 'bg-gray-100', 'dark:bg-gray-800');
+          t.classList.remove('text-gray-700', 'dark:text-gray-400');
           t.setAttribute('aria-selected', 'true');
           t.setAttribute('tabindex', '0');
           t.focus();
         } else {
-          t.classList.remove('text-primary-600', 'dark:text-primary-400', 'border-b-2', 'border-primary-600', 'dark:border-primary-400', '-mb-px', 'bg-white', 'dark:bg-gray-900');
-          t.classList.add('text-gray-600', 'dark:text-gray-400');
+          t.classList.remove('text-primary-600', 'dark:text-white', 'bg-gray-100', 'dark:bg-gray-800');
+          t.classList.add('text-gray-700', 'dark:text-gray-400');
           t.setAttribute('aria-selected', 'false');
           t.setAttribute('tabindex', '-1');
         }
@@ -68,9 +117,14 @@ const tabsId = id || `tabs-${hashString(labels.join('-'))}`;
       panels.forEach((panel, i) => {
         panel.classList.toggle('hidden', i !== index);
       });
+
+      if (index === 0) {
+        panelsContainer.classList.remove('rounded-tl-lg');
+      } else {
+        panelsContainer.classList.add('rounded-tl-lg');
+      }
     }
 
-    // Click handler
     document.addEventListener('click', (e) => {
       const tab = (e.target as HTMLElement).closest('.tab-button');
       if (!tab) return;
@@ -82,7 +136,6 @@ const tabsId = id || `tabs-${hashString(labels.join('-'))}`;
       activateTab(container, index);
     });
 
-    // Keyboard navigation handler
     document.addEventListener('keydown', (e) => {
       const tab = (e.target as HTMLElement).closest('.tab-button');
       if (!tab) return;
@@ -122,8 +175,9 @@ const tabsId = id || `tabs-${hashString(labels.join('-'))}`;
       document.querySelectorAll('[data-tabs]').forEach((container) => {
         const panelsContainer = container.querySelector('.tab-panels');
         if (!panelsContainer) return;
+        const defaultIndex = parseInt(container.getAttribute('data-default-index') || '0', 10);
         Array.from(panelsContainer.children).forEach((panel, index) => {
-          (panel as HTMLElement).classList.toggle('hidden', index !== 0);
+          (panel as HTMLElement).classList.toggle('hidden', index !== defaultIndex);
         });
       });
     }

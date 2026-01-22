@@ -180,7 +180,6 @@ if (isContentBased) {
     </style>
 
     <script>
-      // Collapsible sidebar functionality with fallback for older browsers
       (function() {
         const sidebarSlot = document.querySelector('.sidebar-slot');
         const tocBox = document.querySelector('.toc-collapsible-box');
@@ -198,6 +197,52 @@ if (isContentBased) {
         tocBox.addEventListener('mouseleave', () => {
           sidebarSlot.classList.add('collapsed');
         });
+      })();
+    </script>
+
+    <script>
+      import 'iconify-icon';
+
+      (function() {
+        function addCopyButtons() {
+          // Check if clipboard API is available
+          if (!window.isSecureContext || !navigator.clipboard?.writeText) {
+            return;
+          }
+
+          document.querySelectorAll('article.prose pre').forEach((pre) => {
+            if (pre.querySelector('.code-copy-btn')) return;
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'code-copy-btn';
+            btn.innerHTML = '<iconify-icon icon="mdi:content-copy"></iconify-icon>';
+            btn.setAttribute('aria-label', 'Copy code');
+
+            btn.addEventListener('click', async () => {
+              const code = pre.querySelector('code');
+              if (!code) return;
+
+              try {
+                await navigator.clipboard.writeText(code.textContent || '');
+                btn.innerHTML = '<iconify-icon icon="mdi:check"></iconify-icon>';
+                btn.classList.add('copied');
+
+                setTimeout(() => {
+                  btn.innerHTML = '<iconify-icon icon="mdi:content-copy"></iconify-icon>';
+                  btn.classList.remove('copied');
+                }, 2000);
+              } catch (err) {
+                console.error('Failed to copy:', err);
+              }
+            });
+
+            pre.appendChild(btn);
+          });
+        }
+
+        addCopyButtons();
+        document.addEventListener('astro:page-load', addCopyButtons);
       })();
     </script>
   </body>
