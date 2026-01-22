@@ -9,19 +9,19 @@ const tabsId = id || `tabs-${hashString(labels.join('-'))}`;
 ---
 
 <div class="my-6" data-tabs={tabsId}>
-  <div class="flex gap-1 border-b border-gray-200 dark:border-gray-700" role="tablist">
+  <div class="flex items-end gap-1" role="tablist">
     {labels.map((label, index) => (
       <button
         type="button"
         role="tab"
         tabindex={index === defaultIndex ? 0 : -1}
         class:list={[
-          'tab-button px-4 py-2 text-sm font-medium rounded-t-lg transition-colors',
-          'hover:bg-gray-50 dark:hover:bg-gray-800',
-          'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-inset',
+          'tab-button relative px-4 py-2 text-sm font-medium transition-colors',
+          'rounded-t-lg',
+          'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset',
           index === defaultIndex
-            ? 'text-primary-600 dark:text-primary-400 border-b-2 border-primary-600 dark:border-primary-400 -mb-px bg-white dark:bg-gray-900'
-            : 'text-gray-600 dark:text-gray-400',
+            ? 'text-primary-600 dark:text-white bg-gray-100 dark:bg-gray-800'
+            : 'text-gray-700 dark:text-gray-400 bg-transparent hover:text-gray-900 dark:hover:text-gray-200',
         ]}
         data-tab-index={index}
         aria-selected={index === defaultIndex}
@@ -32,14 +32,16 @@ const tabsId = id || `tabs-${hashString(labels.join('-'))}`;
       </button>
     ))}
   </div>
-  <div class="tab-panels mt-4">
+  <div class:list={[
+      'tab-panels p-4 rounded-tr-lg rounded-br-lg rounded-bl-lg bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100',
+      defaultIndex !== 0 && 'rounded-tl-lg'
+    ]}>
     <slot />
   </div>
 </div>
 
 <script>
   (function() {
-    // Guard to prevent duplicate listeners
     if ((window as any).__tabsInitialized) return;
     (window as any).__tabsInitialized = true;
 
@@ -52,14 +54,14 @@ const tabsId = id || `tabs-${hashString(labels.join('-'))}`;
 
       tabs.forEach((t, i) => {
         if (i === index) {
-          t.classList.add('text-primary-600', 'dark:text-primary-400', 'border-b-2', 'border-primary-600', 'dark:border-primary-400', '-mb-px', 'bg-white', 'dark:bg-gray-900');
-          t.classList.remove('text-gray-600', 'dark:text-gray-400');
+          t.classList.add('text-primary-600', 'dark:text-white', 'bg-gray-100', 'dark:bg-gray-800');
+          t.classList.remove('text-gray-700', 'dark:text-gray-400');
           t.setAttribute('aria-selected', 'true');
           t.setAttribute('tabindex', '0');
           t.focus();
         } else {
-          t.classList.remove('text-primary-600', 'dark:text-primary-400', 'border-b-2', 'border-primary-600', 'dark:border-primary-400', '-mb-px', 'bg-white', 'dark:bg-gray-900');
-          t.classList.add('text-gray-600', 'dark:text-gray-400');
+          t.classList.remove('text-primary-600', 'dark:text-white', 'bg-gray-100', 'dark:bg-gray-800');
+          t.classList.add('text-gray-700', 'dark:text-gray-400');
           t.setAttribute('aria-selected', 'false');
           t.setAttribute('tabindex', '-1');
         }
@@ -68,9 +70,14 @@ const tabsId = id || `tabs-${hashString(labels.join('-'))}`;
       panels.forEach((panel, i) => {
         panel.classList.toggle('hidden', i !== index);
       });
+
+      if (index === 0) {
+        panelsContainer.classList.remove('rounded-tl-lg');
+      } else {
+        panelsContainer.classList.add('rounded-tl-lg');
+      }
     }
 
-    // Click handler
     document.addEventListener('click', (e) => {
       const tab = (e.target as HTMLElement).closest('.tab-button');
       if (!tab) return;
@@ -82,7 +89,6 @@ const tabsId = id || `tabs-${hashString(labels.join('-'))}`;
       activateTab(container, index);
     });
 
-    // Keyboard navigation handler
     document.addEventListener('keydown', (e) => {
       const tab = (e.target as HTMLElement).closest('.tab-button');
       if (!tab) return;
