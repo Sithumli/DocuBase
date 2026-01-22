@@ -1,8 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
-@custom-variant dark (&:where(.dark, .dark *));
-
 @theme {
   --font-sans: "Comfortaa", system-ui, sans-serif;
 }
@@ -52,7 +50,7 @@ article.prose h4 {
 article.prose p {
   font-size: 1rem;
   line-height: 1.75;
-  color: rgb(55 65 81);
+  color: rgb(0 0 0);
   margin-bottom: 1.25rem;
 }
 
@@ -65,17 +63,6 @@ article.prose li {
   margin-bottom: 0.5rem;
   color: rgb(55 65 81);
   line-height: 1.75;
-}
-
-/* Collapsible component dark mode text fix */
-.collapsible-content p,
-.collapsible-content li {
-  color: rgb(55 65 81);
-}
-
-.dark .collapsible-content p,
-.dark .collapsible-content li {
-  color: rgb(209 213 219);
 }
 
 article.prose pre {
@@ -119,7 +106,9 @@ article.prose pre:hover .code-copy-btn {
   color: #22c55e;
 }
 
-article.prose .tab-panels p {
-  margin-bottom: 0;
-  color: inherit;
+.tab-panels p,
+.tab-panels li,
+.collapsible-content p,
+.collapsible-content li {
+  color: inherit !important;
 }
