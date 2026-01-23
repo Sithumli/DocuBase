@@ -5,9 +5,10 @@ const { minutes } = Astro.props as ReadTimeProps;
 ---
 
 <div class="flex items-center gap-1.5 text-sm text-gray-500">
-  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <circle cx="12" cy="12" r="10" stroke-width="2" />
-    <path stroke-linecap="round" stroke-width="2" d="M12 6v6l4 2" />
-  </svg>
+  <iconify-icon icon="mdi:clock-outline" width="16" height="16"></iconify-icon>
   <span>{minutes} min read</span>
 </div>
+
+<script>
+  import 'iconify-icon';
+</script>

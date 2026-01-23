@@ -1,5 +1,6 @@
 export const SITE_TITLE = 'DocuBase';
 export const SITE_DESCRIPTION = 'Beautiful documentation that scales with your product';
+export const GITHUB_URL = 'https://github.com/Sithumli/DocuBase';
 
 export const WORDS_PER_MINUTE = 200;
 
