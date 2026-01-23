@@ -2,6 +2,8 @@
 import { getCollection, render } from 'astro:content';
 import DocsLayout from '../../layouts/DocsLayout.astro';
 import TableOfContents from '@/components/TableOfContents.astro';
+import BottomNav from '@/components/BottomNav.astro';
+import { getTutorialsNavigation } from '@/utils/navigation';
 
 function getCleanSlug(id: string) {
   return id.replace(/\/index$/, '');
@@ -34,10 +36,16 @@ const tutorialPages = sortedTutorials.map((t) => ({
   href: `/tutorials/${getCleanSlug(t.id)}`,
   depth: 2,
 }));
+
+// Get navigation data for bottom nav
+const navData = await getTutorialsNavigation(getCleanSlug(entry.id));
 ---
 
 <DocsLayout entry={entry} headings={headings} Content={Content} type="tutorials">
   <div slot="sidebar">
     <TableOfContents items={tutorialPages} title="Tutorials" showBorder={false} collapsible={true} isPageNav={true} />
+  </div>
+  <div slot="footer">
+    <BottomNav nav={navData} />
   </div>
 </DocsLayout>

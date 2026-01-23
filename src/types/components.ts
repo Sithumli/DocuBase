@@ -122,3 +122,32 @@ export interface TableProps {
 export interface FooterProps {
   githubUrl?: string;
 }
+
+export type ContentType = 'docs' | 'blog' | 'tutorials';
+
+export interface NavTarget {
+  title: string;
+  description?: string;
+  href: string;
+}
+
+export interface NavContext {
+  type: ContentType;
+  isMultiPage: boolean;
+  blockTitle?: string;
+  currentIndex: number;
+  totalInBlock: number;
+}
+
+export interface BottomNavData {
+  prev?: NavTarget;
+  next?: NavTarget;
+  nextBlock?: NavTarget;
+  context: NavContext;
+}
+
+export interface BottomNavProps {
+  nav: BottomNavData;
+  showFallback?: boolean;
+  fallbackLinks?: NavTarget[];
+}
