@@ -1,6 +1,11 @@
 ---
 import { getCollection, render } from 'astro:content';
 import DocsLayout from '../../layouts/DocsLayout.astro';
+import TableOfContents from '@/components/TableOfContents.astro';
+import DocNav from '@/components/DocNav.astro';
+
+// Helper to get clean slug (remove /index suffix)
+const getCleanSlug = (id: string) => id.replace(/\/index$/, '');
 
 const docs = await getCollection('docs');
 const indexDoc = docs.find(doc => doc.id === 'index');
@@ -10,6 +15,33 @@ if (!indexDoc) {
 }
 
 const { Content, headings } = await render(indexDoc);
+
+// Get all docs for sidebar navigation (exclude main index)
+const sortedDocs = docs
+  .filter((doc) => doc.id !== 'index')
+  .sort((a, b) => (a.data.order || 999) - (b.data.order || 999));
+
+const docsPages = sortedDocs.map((doc) => ({
+  title: doc.data.title,
+  href: `/docs/${getCleanSlug(doc.id)}`,
+  depth: 2,
+}));
+
+// First doc for next nav
+const nextDoc = sortedDocs[0];
+const nextNav = nextDoc ? {
+  label: nextDoc.data.title,
+  href: `/docs/${getCleanSlug(nextDoc.id)}`,
+} : undefined;
 ---
 
-<DocsLayout entry={indexDoc} headings={headings} Content={Content} type="docs" />
+<DocsLayout entry={indexDoc} headings={headings} Content={Content} type="docs">
+  <div slot="sidebar">
+    <TableOfContents items={docsPages} title="Documentation" showBorder={false} collapsible={true} isPageNav={true} />
+  </div>
+  {nextNav && (
+    <div slot="footer">
+      <DocNav next={nextNav} />
+    </div>
+  )}
+</DocsLayout>

@@ -7,6 +7,9 @@ import BlogCard from '@/components/BlogCard.astro';
 import { calculateReadTime } from '@/utils/helpers';
 import { WORDS_PER_MINUTE } from '@/types/constants';
 
+// Helper to get clean slug (remove /index suffix)
+const getCleanSlug = (id: string) => id.replace(/\/index$/, '');
+
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
 
 const blogEntries = allPosts.reduce((acc, post) => {
@@ -86,7 +89,7 @@ const entriesByYear = sortedEntries.reduce((acc, entry) => {
                         ? `${entry.pageCount} chapters · ${entry.totalReadTime} min read`
                         : `${entry.totalReadTime} min read`
                       }
-                      href={`/blog/${entry.id}`}
+                      href={`/blog/${getCleanSlug(entry.id)}`}
                     />
                   ))}
                 </div>

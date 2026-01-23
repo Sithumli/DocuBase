@@ -3,11 +3,16 @@ import { getCollection, render } from 'astro:content';
 import DocsLayout from '../../layouts/DocsLayout.astro';
 import TableOfContents from '@/components/TableOfContents.astro';
 
+function getCleanSlug(id: string) {
+  return id.replace(/\/index$/, '');
+}
+
 export async function getStaticPaths() {
+  const cleanSlug = (id: string) => id.replace(/\/index$/, '');
   const posts = await getCollection('blog', ({ data }) => !data.draft);
 
   return posts.map((entry) => ({
-    params: { slug: entry.id },
+    params: { slug: cleanSlug(entry.id) },
     props: { entry },
   }));
 }
@@ -15,22 +20,25 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
 
+// Get all blog posts sorted by date
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+
 let blogPages: any[] = [];
 let seriesTitle = '';
 let firstPostId = '';
 const hasSeries = !!entry.data.series;
 
 if (hasSeries) {
-  const allPosts = await getCollection('blog', ({ data }) =>
-    !data.draft && data.series === entry.data.series
-  );
+  // Get posts in this series
+  const seriesPosts = allPosts
+    .filter(({ data }) => data.series === entry.data.series)
+    .sort((a, b) => (a.data.order || 999) - (b.data.order || 999));
 
-  const sortedPosts = allPosts.sort((a, b) => (a.data.order || 999) - (b.data.order || 999));
-  firstPostId = sortedPosts[0].id;
+  firstPostId = getCleanSlug(seriesPosts[0].id);
 
-  blogPages = sortedPosts.map((post) => ({
+  blogPages = seriesPosts.map((post) => ({
     title: post.data.title,
-    href: `/blog/${post.id}`,
+    href: `/blog/${getCleanSlug(post.id)}`,
     depth: 2,
   }));
 
@@ -39,9 +47,10 @@ if (hasSeries) {
     .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 } else {
+  // Single post
   blogPages = [{
     title: entry.data.title,
-    href: `/blog/${entry.id}`,
+    href: `/blog/${getCleanSlug(entry.id)}`,
     depth: 2,
   }];
   seriesTitle = entry.data.title;
@@ -59,4 +68,3 @@ const customBreadcrumbs = hasSeries ? [
     <TableOfContents items={blogPages} title={seriesTitle} showBorder={false} collapsible={true} isPageNav={hasSeries} />
   </div>
 </DocsLayout>
-

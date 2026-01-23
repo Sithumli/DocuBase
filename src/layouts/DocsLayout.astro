@@ -123,6 +123,10 @@ if (isContentBased) {
                 <article class="prose prose-gray max-w-none">
                   <Content />
                 </article>
+
+                {Astro.slots.has('footer') && (
+                  <slot name="footer" />
+                )}
               </div>
             </main>
 
