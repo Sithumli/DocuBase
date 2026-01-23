@@ -5,10 +5,6 @@ function getCleanSlug(id: string) {
   return id.replace(/\/index$/, '');
 }
 
-/**
- * Get navigation data for docs pages
- * Sequential navigation based on order field
- */
 export async function getDocsNavigation(currentSlug: string): Promise<BottomNavData> {
   const allDocs = await getCollection('docs', ({ data }) => !data.draft);
   const sortedDocs = allDocs
@@ -55,7 +51,6 @@ export async function getDocsNavigation(currentSlug: string): Promise<BottomNavD
       href: `/docs/${getCleanSlug(next.id)}`,
     };
   } else {
-    // At the end of docs, suggest tutorials
     result.nextBlock = {
       title: 'Start Tutorials',
       description: 'Learn how to build with DocuBase',
@@ -66,10 +61,6 @@ export async function getDocsNavigation(currentSlug: string): Promise<BottomNavD
   return result;
 }
 
-/**
- * Get navigation data for blog posts
- * Series-aware navigation if post belongs to a series
- */
 export async function getBlogNavigation(
   currentSlug: string,
   series?: string
@@ -77,7 +68,6 @@ export async function getBlogNavigation(
   const allPosts = await getCollection('blog', ({ data }) => !data.draft);
 
   if (series) {
-    // Series navigation
     const seriesPosts = allPosts
       .filter(({ data }) => data.series === series)
       .sort((a, b) => (a.data.order || 999) - (b.data.order || 999));
@@ -124,7 +114,6 @@ export async function getBlogNavigation(
         href: `/blog/${getCleanSlug(next.id)}`,
       };
     } else {
-      // At the end of series, suggest other blog content
       result.nextBlock = {
         title: 'Explore More Blog Posts',
         description: 'Continue reading other articles',
@@ -134,7 +123,6 @@ export async function getBlogNavigation(
 
     return result;
   } else {
-    // Standalone post - chronological navigation
     const sortedPosts = allPosts.sort(
       (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
     );
@@ -184,10 +172,6 @@ export async function getBlogNavigation(
   }
 }
 
-/**
- * Get navigation data for tutorial pages
- * Sequential navigation based on order field
- */
 export async function getTutorialsNavigation(currentSlug: string): Promise<BottomNavData> {
   const allTutorials = await getCollection('tutorials', ({ data }) => !data.draft);
   const sortedTutorials = allTutorials
@@ -234,7 +218,6 @@ export async function getTutorialsNavigation(currentSlug: string): Promise<Botto
       href: `/tutorials/${getCleanSlug(next.id)}`,
     };
   } else {
-    // At the end of tutorials, suggest blog
     result.nextBlock = {
       title: 'Read the Blog',
       description: 'Explore our latest articles and guides',

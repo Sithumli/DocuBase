@@ -22,7 +22,6 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
 
-// Get all blog posts sorted by date
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
 
 let blogPages: any[] = [];
@@ -31,7 +30,6 @@ let firstPostId = '';
 const hasSeries = !!entry.data.series;
 
 if (hasSeries) {
-  // Get posts in this series
   const seriesPosts = allPosts
     .filter(({ data }) => data.series === entry.data.series)
     .sort((a, b) => (a.data.order || 999) - (b.data.order || 999));
@@ -49,7 +47,6 @@ if (hasSeries) {
     .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 } else {
-  // Single post
   blogPages = [{
     title: entry.data.title,
     href: `/blog/${getCleanSlug(entry.id)}`,
@@ -64,7 +61,6 @@ const customBreadcrumbs = hasSeries ? [
   { label: entry.data.title },
 ] : undefined;
 
-// Get navigation data for bottom nav
 const navData = await getBlogNavigation(getCleanSlug(entry.id), entry.data.series);
 ---
 

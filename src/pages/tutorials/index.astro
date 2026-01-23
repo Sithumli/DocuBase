@@ -4,7 +4,6 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
 import TableOfContents from '@/components/TableOfContents.astro';
 import DocNav from '@/components/DocNav.astro';
 
-// Helper to get clean slug (remove /index suffix)
 const getCleanSlug = (id: string) => id.replace(/\/index$/, '');
 
 const tutorials = await getCollection('tutorials');
@@ -16,7 +15,6 @@ if (!indexTutorial) {
 
 const { Content, headings } = await render(indexTutorial);
 
-// Get all tutorials for sidebar navigation (exclude main index)
 const sortedTutorials = tutorials
   .filter((t) => t.id !== 'index')
   .sort((a, b) => (a.data.order || 999) - (b.data.order || 999));
@@ -27,7 +25,6 @@ const tutorialPages = sortedTutorials.map((t) => ({
   depth: 2,
 }));
 
-// First tutorial for next nav
 const nextTutorial = sortedTutorials[0];
 const nextNav = nextTutorial ? {
   label: nextTutorial.data.title,

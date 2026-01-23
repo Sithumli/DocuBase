@@ -5,20 +5,16 @@ import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import BlogCard from '@/components/BlogCard.astro';
 
-// Helper to get clean slug (remove /index suffix)
 const getCleanSlug = (id: string) => id.replace(/\/index$/, '');
 
 const allDocs = await getCollection('docs', ({ data }) => !data.draft);
 
-// Filter out main index and sort by order
 const sortedDocs = allDocs
   .filter((doc) => doc.id !== 'index')
   .sort((a, b) => (a.data.order || 999) - (b.data.order || 999));
 
-// Get current year
 const currentYear = new Date().getFullYear();
 
-// Group all docs under current year
 const docsByYear = {
   [currentYear]: sortedDocs
 };
