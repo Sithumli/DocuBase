@@ -1,9 +1,6 @@
 import { getCollection } from 'astro:content';
 import type { BottomNavData, NavTarget } from '@/types';
-
-function getCleanSlug(id: string) {
-  return id.replace(/\/index$/, '');
-}
+import { getCleanSlug } from './helpers';
 
 export async function getDocsNavigation(currentSlug: string): Promise<BottomNavData> {
   const allDocs = await getCollection('docs', ({ data }) => !data.draft);

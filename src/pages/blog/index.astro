@@ -6,8 +6,7 @@ import Footer from '@/components/Footer.astro';
 import BlogCard from '@/components/BlogCard.astro';
 import { calculateReadTime } from '@/utils/helpers';
 import { WORDS_PER_MINUTE } from '@/types/constants';
-
-const getCleanSlug = (id: string) => id.replace(/\/index$/, '');
+import { getCleanSlug } from '@/utils';
 
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
 

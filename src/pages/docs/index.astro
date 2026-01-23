@@ -4,8 +4,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import BlogCard from '@/components/BlogCard.astro';
-
-const getCleanSlug = (id: string) => id.replace(/\/index$/, '');
+import { getCleanSlug } from '@/utils';
 
 const allDocs = await getCollection('docs', ({ data }) => !data.draft);
 

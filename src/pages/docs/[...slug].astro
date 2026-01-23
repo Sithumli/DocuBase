@@ -4,10 +4,7 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
 import TableOfContents from '@/components/TableOfContents.astro';
 import BottomNav from '@/components/BottomNav.astro';
 import { getDocsNavigation } from '@/utils/navigation';
-
-function getCleanSlug(id: string) {
-  return id.replace(/\/index$/, '');
-}
+import { getCleanSlug } from '@/utils';
 
 export async function getStaticPaths() {
   const cleanSlug = (id: string) => id.replace(/\/index$/, '');

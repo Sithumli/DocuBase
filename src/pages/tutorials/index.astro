@@ -3,8 +3,7 @@ import { getCollection, render } from 'astro:content';
 import DocsLayout from '../../layouts/DocsLayout.astro';
 import TableOfContents from '@/components/TableOfContents.astro';
 import DocNav from '@/components/DocNav.astro';
-
-const getCleanSlug = (id: string) => id.replace(/\/index$/, '');
+import { getCleanSlug } from '@/utils';
 
 const tutorials = await getCollection('tutorials');
 const indexTutorial = tutorials.find(tutorial => tutorial.id === 'index');
