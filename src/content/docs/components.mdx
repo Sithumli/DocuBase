@@ -6,8 +6,8 @@ category: Reference
 ---
 
 import Callout from '@/components/Callout.astro';
-import CodeGroup from '@/components/CodeGroup.astro';
 import Tabs from '@/components/Tabs.astro';
+import Table from '@/components/Table.astro';
 import Collapsible from '@/components/Collapsible.astro';
 import Example from '@/components/Example.astro';
 import Steps from '@/components/Steps.astro';
@@ -105,9 +105,9 @@ import Tabs from '@/components/Tabs.astro';
   </div>
 </Tabs>
 
-## CodeGroup
+## Code Tabs
 
-CodeGroup is similar to Tabs but specifically designed for code snippets.
+Use Tabs to show code snippets in multiple languages or package managers.
 
 ### Usage
 
@@ -146,6 +146,47 @@ yarn add package-name
     ```
   </div>
 </Tabs>
+
+## Table
+
+Tables display structured data in a clean, styled format with optional striped rows.
+
+### Usage
+
+```mdx
+import Table from '@/components/Table.astro';
+
+<Table
+  headers={["Name", "Type", "Description"]}
+  rows={[
+    ["title", "string", "The page title"],
+    ["description", "string", "A brief summary"],
+    ["order", "number", "Sort order"]
+  ]}
+/>
+```
+
+### Example
+
+<Table
+  headers={["Feature", "Status", "Notes"]}
+  rows={[
+    ["MDX Support", "Stable", "Full component support"],
+    ["Dark Mode", "Stable", "Auto-detects system preference"],
+    ["Search", "Beta", "Coming soon"]
+  ]}
+/>
+
+### Props
+
+<Table
+  headers={["Prop", "Type", "Default", "Description"]}
+  rows={[
+    ["headers", "string[]", "required", "Column header labels"],
+    ["rows", "string[][]", "required", "Array of row data"],
+    ["striped", "boolean", "true", "Alternate row backgrounds"]
+  ]}
+/>
 
 ## Collapsible
 

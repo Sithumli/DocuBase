@@ -1,25 +1,123 @@
 ---
 title: Quick Start
-description: Build documentation that scales with your product.
-order: 1
+description: Get up and running with DocuBase in under 5 minutes
+order: 0
 ---
 
-Build documentation that scales with your product.
-A modern, structured documentation template designed for
-clarity, consistency, and long-term growth.
+import Callout from '@/components/Callout.astro';
+import Tabs from '@/components/Tabs.astro';
+import Steps from '@/components/Steps.astro';
+import Step from '@/components/Step.astro';
+import Table from '@/components/Table.astro';
 
-## Phase 1
+Welcome to DocuBase! This quick start guide will have you up and running with a beautiful documentation site in just a few steps.
 
-Build documentation that scales with your product.
-A modern, structured documentation template designed for
-clarity, consistency, and long-term growth.
+## One-Minute Setup
 
-Build documentation that scales with your product.
-A modern, structured documentation template designed for
-clarity, consistency, and long-term growth.
+<Steps>
+  <Step title="Clone and install">
+    ```bash
+    git clone https://github.com/your-repo/docubase.git my-docs
+    cd my-docs && pnpm install
+    ```
+  </Step>
 
-## Phase 2
+  <Step title="Start the dev server">
+    ```bash
+    pnpm dev
+    ```
 
-Build documentation that scales with your product.
-A modern, structured documentation template designed for
-clarity, consistency, and long-term growth.
+    Open `http://localhost:4321` in your browser.
+  </Step>
+
+  <Step title="Create your first page">
+    Add a new file at `src/content/docs/my-page.mdx`:
+
+    ```mdx
+    ---
+    title: My First Page
+    description: A new documentation page
+    ---
+
+    # Hello World
+
+    This is my first documentation page!
+    ```
+  </Step>
+</Steps>
+
+<Callout type="tip" title="Hot reload">
+Changes to your MDX files are automatically reflected in the browser—no refresh needed!
+</Callout>
+
+## What You Get
+
+DocuBase comes with everything you need to build professional documentation:
+
+<Table
+  headers={["Feature", "Description"]}
+  rows={[
+    ["MDX Support", "Write markdown with interactive components"],
+    ["Content Collections", "Type-safe content with schema validation"],
+    ["Built-in Components", "Callouts, tabs, and more"],
+    ["Responsive Design", "Looks great on all devices"],
+    ["Dark Mode Ready", "Automatic dark/light theme support"],
+    ["Fast Performance", "Static generation for instant page loads"]
+  ]}
+/>
+
+## Project Structure at a Glance
+
+```
+src/
+├── content/
+│   ├── docs/        # 📄 Documentation pages
+│   ├── blog/        # 📝 Blog posts
+│   └── tutorials/   # 🎓 Tutorials
+├── components/      # 🧩 Reusable components
+├── layouts/         # 📐 Page layouts
+└── pages/          # 🛣️ Route definitions
+```
+
+## Essential Commands
+
+<Tabs labels={["Development", "Build", "Preview"]}>
+  <div>
+    ```bash
+    # Start development server with hot reload
+    pnpm dev
+    ```
+  </div>
+  <div>
+    ```bash
+    # Build for production
+    pnpm build
+    ```
+  </div>
+  <div>
+    ```bash
+    # Preview production build locally
+    pnpm preview
+    ```
+  </div>
+</Tabs>
+
+## Next Steps
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+
+**Learn the basics**
+- [Getting Started](/docs/getting-started) - Full setup walkthrough
+- [Installation](/docs/installation) - Detailed installation options
+- [Core Concepts](/docs/core-concepts) - Understand how DocuBase works
+
+**Go deeper**
+- [Components](/docs/components) - Use built-in MDX components
+- [Tutorials](/tutorials) - Hands-on learning guides
+- [Blog](/blog) - Latest updates and guides
+
+</div>
+
+<Callout type="info">
+Need help? Check out the tutorials or explore the blog for tips and best practices.
+</Callout>

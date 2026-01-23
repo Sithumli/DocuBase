@@ -113,9 +113,10 @@ export interface TabsProps {
   id?: string;
 }
 
-export interface CodeGroupProps {
-  labels: string[];
-  id?: string;
+export interface TableProps {
+  headers: string[];
+  rows: string[][];
+  striped?: boolean;
 }
 
 export interface FooterProps {
