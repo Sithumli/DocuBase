@@ -1,18 +1,4 @@
 ---
-/**
- * CodeGroup - A tabbed code block component
- *
- * @prop {string[]} labels - Tab labels (must match number of slotted children)
- * @prop {string} [id] - Optional unique ID for the group
- *
- * Usage:
- * <CodeGroup labels={["JavaScript", "TypeScript"]}>
- *   <div>JS code here</div>
- *   <div>TS code here</div>
- * </CodeGroup>
- *
- * Note: The number of labels must match the number of direct children in the slot.
- */
 import type { CodeGroupProps } from '@/types';
 import { hashString } from '@/utils';
 
@@ -49,8 +35,19 @@ const groupId = id || `code-group-${hashString(labels.join('-'))}`;
 </div>
 
 <script>
+  const CODE_GROUP_ACTIVE_CLASSES = [
+    'text-primary-600',
+    'dark:text-primary-400',
+    'border-b-2',
+    'border-primary-600',
+    'dark:border-primary-400',
+    '-mb-px',
+    'bg-white',
+    'dark:bg-gray-900',
+  ];
+  const CODE_GROUP_INACTIVE_CLASSES = ['text-gray-600', 'dark:text-gray-400'];
+
   (function() {
-    // Guard to prevent duplicate listeners
     if ((window as any).__codeGroupInitialized) return;
     (window as any).__codeGroupInitialized = true;
 
@@ -63,14 +60,14 @@ const groupId = id || `code-group-${hashString(labels.join('-'))}`;
 
       tabs.forEach((t, i) => {
         if (i === index) {
-          t.classList.add('text-primary-600', 'dark:text-primary-400', 'border-b-2', 'border-primary-600', 'dark:border-primary-400', '-mb-px', 'bg-white', 'dark:bg-gray-900');
-          t.classList.remove('text-gray-600', 'dark:text-gray-400');
+          t.classList.add(...CODE_GROUP_ACTIVE_CLASSES);
+          t.classList.remove(...CODE_GROUP_INACTIVE_CLASSES);
           t.setAttribute('aria-selected', 'true');
           t.setAttribute('tabindex', '0');
           t.focus();
         } else {
-          t.classList.remove('text-primary-600', 'dark:text-primary-400', 'border-b-2', 'border-primary-600', 'dark:border-primary-400', '-mb-px', 'bg-white', 'dark:bg-gray-900');
-          t.classList.add('text-gray-600', 'dark:text-gray-400');
+          t.classList.remove(...CODE_GROUP_ACTIVE_CLASSES);
+          t.classList.add(...CODE_GROUP_INACTIVE_CLASSES);
           t.setAttribute('aria-selected', 'false');
           t.setAttribute('tabindex', '-1');
         }
@@ -81,7 +78,6 @@ const groupId = id || `code-group-${hashString(labels.join('-'))}`;
       });
     }
 
-    // Click handler
     document.addEventListener('click', (e) => {
       const tab = (e.target as HTMLElement).closest('.code-group-tab');
       if (!tab) return;
@@ -93,7 +89,6 @@ const groupId = id || `code-group-${hashString(labels.join('-'))}`;
       activateCodeGroupTab(group, index);
     });
 
-    // Keyboard navigation handler
     document.addEventListener('keydown', (e) => {
       const tab = (e.target as HTMLElement).closest('.code-group-tab');
       if (!tab) return;
@@ -138,7 +133,6 @@ const groupId = id || `code-group-${hashString(labels.join('-'))}`;
         const panelCount = panels.children.length;
         const tabCount = tabs.length;
 
-        // Validate that tabs and panels match
         if (tabCount !== panelCount && import.meta.env.DEV) {
           console.warn(
             `[CodeGroup] Mismatch: ${tabCount} labels but ${panelCount} content panels in group "${group.getAttribute('data-code-group')}". Each label should have a corresponding content block.`

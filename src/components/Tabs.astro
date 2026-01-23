@@ -1,58 +1,19 @@
 ---
 import type { TabsProps } from '@/types';
 import { hashString } from '@/utils';
-import { DEFAULTS } from '@/types/constants';
+import { DEFAULTS, INIT_FLAGS, EVENTS, SELECTORS } from '@/types/constants';
+import { TAB_CLASSES } from '@/types/styles';
+import { TAB_LABEL_ICONS, getTabIcon } from '@/types/icons';
 
 const { labels, defaultIndex = DEFAULTS.TABS.defaultIndex, id } = Astro.props as TabsProps;
 
 const tabsId = id || `tabs-${hashString(labels.join('-'))}`;
-
-const labelIcons: Record<string, string> = {
-  javascript: 'logos:javascript',
-  js: 'logos:javascript',
-  typescript: 'logos:typescript-icon',
-  ts: 'logos:typescript-icon',
-  python: 'logos:python',
-  py: 'logos:python',
-  bash: 'codicon:terminal-bash',
-  shell: 'codicon:terminal-bash',
-  sh: 'codicon:terminal-bash',
-  terminal: 'codicon:terminal',
-  npm: 'logos:npm-icon',
-  pnpm: 'logos:pnpm',
-  yarn: 'logos:yarn',
-  bun: 'logos:bun',
-  react: 'logos:react',
-  jsx: 'logos:react',
-  tsx: 'logos:react',
-  vue: 'logos:vue',
-  svelte: 'logos:svelte-icon',
-  astro: 'logos:astro-icon',
-  html: 'logos:html-5',
-  css: 'logos:css-3',
-  json: 'logos:json',
-  rust: 'logos:rust',
-  go: 'logos:go',
-  java: 'logos:java',
-  php: 'logos:php',
-  ruby: 'logos:ruby',
-  swift: 'logos:swift',
-  kotlin: 'logos:kotlin-icon',
-  sql: 'tabler:sql',
-  docker: 'logos:docker-icon',
-  git: 'logos:git-icon',
-};
-
-function getIcon(label: string): string | null {
-  const normalizedLabel = label.toLowerCase().trim();
-  return labelIcons[normalizedLabel] || null;
-}
 ---
 
 <div class="my-6" data-tabs={tabsId} data-default-index={defaultIndex}>
   <div class="flex items-end gap-1" role="tablist">
     {labels.map((label, index) => {
-      const icon = getIcon(label);
+      const icon = getTabIcon(label);
       return (
         <button
           type="button"
@@ -92,6 +53,9 @@ function getIcon(label: string): string | null {
     if ((window as any).__tabsInitialized) return;
     (window as any).__tabsInitialized = true;
 
+    const TAB_ACTIVE_CLASSES = ['text-primary-600', 'dark:text-white', 'bg-gray-100', 'dark:bg-gray-800'];
+    const TAB_INACTIVE_CLASSES = ['text-gray-700', 'dark:text-gray-400'];
+
     function activateTab(container: Element, index: number) {
       const tabs = Array.from(container.querySelectorAll('.tab-button')) as HTMLElement[];
       const panelsContainer = container.querySelector('.tab-panels');
@@ -101,14 +65,14 @@ function getIcon(label: string): string | null {
 
       tabs.forEach((t, i) => {
         if (i === index) {
-          t.classList.add('text-primary-600', 'dark:text-white', 'bg-gray-100', 'dark:bg-gray-800');
-          t.classList.remove('text-gray-700', 'dark:text-gray-400');
+          t.classList.add(...TAB_ACTIVE_CLASSES);
+          t.classList.remove(...TAB_INACTIVE_CLASSES);
           t.setAttribute('aria-selected', 'true');
           t.setAttribute('tabindex', '0');
           t.focus();
         } else {
-          t.classList.remove('text-primary-600', 'dark:text-white', 'bg-gray-100', 'dark:bg-gray-800');
-          t.classList.add('text-gray-700', 'dark:text-gray-400');
+          t.classList.remove(...TAB_ACTIVE_CLASSES);
+          t.classList.add(...TAB_INACTIVE_CLASSES);
           t.setAttribute('aria-selected', 'false');
           t.setAttribute('tabindex', '-1');
         }

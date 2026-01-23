@@ -1,0 +1,112 @@
+---
+title: Content Collections
+description: Master Astro's Content Collections for managing your content
+pubDate: 2026-01-20
+author: DocuBase Team
+tags: [astro, content, collections]
+series: astro-guide
+order: 3
+---
+
+import Callout from '@/components/Callout.astro';
+
+# Content Collections
+
+Content Collections are Astro's solution for managing content like blog posts, documentation, and other Markdown/MDX files.
+
+## What are Content Collections?
+
+Content Collections provide:
+
+- **Type-safety** - Validate your frontmatter with Zod schemas
+- **Organization** - Group related content together
+- **Querying** - Easy-to-use APIs for fetching content
+- **Performance** - Optimized for build-time data fetching
+
+## Defining a Collection
+
+Collections are defined in `src/content.config.ts`:
+
+```typescript
+import { defineCollection, z } from 'astro:content';
+import { glob } from 'astro/loaders';
+
+const blogCollection = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/blog' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string().optional(),
+    pubDate: z.coerce.date(),
+    author: z.string().optional(),
+    tags: z.array(z.string()).optional(),
+  }),
+});
+
+export const collections = {
+  blog: blogCollection,
+};
+```
+
+<Callout type="info">
+The schema validates your frontmatter at build time, catching errors early!
+</Callout>
+
+## Querying Collections
+
+Use the Content Collections API to query your content:
+
+```astro
+---
+import { getCollection } from 'astro:content';
+
+// Get all blog posts
+const allPosts = await getCollection('blog');
+
+// Filter posts
+const publishedPosts = await getCollection('blog', ({ data }) => {
+  return !data.draft;
+});
+
+// Sort posts by date
+const sortedPosts = allPosts.sort((a, b) => 
+  b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+---
+```
+
+## Rendering Content
+
+To render a content entry:
+
+```astro
+---
+import { getEntry, render } from 'astro:content';
+
+const post = await getEntry('blog', 'my-post');
+const { Content, headings } = await render(post);
+---
+
+<article>
+  <h1>{post.data.title}</h1>
+  <Content />
+</article>
+```
+
+## Frontmatter Validation
+
+The schema ensures your frontmatter is always valid:
+
+```yaml
+---
+title: My Blog Post        # ✓ Required
+description: A great post  # ✓ Optional
+pubDate: 2026-01-20       # ✓ Coerced to Date
+author: John Doe          # ✓ Optional string
+tags: [astro, blog]       # ✓ Array of strings
+draft: false              # ✓ Boolean
+---
+```
+
+## Next Steps
+
+In the next chapter, we'll explore styling and theming your Astro site to make it look beautiful and unique.

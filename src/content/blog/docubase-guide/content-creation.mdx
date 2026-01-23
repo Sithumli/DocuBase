@@ -1,0 +1,109 @@
+---
+title: Content Creation
+description: Learn how to write and organize your documentation content
+pubDate: 2026-01-18
+author: DocuBase Team
+tags: [tutorial, content, writing]
+series: docubase-guide
+order: 3
+---
+
+import Callout from '@/components/Callout.astro';
+import Tabs from '@/components/Tabs.astro';
+
+# Content Creation
+
+Learn how to create engaging documentation with DocuBase's powerful content features.
+
+## Writing in MDX
+
+DocuBase uses MDX, which combines Markdown with component support:
+
+```mdx
+---
+title: My Page
+description: Page description
+---
+
+import MyComponent from '@/components/MyComponent.astro';
+
+## Regular Markdown
+
+This is normal markdown content.
+
+<MyComponent />
+```
+
+## Frontmatter
+
+Every content file starts with frontmatter:
+
+```yaml
+---
+title: Page Title         # Required
+description: Brief desc   # Recommended
+pubDate: 2026-01-18      # For blogs/tutorials
+tags: [tag1, tag2]       # Optional
+order: 1                 # For ordering
+draft: false             # Hide from production
+---
+```
+
+<Callout type="warning">
+Always include a title and description for better SEO!
+</Callout>
+
+## Using Components
+
+DocuBase includes many built-in components:
+
+### Callouts
+
+```mdx
+<Callout type="info">
+Information message here
+</Callout>
+```
+
+Types: `info`, `tip`, `warning`, `danger`, `note`
+
+### Tabs
+
+<Tabs labels={["JavaScript", "TypeScript", "Python"]}>
+  <div>
+    ```js
+    console.log('Hello');
+    ```
+  </div>
+  <div>
+    ```ts
+    console.log('Hello' as string);
+    ```
+  </div>
+  <div>
+    ```python
+    print('Hello')
+    ```
+  </div>
+</Tabs>
+
+## Content Best Practices
+
+1. **Write clearly** - Use simple, direct language
+2. **Structure well** - Use headings hierarchically
+3. **Add examples** - Show, don't just tell
+4. **Use components** - Enhance with callouts and tabs
+5. **Test links** - Ensure all links work
+
+## Multi-Page Series
+
+To create a multi-page series like this guide:
+
+1. Create a folder: `blog/my-series/`
+2. Add pages with `series: "my-series"` in frontmatter
+3. Use `order: 1, 2, 3...` to sequence pages
+4. First page (order: 1) is the overview
+
+## Next Steps
+
+Ready to customize? The next chapter covers theming and styling your documentation site.

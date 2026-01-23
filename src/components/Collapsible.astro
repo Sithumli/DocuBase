@@ -1,7 +1,7 @@
 ---
 import type { CollapsibleProps } from '@/types';
 import { hashString } from '@/utils';
-import { DEFAULTS } from '@/types/constants';
+import { DEFAULTS, INIT_FLAGS, SELECTORS } from '@/types/constants';
 
 const { title, defaultOpen = DEFAULTS.COLLAPSIBLE.defaultOpen, id } = Astro.props as CollapsibleProps;
 
@@ -49,7 +49,6 @@ const collapsibleId = id || `collapsible-${hashString(title)}`;
 
 <script>
   (function() {
-    // Guard to prevent duplicate listeners
     if ((window as any).__collapsibleInitialized) return;
     (window as any).__collapsibleInitialized = true;
 
@@ -71,7 +70,6 @@ const collapsibleId = id || `collapsible-${hashString(title)}`;
     }
 
     function initCollapsibles() {
-      // Ensure initial state is consistent with aria-expanded attributes
       document.querySelectorAll('[data-collapsible]').forEach((collapsible) => {
         const trigger = collapsible.querySelector('.collapsible-trigger');
         const content = collapsible.querySelector('.collapsible-content');

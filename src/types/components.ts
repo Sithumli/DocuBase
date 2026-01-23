@@ -19,6 +19,7 @@ export interface TableOfContentsProps {
   centered?: boolean;
   nested?: boolean;
   collapsible?: boolean;
+  isPageNav?: boolean;
 }
 
 export interface TocItem {

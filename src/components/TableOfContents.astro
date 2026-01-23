@@ -1,17 +1,18 @@
 ---
 import type { TableOfContentsProps } from '@/types';
 import type { TocItem } from '@/types';
+import { DEFAULTS, TOC_OBSERVER_OPTIONS, SCROLL_OPTIONS } from '@/types/constants';
 
 type Props = TableOfContentsProps;
 
-const { items, title = "On this Topic", showBorder = true, nested = false, collapsible = false } = Astro.props as Props;
+const { items, title = DEFAULTS.TOC.title, showBorder = true, nested = false, collapsible = false, isPageNav = false } = Astro.props as Props;
 ---
 
 <div class:list={[
   "text-sm",
   showBorder && "border-l border-gray-200 pl-4",
   collapsible && "toc-collapsible-wrapper"
-]} data-toc data-toc-contextual={nested ? "true" : "false"}>
+]} data-toc data-toc-contextual={nested ? "true" : "false"} data-page-nav={isPageNav ? "true" : undefined}>
   {collapsible ? (
     <div class="toc-collapsible-box border border-gray-200 rounded-[20px] p-4">
       <div class="toc-icon">
@@ -29,7 +30,7 @@ const { items, title = "On this Topic", showBorder = true, nested = false, colla
               <div data-h2-section data-h2-id={item.href.slice(1)}>
                 <a
                   href={item.href}
-                  class="toc-link block transition-all duration-200 transform font-medium text-gray-900 hover:text-gray-600"
+                  class="toc-link block transition-all duration-200 transform font-medium text-gray-900 hover:text-blue-600"
                   data-toc-link={item.href}
                 >
                   {item.title}
@@ -39,7 +40,7 @@ const { items, title = "On this Topic", showBorder = true, nested = false, colla
                     {item.children.map((child) => (
                       <a
                         href={child.href}
-                        class="toc-link block transition-all duration-200 transform text-sm text-gray-900 hover:text-gray-600"
+                        class="toc-link block transition-all duration-200 transform text-sm text-gray-900 hover:text-blue-600"
                         data-toc-link={child.href}
                       >
                         {child.title}
@@ -54,7 +55,7 @@ const { items, title = "On this Topic", showBorder = true, nested = false, colla
               <a
                 href={item.href}
                 class:list={[
-                  "toc-link block transition-all duration-200 transform text-gray-900 hover:text-gray-600",
+                  "toc-link block transition-all duration-200 transform text-gray-900 hover:text-blue-600",
                   item.depth === 2 && "font-medium",
                   item.depth === 3 && "ml-4 text-sm",
                 ]}
@@ -77,7 +78,7 @@ const { items, title = "On this Topic", showBorder = true, nested = false, colla
             <div data-h2-section data-h2-id={item.href.slice(1)}>
               <a
                 href={item.href}
-                class="toc-link block transition-all duration-200 transform font-medium text-gray-900 hover:text-gray-600"
+                class="toc-link block transition-all duration-200 transform font-medium text-gray-900 hover:text-blue-600"
                 data-toc-link={item.href}
               >
                 {item.title}
@@ -87,7 +88,7 @@ const { items, title = "On this Topic", showBorder = true, nested = false, colla
                   {item.children.map((child) => (
                     <a
                       href={child.href}
-                      class="toc-link block transition-all duration-200 transform text-sm text-gray-900 hover:text-gray-600"
+                      class="toc-link block transition-all duration-200 transform text-sm text-gray-900 hover:text-blue-600"
                       data-toc-link={child.href}
                     >
                       {child.title}
@@ -102,7 +103,7 @@ const { items, title = "On this Topic", showBorder = true, nested = false, colla
             <a
               href={item.href}
               class:list={[
-                "toc-link block transition-all duration-200 transform text-gray-900 hover:text-gray-600",
+                "toc-link block transition-all duration-200 transform text-gray-900 hover:text-blue-600",
                 item.depth === 2 && "font-medium",
                 item.depth === 3 && "ml-4 text-sm",
               ]}
@@ -150,9 +151,11 @@ const { items, title = "On this Topic", showBorder = true, nested = false, colla
   }
 
   .toc-content {
-    width: 14rem;
+    width: calc(14rem - 2rem);
     opacity: 1;
     transition: opacity 0.2s ease-in-out;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 
   .toc-collapsible-box:not(:hover) .toc-content {
@@ -162,6 +165,9 @@ const { items, title = "On this Topic", showBorder = true, nested = false, colla
 </style>
 
 <script>
+  const TOC_ROOT_MARGIN = '-80px 0px -70% 0px';
+  const TOC_THRESHOLD = 0;
+
   (function() {
     if ((window as any).__tocInitialized) return;
     (window as any).__tocInitialized = true;
@@ -197,12 +203,18 @@ const { items, title = "On this Topic", showBorder = true, nested = false, colla
         });
       }
 
-      // Add click handlers for TOC navigation
       tocContainers.forEach(toc => {
+        const isPageNav = toc.hasAttribute('data-page-nav');
+
         toc.querySelectorAll('[data-toc-link]').forEach(link => {
           link.addEventListener('click', (e) => {
-            e.preventDefault();
             const href = link.getAttribute('data-toc-link');
+
+            if (isPageNav || !href?.startsWith('#')) {
+              return;
+            }
+
+            e.preventDefault();
             if (href?.startsWith('#')) {
               const targetId = href.slice(1);
               const targetElement = document.getElementById(targetId);
@@ -216,62 +228,11 @@ const { items, title = "On this Topic", showBorder = true, nested = false, colla
         });
       });
 
-      // Dynamic context-aware TOC (show only current section and its children)
-      function updateContextualToc(activeH2Id: string) {
-        const rightTocContainer = document.querySelector('[data-toc-contextual="true"]');
-        if (!rightTocContainer) return;
-
-        // Hide all H2 sections
+      const rightTocContainer = document.querySelector('[data-toc-contextual="true"]');
+      if (rightTocContainer) {
         rightTocContainer.querySelectorAll('[data-h2-section]').forEach(section => {
-          (section as HTMLElement).style.display = 'none';
+          (section as HTMLElement).style.display = 'block';
         });
-
-        // Show only the active H2 section
-        const activeSection = rightTocContainer.querySelector(`[data-h2-id="${activeH2Id}"]`);
-        if (activeSection) {
-          (activeSection as HTMLElement).style.display = 'block';
-        }
-      }
-
-      // Track current H2 for contextual TOC
-      const contextualToc = document.querySelector('[data-toc-contextual="true"]');
-      if (contextualToc) {
-        const h2Headings = Array.from(document.querySelectorAll('article h2[id], main h2[id]')) as HTMLElement[];
-
-        if (h2Headings.length > 0) {
-          let currentActiveH2: string | null = null;
-
-          function findCurrentH2() {
-            const scrollPos = window.scrollY + 120;
-
-            // Find which H2 section we're currently in
-            for (let i = h2Headings.length - 1; i >= 0; i--) {
-              const h2 = h2Headings[i];
-              if (h2.offsetTop <= scrollPos) {
-                return h2.id;
-              }
-            }
-
-            // Default to first section if we're above all headings
-            return h2Headings[0]?.id || null;
-          }
-
-          function onScroll() {
-            const newActiveH2 = findCurrentH2();
-            if (newActiveH2 && newActiveH2 !== currentActiveH2) {
-              currentActiveH2 = newActiveH2;
-              updateContextualToc(newActiveH2);
-            }
-          }
-
-          window.addEventListener('scroll', onScroll, { passive: true });
-
-          // Initialize with first section
-          if (h2Headings[0]?.id) {
-            currentActiveH2 = h2Headings[0].id;
-            updateContextualToc(h2Headings[0].id);
-          }
-        }
       }
 
       const observer = new IntersectionObserver(
@@ -288,8 +249,8 @@ const { items, title = "On this Topic", showBorder = true, nested = false, colla
           }
         },
         {
-          rootMargin: '-80px 0px -70% 0px',
-          threshold: 0,
+          rootMargin: TOC_ROOT_MARGIN,
+          threshold: TOC_THRESHOLD,
         }
       );
 

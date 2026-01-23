@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import DocsLayout from '../../layouts/DocsLayout.astro';
+import TableOfContents from '@/components/TableOfContents.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog', ({ data }) => !data.draft);
@@ -13,6 +14,49 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
+
+let blogPages: any[] = [];
+let seriesTitle = '';
+let firstPostId = '';
+const hasSeries = !!entry.data.series;
+
+if (hasSeries) {
+  const allPosts = await getCollection('blog', ({ data }) =>
+    !data.draft && data.series === entry.data.series
+  );
+
+  const sortedPosts = allPosts.sort((a, b) => (a.data.order || 999) - (b.data.order || 999));
+  firstPostId = sortedPosts[0].id;
+
+  blogPages = sortedPosts.map((post) => ({
+    title: post.data.title,
+    href: `/blog/${post.id}`,
+    depth: 2,
+  }));
+
+  seriesTitle = entry.data.series
+    .split('-')
+    .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+} else {
+  blogPages = [{
+    title: entry.data.title,
+    href: `/blog/${entry.id}`,
+    depth: 2,
+  }];
+  seriesTitle = entry.data.title;
+}
+
+const customBreadcrumbs = hasSeries ? [
+  { label: 'Blog', href: '/blog' },
+  { label: seriesTitle, href: `/blog/${firstPostId}` },
+  { label: entry.data.title },
+] : undefined;
 ---
 
-<DocsLayout entry={entry} headings={headings} Content={Content} type="blog" />
+<DocsLayout entry={entry} headings={headings} Content={Content} type="blog" customBreadcrumbs={customBreadcrumbs}>
+  <div slot="sidebar">
+    <TableOfContents items={blogPages} title={seriesTitle} showBorder={false} collapsible={true} isPageNav={hasSeries} />
+  </div>
+</DocsLayout>
+
