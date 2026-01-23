@@ -17,7 +17,7 @@ export const DEFAULTS = {
   HERO: {
     subtitle: 'DocuBase',
     buttonText: 'Get Started',
-    buttonHref: '/docs',
+    buttonHref: '/docs/getting-started',
   },
   TOC: {
     title: 'On this Page',

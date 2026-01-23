@@ -1,47 +1,64 @@
 ---
-import { getCollection, render } from 'astro:content';
-import DocsLayout from '../../layouts/DocsLayout.astro';
-import TableOfContents from '@/components/TableOfContents.astro';
-import DocNav from '@/components/DocNav.astro';
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import BlogCard from '@/components/BlogCard.astro';
 
 // Helper to get clean slug (remove /index suffix)
 const getCleanSlug = (id: string) => id.replace(/\/index$/, '');
 
-const docs = await getCollection('docs');
-const indexDoc = docs.find(doc => doc.id === 'index');
+const allDocs = await getCollection('docs', ({ data }) => !data.draft);
 
-if (!indexDoc) {
-  throw new Error('Index doc not found');
-}
-
-const { Content, headings } = await render(indexDoc);
-
-// Get all docs for sidebar navigation (exclude main index)
-const sortedDocs = docs
+// Filter out main index and sort by order
+const sortedDocs = allDocs
   .filter((doc) => doc.id !== 'index')
   .sort((a, b) => (a.data.order || 999) - (b.data.order || 999));
 
-const docsPages = sortedDocs.map((doc) => ({
-  title: doc.data.title,
-  href: `/docs/${getCleanSlug(doc.id)}`,
-  depth: 2,
-}));
+// Get current year
+const currentYear = new Date().getFullYear();
 
-// First doc for next nav
-const nextDoc = sortedDocs[0];
-const nextNav = nextDoc ? {
-  label: nextDoc.data.title,
-  href: `/docs/${getCleanSlug(nextDoc.id)}`,
-} : undefined;
+// Group all docs under current year
+const docsByYear = {
+  [currentYear]: sortedDocs
+};
 ---
 
-<DocsLayout entry={indexDoc} headings={headings} Content={Content} type="docs">
-  <div slot="sidebar">
-    <TableOfContents items={docsPages} title="Documentation" showBorder={false} collapsible={true} isPageNav={true} />
-  </div>
-  {nextNav && (
-    <div slot="footer">
-      <DocNav next={nextNav} />
-    </div>
-  )}
-</DocsLayout>
+<BaseLayout title="Documentation" description="Browse all documentation pages for DocuBase">
+  <Header currentPath="/docs" />
+
+    <main class="flex-1">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="max-w-3xl mx-auto">
+          {Object.entries(docsByYear)
+            .sort(([a], [b]) => Number(b) - Number(a))
+            .map(([year, docs]) => (
+              <div class="flex gap-12 mb-12">
+                <h2 class="text-2xl font-bold text-gray-900 shrink-0 sticky top-24 self-start">
+                  {year}
+                </h2>
+
+                <div class="flex-1 space-y-4">
+                  {docs.map((doc) => (
+                    <BlogCard
+                      title={doc.data.title}
+                      description={doc.data.description || ''}
+                      date={`Page ${doc.data.order}`}
+                      readTime=""
+                      href={`/docs/${getCleanSlug(doc.id)}`}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))
+          }
+
+          {sortedDocs.length === 0 && (
+            <p class="text-center text-gray-600">No documentation pages yet.</p>
+          )}
+        </div>
+      </div>
+    </main>
+
+    <Footer />
+</BaseLayout>
