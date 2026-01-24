@@ -1,43 +1,61 @@
 ---
-import { getCollection, render } from 'astro:content';
-import DocsLayout from '../../layouts/DocsLayout.astro';
-import TableOfContents from '@/components/TableOfContents.astro';
-import DocNav from '@/components/DocNav.astro';
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import BlogCard from '@/components/BlogCard.astro';
+import { calculateReadTime } from '@/utils/helpers';
+import { WORDS_PER_MINUTE } from '@/types/constants';
 import { getCleanSlug } from '@/utils';
 
-const tutorials = await getCollection('tutorials');
-const indexTutorial = tutorials.find(tutorial => tutorial.id === 'index');
+const allTutorials = await getCollection('tutorials', ({ data }) => !data.draft);
 
-if (!indexTutorial) {
-  throw new Error('Index tutorial not found');
-}
-
-const { Content, headings } = await render(indexTutorial);
-
-const sortedTutorials = tutorials
-  .filter((t) => t.id !== 'index')
+const sortedTutorials = allTutorials
+  .filter((tutorial) => tutorial.id !== 'index')
   .sort((a, b) => (a.data.order || 999) - (b.data.order || 999));
 
-const tutorialPages = sortedTutorials.map((t) => ({
-  title: t.data.title,
-  href: `/tutorials/${getCleanSlug(t.id)}`,
-  depth: 2,
-}));
+const currentYear = new Date().getFullYear();
 
-const nextTutorial = sortedTutorials[0];
-const nextNav = nextTutorial ? {
-  label: nextTutorial.data.title,
-  href: `/tutorials/${getCleanSlug(nextTutorial.id)}`,
-} : undefined;
+const tutorialsByYear = {
+  [currentYear]: sortedTutorials
+};
 ---
 
-<DocsLayout entry={indexTutorial} headings={headings} Content={Content} type="tutorials">
-  <div slot="sidebar">
-    <TableOfContents items={tutorialPages} title="Tutorials" showBorder={false} collapsible={true} isPageNav={true} />
-  </div>
-  {nextNav && (
-    <div slot="footer">
-      <DocNav next={nextNav} />
-    </div>
-  )}
-</DocsLayout>
+<BaseLayout title="Tutorials" description="Step-by-step tutorials to help you learn DocuBase">
+  <Header currentPath="/tutorials" />
+
+    <main class="flex-1">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="max-w-3xl mx-auto">
+          {Object.entries(tutorialsByYear)
+            .sort(([a], [b]) => Number(b) - Number(a))
+            .map(([year, tutorials]) => (
+              <div class="flex gap-12 mb-12">
+                <h2 class="text-2xl font-bold text-gray-900 shrink-0 sticky top-24 self-start">
+                  {year}
+                </h2>
+
+                <div class="flex-1 space-y-4">
+                  {tutorials.map((tutorial) => (
+                    <BlogCard
+                      title={tutorial.data.title}
+                      description={tutorial.data.description || ''}
+                      date={`Step ${tutorial.data.order}`}
+                      readTime={`${calculateReadTime(tutorial.body || '', WORDS_PER_MINUTE)} min read`}
+                      href={`/tutorials/${getCleanSlug(tutorial.id)}`}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))
+          }
+
+          {sortedTutorials.length === 0 && (
+            <p class="text-center text-gray-600">No tutorials yet. Check back soon!</p>
+          )}
+        </div>
+      </div>
+    </main>
+
+    <Footer />
+</BaseLayout>
