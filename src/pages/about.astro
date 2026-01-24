@@ -1,0 +1,92 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import Hero from '@/components/Hero.astro';
+import SectionHeader from '@/components/SectionHeader.astro';
+import FlipCard from '@/components/FlipCard.astro';
+import Button from '@/components/Button.astro';
+---
+
+<BaseLayout title="About" description="Learn more about DocuBase and our mission to make documentation beautiful and accessible">
+  <Header currentPath="/about" />
+
+  <main class="flex-1">
+    <Hero
+      title="About"
+      highlightedText="DocuBase"
+      description="A modern documentation template built for developers who want beautiful, functional docs without the setup hassle."
+    />
+
+    <section class="pb-16 md:pb-24">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto">
+          <SectionHeader title="Our Mission" class="ml-8" />
+
+          <div class="prose prose-gray max-w-none text-gray-600">
+            <p class="text-lg leading-relaxed mb-6">
+              DocuBase was created with a simple goal: to provide developers with a
+              documentation template that looks great out of the box while remaining
+              flexible enough to adapt to any project's needs.
+            </p>
+
+            <p class="text-lg leading-relaxed mb-6">
+              We believe that great documentation is essential to great software.
+              It bridges the gap between code and users, making complex systems
+              accessible and understandable.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pb-16 md:pb-24">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto">
+          <SectionHeader title="Features" class="ml-8" />
+
+          <div class="grid gap-6 md:grid-cols-2">
+            <FlipCard
+              title="Modern Stack"
+              description="Built with Astro, Tailwind CSS, and TypeScript for a fast, type-safe development experience."
+            />
+
+            <FlipCard
+              title="Content Collections"
+              description="Organize your docs, blog posts, and tutorials with Astro's powerful content collections."
+            />
+
+            <FlipCard
+              title="Dark Mode Ready"
+              description="A beautiful dark theme designed for comfortable reading during those late-night coding sessions."
+            />
+
+            <FlipCard
+              title="SEO Optimized"
+              description="Built-in SEO best practices to help your documentation rank well in search engines."
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pb-16 md:pb-24">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto">
+          <SectionHeader title="Get Started" class="ml-8" />
+
+          <div class="text-center">
+            <p class="text-lg text-gray-600 mb-8">
+              Ready to build your documentation? Check out our getting started guide.
+            </p>
+            <Button href="/docs/getting-started" variant="glass" icon="ion:chevron-forward">
+              Get Started
+            </Button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>
