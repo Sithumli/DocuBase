@@ -83,10 +83,11 @@ const entriesByYear = sortedEntries.reduce((acc, entry) => {
                         month: 'short',
                         day: 'numeric'
                       })}
-                      readTime={entry.isSeries 
+                      readTime={entry.isSeries
                         ? `${entry.pageCount} chapters · ${entry.totalReadTime} min read`
                         : `${entry.totalReadTime} min read`
                       }
+                      image={entry.data.image}
                       href={`/blog/${getCleanSlug(entry.id)}`}
                     />
                   ))}
