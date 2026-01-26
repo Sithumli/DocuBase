@@ -1,9 +1,8 @@
 ---
 import type { TabsProps } from '@/types';
 import { hashString } from '@/utils';
-import { DEFAULTS, INIT_FLAGS, EVENTS, SELECTORS } from '@/types/constants';
-import { TAB_CLASSES } from '@/types/styles';
-import { TAB_LABEL_ICONS, getTabIcon } from '@/types/icons';
+import { DEFAULTS } from '@/types/constants';
+import { getTabIcon } from '@/types/icons';
 
 const { labels, defaultIndex = DEFAULTS.TABS.defaultIndex, id } = Astro.props as TabsProps;
 

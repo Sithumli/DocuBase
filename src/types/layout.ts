@@ -1,12 +1,10 @@
-import type { BreadcrumbItem } from './components';
+import type { BreadcrumbItem, ContentType } from './components';
 
 export interface DocsLayoutProps {
   title: string;
   description?: string;
-  type?: 'docs' | 'blog' | 'tutorials';
+  type?: ContentType;
 }
-
-export type ContentType = 'docs' | 'blog' | 'tutorials';
 
 export interface ExtendedDocsLayoutProps extends DocsLayoutProps {
   entry?: any;

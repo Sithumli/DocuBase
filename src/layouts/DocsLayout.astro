@@ -6,12 +6,10 @@ import TableOfContents from '@/components/TableOfContents.astro';
 import Breadcrumb from '@/components/Breadcrumb.astro';
 import ReadTime from '@/components/ReadTime.astro';
 import type { ExtendedDocsLayoutProps } from '@/types/layout';
-import { SITE_TITLE, WORDS_PER_MINUTE, TIMING, SELECTORS, LAYOUT } from '@/types/constants';
-import { COPY_BUTTON_ICONS } from '@/types/icons';
+import { WORDS_PER_MINUTE, LAYOUT } from '@/types/constants';
 import { calculateReadTime } from '@/utils/helpers';
 
 const { title: propTitle, description: propDescription, type = 'docs', entry, headings = [], Content, customBreadcrumbs } = Astro.props as ExtendedDocsLayoutProps;
-const siteTitle = SITE_TITLE;
 
 const isContentBased = !!entry && !!headings && !!Content;
 const hasSidebarSlot = Astro.slots.has('sidebar');

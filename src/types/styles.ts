@@ -35,22 +35,3 @@ export const CALLOUT_DEFAULT_TITLES: Record<CalloutType, string> = {
   danger: 'Danger',
   info: 'Info',
 } as const;
-
-export const TAB_CLASSES = {
-  active: ['text-primary-600', 'dark:text-white', 'bg-gray-100', 'dark:bg-gray-800'],
-  inactive: ['text-gray-700', 'dark:text-gray-400'],
-} as const;
-
-export const CODE_GROUP_CLASSES = {
-  active: [
-    'text-primary-600',
-    'dark:text-primary-400',
-    'border-b-2',
-    'border-primary-600',
-    'dark:border-primary-400',
-    '-mb-px',
-    'bg-white',
-    'dark:bg-gray-900',
-  ],
-  inactive: ['text-gray-600', 'dark:text-gray-400'],
-} as const;

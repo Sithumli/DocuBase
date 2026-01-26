@@ -1,10 +1,7 @@
 ---
-interface Props {
-  headers: string[];
-  rows: string[][];
-}
+import type { TableProps } from '@/types';
 
-const { headers, rows } = Astro.props;
+const { headers, rows, striped = true } = Astro.props as TableProps;
 ---
 
 <div class="my-6 inline-block min-w-[280px] max-w-full overflow-x-auto rounded-xl border border-white/20 dark:border-white/10 bg-white/60 dark:bg-gray-900/40 backdrop-blur-md shadow-lg shadow-gray-200/50 dark:shadow-black/20">
@@ -21,14 +18,17 @@ const { headers, rows } = Astro.props;
     <tbody>
       {rows.map((row, rowIndex) => (
         <>
-          {rowIndex !== 0 && (
+          {rowIndex !== 0 && !striped && (
             <tr>
               <td colspan={row.length} class="px-5 py-0">
                 <div class="border-t border-gray-300/40 dark:border-white/10"></div>
               </td>
             </tr>
           )}
-          <tr class="hover:bg-white/40 dark:hover:bg-white/5 transition-colors">
+          <tr class:list={[
+            "hover:bg-white/40 dark:hover:bg-white/5 transition-colors",
+            striped && rowIndex % 2 === 1 && "bg-gray-50/50 dark:bg-white/[0.02]"
+          ]}>
             {row.map((cell, cellIndex) => (
               <td class={`px-5 py-3 whitespace-nowrap ${cellIndex === 0 ? 'font-medium text-gray-950 dark:text-white' : 'text-gray-800 dark:text-gray-100'} ${rowIndex === rows.length - 1 && cellIndex === 0 ? 'rounded-bl-xl' : ''} ${rowIndex === rows.length - 1 && cellIndex === row.length - 1 ? 'rounded-br-xl' : ''}`}>
                 {cell}
