@@ -1,0 +1,159 @@
+---
+title: Deployment & Optimization
+description: Deploy your Astro site and optimize it for production
+pubDate: 2026-01-20
+author: DocuBase Team
+tags: [astro, deployment, optimization, performance]
+series: astro-guide
+order: 5
+---
+
+import Callout from '@/components/Callout.astro';
+
+# Deployment & Optimization
+
+Ready to ship your Astro site? Let's explore deployment options and optimization strategies.
+
+## Deployment Platforms
+
+Astro works great with modern hosting platforms:
+
+### Vercel
+
+```bash
+npm install -g vercel
+vercel
+```
+
+Vercel automatically detects Astro and configures everything for you.
+
+### Netlify
+
+1. Connect your Git repository
+2. Set build command: `npm run build`
+3. Set publish directory: `dist`
+4. Deploy!
+
+### Cloudflare Pages
+
+Cloudflare Pages offers excellent performance with edge computing:
+
+```bash
+npm run build
+npx wrangler pages publish dist
+```
+
+### GitHub Pages
+
+For static sites, GitHub Pages is free and simple:
+
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - run: npm install
+      - run: npm run build
+      - uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+```
+
+<Callout type="tip">
+All these platforms offer automatic deployments from Git - just push and go!
+</Callout>
+
+## Build Optimization
+
+### Image Optimization
+
+Use Astro's built-in Image component:
+
+```astro
+---
+import { Image } from 'astro:assets';
+import myImage from '../assets/photo.png';
+---
+
+<Image src={myImage} alt="Description" />
+```
+
+Benefits:
+- Automatic format conversion (WebP, AVIF)
+- Responsive images
+- Lazy loading
+- Size optimization
+
+### Prefetching
+
+Enable prefetching for faster navigation:
+
+```astro
+<a href="/about" data-astro-prefetch>About</a>
+```
+
+### Bundle Analysis
+
+Analyze your bundle size:
+
+```bash
+npm run build -- --stats
+```
+
+## Performance Best Practices
+
+1. **Minimize JavaScript** - Use partial hydration
+2. **Optimize images** - Compress and use modern formats
+3. **Enable caching** - Configure cache headers
+4. **Use a CDN** - Serve static assets from edge locations
+5. **Lazy load** - Defer non-critical resources
+
+## Monitoring
+
+Track your site's performance:
+
+- **Lighthouse** - Built into Chrome DevTools
+- **WebPageTest** - Detailed performance analysis
+- **Analytics** - Google Analytics, Plausible, Fathom
+
+## Environment Variables
+
+Manage secrets with environment variables:
+
+```env
+# .env
+API_KEY=your-secret-key
+PUBLIC_API_URL=https://api.example.com
+```
+
+```astro
+---
+const apiKey = import.meta.env.API_KEY;
+const publicUrl = import.meta.env.PUBLIC_API_URL;
+---
+```
+
+<Callout type="warning">
+Only variables prefixed with PUBLIC_ are exposed to the client!
+</Callout>
+
+## Conclusion
+
+Congratulations! You've completed the Complete Astro Guide. You now have the knowledge to:
+
+✓ Build Astro components and pages
+✓ Manage content with Content Collections
+✓ Style your site effectively
+✓ Deploy and optimize for production
+
+Keep building amazing things with Astro! 🚀

@@ -1,0 +1,97 @@
+---
+title: Components & Pages
+description: Learn how to create and use Astro components and pages
+pubDate: 2026-01-20
+author: DocuBase Team
+tags: [astro, components, pages]
+series: astro-guide
+order: 2
+---
+
+import Callout from '@/components/Callout.astro';
+import Tabs from '@/components/Tabs.astro';
+
+# Components & Pages
+
+In this chapter, we'll explore Astro's component model and how to create pages for your website.
+
+## Astro Components
+
+Astro components are the building blocks of your site. They use a `.astro` file extension and consist of two main parts:
+
+1. **Component Script** (frontmatter) - JavaScript that runs at build time
+2. **Component Template** - HTML-like markup with optional component expressions
+
+### Basic Component Structure
+
+```astro
+---
+// Component Script (runs at build time)
+const greeting = "Hello, World!";
+const items = ['one', 'two', 'three'];
+---
+
+<!-- Component Template -->
+<div>
+  <h1>{greeting}</h1>
+  <ul>
+    {items.map(item => <li>{item}</li>)}
+  </ul>
+</div>
+```
+
+<Callout type="tip">
+The component script runs only during the build process, not in the browser. This means zero JavaScript is shipped by default!
+</Callout>
+
+## Creating Pages
+
+Pages in Astro are simply components placed in the `src/pages/` directory. The file structure directly maps to your URL structure:
+
+- `src/pages/index.astro` → `/`
+- `src/pages/about.astro` → `/about`
+- `src/pages/blog/post.astro` → `/blog/post`
+
+### Dynamic Routes
+
+You can create dynamic routes using square brackets:
+
+```astro
+---
+// src/pages/blog/[slug].astro
+export function getStaticPaths() {
+  return [
+    { params: { slug: 'post-1' } },
+    { params: { slug: 'post-2' } },
+  ];
+}
+
+const { slug } = Astro.params;
+---
+
+<h1>Post: {slug}</h1>
+```
+
+## Component Props
+
+Astro components can accept props just like React or Vue components:
+
+```astro
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'No description' } = Astro.props;
+---
+
+<div>
+  <h2>{title}</h2>
+  <p>{description}</p>
+</div>
+```
+
+## Next Steps
+
+In the next chapter, we'll learn about Content Collections and how to manage your blog posts and documentation effectively.

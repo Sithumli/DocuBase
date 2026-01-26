@@ -4,12 +4,12 @@ import type { BreadcrumbProps } from '@/types';
 const { items } = Astro.props as BreadcrumbProps;
 ---
 
-<nav class="flex items-center gap-2 text-sm text-gray-500 mb-4">
+<nav class="relative z-10 flex items-center gap-2 text-sm text-gray-500 mb-4">
   {items.map((item, index) => (
     <>
       {index > 0 && <span class="text-gray-400">&gt;</span>}
       {item.href ? (
-        <a href={item.href} class="hover:text-gray-900 transition-colors">
+        <a href={item.href} class="inline-block hover:text-gray-900 transition-colors">
           {item.label}
         </a>
       ) : (

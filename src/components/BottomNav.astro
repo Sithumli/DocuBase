@@ -1,0 +1,154 @@
+---
+import type { BottomNavProps, NavTarget } from '@/types';
+
+interface Props {
+  nav: BottomNavProps['nav'];
+  showFallback?: boolean;
+  fallbackLinks?: NavTarget[];
+}
+
+const { nav, showFallback = true, fallbackLinks } = Astro.props;
+const { prev, next, nextBlock, context } = nav;
+
+const hasPrevOrNext = prev || next;
+const showProgress = context.isMultiPage && context.totalInBlock > 1;
+
+const defaultFallbackLinks: NavTarget[] = fallbackLinks || [
+  { title: 'Documentation', description: 'Explore the docs', href: '/docs' },
+  { title: 'Tutorials', description: 'Learn step-by-step', href: '/tutorials' },
+  { title: 'Blog', description: 'Read our articles', href: '/blog' },
+];
+---
+
+<div class="bottom-nav pt-8 mt-8 not-prose" style="border-top: 1px solid rgb(229 231 235) !important;">
+  {showProgress && (
+    <div class="mb-4 text-xs font-medium" style="color: rgb(55 65 81) !important;">
+      <div class="flex items-center justify-between mb-1.5">
+        <span style="color: rgb(55 65 81) !important;">
+          Page {context.currentIndex} of {context.totalInBlock}
+          {context.blockTitle && ` in ${context.blockTitle}`}
+        </span>
+        <span style="color: rgb(55 65 81) !important;">{Math.round((context.currentIndex / context.totalInBlock) * 100)}% complete</span>
+      </div>
+      <div class="w-full rounded-full h-1" style="background-color: rgb(229 231 235) !important;">
+        <div
+          class="h-1 rounded-full transition-all duration-300"
+          style={`width: ${(context.currentIndex / context.totalInBlock) * 100}%; background-color: rgb(79 70 229) !important;`}
+        ></div>
+      </div>
+    </div>
+  )}
+
+  {hasPrevOrNext ? (
+    <nav class="flex items-center justify-between gap-4">
+      {prev ? (
+        <a
+          href={prev.href}
+          class="group flex items-center gap-3 px-4 py-3 rounded-lg transition-all"
+          style="border: 1px solid rgb(229 231 235) !important;"
+        >
+          <iconify-icon icon="mdi:chevron-left" width="20" height="20" style="color: rgb(17 24 39) !important;" class="shrink-0"></iconify-icon>
+          <div class="flex flex-col">
+            <span class="text-xs" style="color: rgb(55 65 81) !important;">Previous</span>
+            <span class="text-sm font-semibold transition-colors" style="color: rgb(17 24 39) !important;">
+              {prev.title}
+            </span>
+          </div>
+        </a>
+      ) : (
+        <div></div>
+      )}
+
+      {next ? (
+        <a
+          href={next.href}
+          class="group flex items-center gap-3 px-4 py-3 rounded-lg transition-all ml-auto"
+          style="border: 1px solid rgb(229 231 235) !important;"
+        >
+          <div class="flex flex-col text-right">
+            <span class="text-xs" style="color: rgb(55 65 81) !important;">Next</span>
+            <span class="text-sm font-semibold transition-colors" style="color: rgb(17 24 39) !important;">
+              {next.title}
+            </span>
+          </div>
+          <iconify-icon icon="mdi:chevron-right" width="20" height="20" style="color: rgb(17 24 39) !important;" class="shrink-0"></iconify-icon>
+        </a>
+      ) : (
+        <div></div>
+      )}
+    </nav>
+  ) : showFallback ? (
+    <div class="text-center py-6">
+      <div class="inline-flex items-center justify-center w-12 h-12 rounded-full mb-3" style="background-color: rgb(224 231 255) !important;">
+        <iconify-icon icon="mdi:check-circle" width="24" height="24" style="color: rgb(79 70 229) !important;"></iconify-icon>
+      </div>
+      <h3 class="text-lg font-semibold mb-1" style="color: rgb(17 24 39) !important;">
+        You've reached the end!
+      </h3>
+      <p class="text-sm mb-4" style="color: rgb(55 65 81) !important;">
+        Explore other content to continue your journey
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 max-w-2xl mx-auto">
+        {defaultFallbackLinks.map((link) => (
+          <a
+            href={link.href}
+            class="group p-3 rounded-lg transition-all"
+            style="border: 1px solid rgb(229 231 235) !important;"
+          >
+            <div class="text-sm font-semibold transition-colors mb-0.5" style="color: rgb(17 24 39) !important;">
+              {link.title}
+            </div>
+            {link.description && (
+              <div class="text-xs" style="color: rgb(55 65 81) !important;">
+                {link.description}
+              </div>
+            )}
+          </a>
+        ))}
+      </div>
+    </div>
+  ) : null}
+
+  {nextBlock && (
+    <div class="mt-4">
+      <a
+        href={nextBlock.href}
+        class="group flex items-center gap-3 px-4 py-3 rounded-lg transition-all"
+        style="border: 2px dashed rgb(199 210 254) !important;"
+      >
+        <div class="flex-1">
+          <div class="text-xs mb-0.5 font-semibold" style="color: rgb(79 70 229) !important;">Up Next</div>
+          <div class="text-sm font-semibold transition-colors" style="color: rgb(17 24 39) !important;">
+            {nextBlock.title}
+          </div>
+          {nextBlock.description && (
+            <div class="text-xs mt-0.5" style="color: rgb(55 65 81) !important;">
+              {nextBlock.description}
+            </div>
+          )}
+        </div>
+        <iconify-icon icon="mdi:arrow-right" width="20" height="20" style="color: rgb(79 70 229) !important;" class="shrink-0"></iconify-icon>
+      </a>
+    </div>
+  )}
+</div>
+
+<style>
+  .bottom-nav * {
+    color: rgb(17 24 39) !important;
+  }
+  .bottom-nav span,
+  .bottom-nav div:not(.bg-indigo-600):not(.bg-indigo-500) {
+    color: rgb(17 24 39) !important;
+  }
+  .bottom-nav .text-xs {
+    color: rgb(55 65 81) !important;
+  }
+  .bottom-nav a {
+    text-decoration: none !important;
+  }
+</style>
+
+<script>
+  import 'iconify-icon';
+</script>

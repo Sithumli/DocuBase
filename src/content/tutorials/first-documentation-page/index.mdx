@@ -13,7 +13,7 @@ order: 1
 import Callout from '@/components/Callout.astro';
 import Steps from '@/components/Steps.astro';
 import Step from '@/components/Step.astro';
-import CodeGroup from '@/components/CodeGroup.astro';
+import Tabs from '@/components/Tabs.astro';
 
 In this tutorial, you'll learn how to create your first documentation page using DocuBase. By the end, you'll have a fully functional documentation page with custom content and components.
 
@@ -35,7 +35,7 @@ Make sure you have DocuBase installed and running before starting this tutorial.
   <Step title="Create a new MDX file">
     Navigate to the `src/content/docs/` directory and create a new file called `my-first-page.mdx`:
 
-    <CodeGroup labels={["macOS/Linux", "Windows"]}>
+    <Tabs labels={["macOS/Linux", "Windows"]}>
       <div>
         ```bash
         touch src/content/docs/my-first-page.mdx
@@ -46,7 +46,7 @@ Make sure you have DocuBase installed and running before starting this tutorial.
         echo. > src\content\docs\my-first-page.mdx
         ```
       </div>
-    </CodeGroup>
+    </Tabs>
 
     Or simply create the file using your code editor.
   </Step>
@@ -114,8 +114,7 @@ Make sure you have DocuBase installed and running before starting this tutorial.
 
     You can use any of the built-in components:
     - `Callout` - For notes, tips, and warnings
-    - `Tabs` - For tabbed content
-    - `CodeGroup` - For multiple code examples
+    - `Tabs` - For tabbed content and code examples
     - `Steps` and `Step` - For sequential instructions
     - `Collapsible` - For expandable sections
   </Step>

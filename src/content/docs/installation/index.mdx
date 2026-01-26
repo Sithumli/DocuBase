@@ -1,0 +1,203 @@
+---
+title: Installation
+description: Step-by-step guide to install and set up DocuBase
+order: 2
+category: Getting Started
+---
+
+import Callout from '@/components/Callout.astro';
+import Steps from '@/components/Steps.astro';
+import Step from '@/components/Step.astro';
+import Tabs from '@/components/Tabs.astro';
+import Table from '@/components/Table.astro';
+
+This guide covers multiple installation methods for DocuBase, from quick setup to manual configuration.
+
+## System Requirements
+
+Before installing DocuBase, ensure your system meets these requirements:
+
+<Table
+  headers={["Requirement", "Minimum", "Recommended"]}
+  rows={[
+    ["Node.js", "v18.0.0", "v20.0.0+"],
+    ["RAM", "4GB", "8GB+"],
+    ["Disk Space", "500MB", "1GB+"]
+  ]}
+/>
+
+<Callout type="tip" title="Check your Node version">
+Run `node --version` in your terminal to verify your Node.js installation.
+</Callout>
+
+## Quick Installation
+
+<Steps>
+  <Step title="Clone the repository">
+    Clone DocuBase to your local machine:
+
+    ```bash
+    git clone https://github.com/your-repo/docubase.git my-docs
+    cd my-docs
+    ```
+  </Step>
+
+  <Step title="Install dependencies">
+    Choose your preferred package manager:
+
+    <Tabs labels={["pnpm", "npm", "yarn", "bun"]}>
+      <div>
+        ```bash
+        pnpm install
+        ```
+      </div>
+      <div>
+        ```bash
+        npm install
+        ```
+      </div>
+      <div>
+        ```bash
+        yarn install
+        ```
+      </div>
+      <div>
+        ```bash
+        bun install
+        ```
+      </div>
+    </Tabs>
+  </Step>
+
+  <Step title="Start development server">
+    Launch the development server:
+
+    <Tabs labels={["pnpm", "npm", "yarn", "bun"]}>
+      <div>
+        ```bash
+        pnpm dev
+        ```
+      </div>
+      <div>
+        ```bash
+        npm run dev
+        ```
+      </div>
+      <div>
+        ```bash
+        yarn dev
+        ```
+      </div>
+      <div>
+        ```bash
+        bun dev
+        ```
+      </div>
+    </Tabs>
+
+    Open `http://localhost:4321` in your browser.
+  </Step>
+</Steps>
+
+## Manual Installation
+
+If you prefer to set up DocuBase from scratch or integrate it into an existing project:
+
+### 1. Create a new Astro project
+
+```bash
+npm create astro@latest my-docs
+```
+
+### 2. Install required dependencies
+
+```bash
+pnpm add @astrojs/mdx @astrojs/tailwind tailwindcss
+```
+
+### 3. Configure Astro
+
+Update your `astro.config.mjs`:
+
+```javascript
+import { defineConfig } from 'astro/config';
+import mdx from '@astrojs/mdx';
+import tailwind from '@astrojs/tailwind';
+
+export default defineConfig({
+  integrations: [mdx(), tailwind()],
+  output: 'static'
+});
+```
+
+### 4. Set up content collections
+
+Create `src/content.config.ts`:
+
+```typescript
+import { defineCollection, z } from 'astro:content';
+import { glob } from 'astro/loaders';
+
+const docs = defineCollection({
+  loader: glob({ pattern: "**/*.mdx", base: "./src/content/docs" }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string().optional(),
+    order: z.number().optional(),
+    category: z.string().optional(),
+  }),
+});
+
+export const collections = { docs };
+```
+
+## Verifying Installation
+
+After installation, verify everything works correctly:
+
+<Steps>
+  <Step title="Check the homepage">
+    Navigate to `http://localhost:4321` and confirm the homepage loads.
+  </Step>
+
+  <Step title="Test documentation pages">
+    Visit `http://localhost:4321/docs/getting-started` to verify documentation rendering.
+  </Step>
+
+  <Step title="Check for errors">
+    Look at your terminal for any build warnings or errors.
+  </Step>
+</Steps>
+
+<Callout type="warning" title="Common issues">
+If you see dependency errors, try deleting `node_modules` and your lockfile, then reinstalling.
+</Callout>
+
+## Environment Configuration
+
+DocuBase works out of the box, but you can customize it with environment variables:
+
+```bash
+# .env.example
+PUBLIC_SITE_URL=https://your-docs.com
+PUBLIC_SITE_NAME=My Documentation
+```
+
+## Updating DocuBase
+
+To update to the latest version:
+
+```bash
+git pull origin main
+pnpm install
+```
+
+<Callout type="info">
+Check the changelog before updating to review any breaking changes.
+</Callout>
+
+## Next Steps
+
+- Learn the [Core Concepts](/docs/core-concepts) of DocuBase
+- Explore available [Components](/docs/components)
+- Follow the [Getting Started](/docs/getting-started) guide

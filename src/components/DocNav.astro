@@ -1,25 +1,43 @@
 ---
-import type { DocNavProps } from '@/types';
+interface NavItem {
+  label: string;
+  href: string;
+}
 
-const { prev, next } = Astro.props as DocNavProps;
+interface Props {
+  prev?: NavItem;
+  next?: NavItem;
+}
+
+const { prev, next } = Astro.props;
 ---
 
-<nav class="flex items-center justify-between pt-8 mt-8 border-t border-gray-200">
-  <div>
-    {prev && (
-      <a href={prev.href} class="text-sm text-gray-500 hover:text-gray-900 transition-colors">
-        Previous
-      </a>
-    )}
-  </div>
-  <div>
-    {next && (
-      <a href={next.href} class="flex items-center gap-1 text-sm text-gray-900 font-medium hover:text-gray-700 transition-colors">
-        {next.label}
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-      </a>
-    )}
-  </div>
+<nav class="flex items-center justify-between gap-4 pt-8 mt-8 border-t border-gray-200 dark:border-gray-700">
+  {prev ? (
+    <a href={prev.href} class="group flex items-center gap-3 px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all">
+      <iconify-icon icon="mdi:chevron-left" width="20" height="20" class="text-gray-900 dark:text-white shrink-0"></iconify-icon>
+      <div class="flex flex-col">
+        <span class="text-xs text-gray-500 dark:text-gray-400">Previous</span>
+        <span class="text-sm font-medium text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{prev.label}</span>
+      </div>
+    </a>
+  ) : (
+    <div></div>
+  )}
+
+  {next ? (
+    <a href={next.href} class="group flex items-center gap-3 px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all ml-auto">
+      <div class="flex flex-col text-right">
+        <span class="text-xs text-gray-500 dark:text-gray-400">Next</span>
+        <span class="text-sm font-medium text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{next.label}</span>
+      </div>
+      <iconify-icon icon="mdi:chevron-right" width="20" height="20" class="text-gray-900 dark:text-white shrink-0"></iconify-icon>
+    </a>
+  ) : (
+    <div></div>
+  )}
 </nav>
+
+<script>
+  import 'iconify-icon';
+</script>

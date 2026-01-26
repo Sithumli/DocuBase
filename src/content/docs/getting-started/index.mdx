@@ -6,7 +6,6 @@ category: Introduction
 ---
 
 import Callout from '@/components/Callout.astro';
-import CodeGroup from '@/components/CodeGroup.astro';
 import Tabs from '@/components/Tabs.astro';
 import Steps from '@/components/Steps.astro';
 import Step from '@/components/Step.astro';
@@ -127,11 +126,11 @@ Tutorial content here...
 
 DocuBase includes several built-in components for your MDX content:
 
-<Tabs labels={["Callouts", "Code Groups", "Collapsible"]}>
+<Tabs labels={["Callouts", "Tabs", "Collapsible"]}>
   <div>
     Use callouts to highlight important information:
 
-    ```mdx
+    ```bash
     <Callout type="warning">
       This is a warning message.
     </Callout>
@@ -140,20 +139,20 @@ DocuBase includes several built-in components for your MDX content:
     Available types: `note`, `tip`, `warning`, `danger`, `info`
   </div>
   <div>
-    Group related code snippets with tabs:
+    Group related content with tabs:
 
-    ```mdx
-    <CodeGroup labels={["npm", "pnpm", "yarn"]}>
+    ```bash
+    <Tabs labels={["npm", "pnpm", "yarn"]}>
       <div>npm install package</div>
       <div>pnpm add package</div>
       <div>yarn add package</div>
-    </CodeGroup>
+    </Tabs>
     ```
   </div>
   <div>
     Create expandable sections:
 
-    ```mdx
+    ```bash
     <Collapsible title="Click to expand">
       Hidden content here...
     </Collapsible>

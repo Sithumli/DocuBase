@@ -1,5 +1,5 @@
 ---
-import '../styles/global.css';
+import BaseLayout from '@/layouts/BaseLayout.astro';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import Hero from '@/components/Hero.astro';
@@ -7,16 +7,8 @@ import FeatureCard from '@/components/FeatureCard.astro';
 import SectionHeader from '@/components/SectionHeader.astro';
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="generator" content={Astro.generator} />
-    <title>DocuBase</title>
-  </head>
-  <body class="min-h-screen flex flex-col bg-white text-gray-900">
-    <Header currentPath="/" />
+<BaseLayout title="Home" description="Build documentation that scales with your product">
+  <Header currentPath="/" />
 
     <main class="flex-1">
       <Hero
@@ -54,5 +46,4 @@ import SectionHeader from '@/components/SectionHeader.astro';
     </main>
 
     <Footer />
-  </body>
-</html>
+</BaseLayout>

@@ -1,62 +1,94 @@
 ---
 import { getCollection } from 'astro:content';
-import '../../styles/global.css';
+import BaseLayout from '@/layouts/BaseLayout.astro';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import BlogCard from '@/components/BlogCard.astro';
 import { calculateReadTime } from '@/utils/helpers';
 import { WORDS_PER_MINUTE } from '@/types/constants';
+import { getCleanSlug } from '@/utils';
 
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
-const sortedPosts = allPosts.sort((a, b) =>
+
+const blogEntries = allPosts.reduce((acc, post) => {
+  if (post.data.series) {
+    if (!acc.series[post.data.series]) {
+      acc.series[post.data.series] = [];
+    }
+    acc.series[post.data.series].push(post);
+  } else {
+    acc.standalone.push(post);
+  }
+  return acc;
+}, { series: {} as Record<string, typeof allPosts>, standalone: [] as typeof allPosts });
+
+const seriesEntries = Object.entries(blogEntries.series).map(([seriesName, posts]) => {
+  const sortedPosts = posts.sort((a, b) => (a.data.order || 999) - (b.data.order || 999));
+  const overviewPost = sortedPosts[0];
+
+  const totalReadTime = posts.reduce((total, post) =>
+    total + calculateReadTime(post.body || '', WORDS_PER_MINUTE), 0
+  );
+  
+  return {
+    ...overviewPost,
+    pageCount: posts.length,
+    totalReadTime,
+    isSeries: true,
+  };
+});
+
+const allBlogEntries = [...seriesEntries, ...blogEntries.standalone.map(post => ({
+  ...post,
+  pageCount: 1,
+  totalReadTime: calculateReadTime(post.body || '', WORDS_PER_MINUTE),
+  isSeries: false,
+}))];
+
+const sortedEntries = allBlogEntries.sort((a, b) =>
   b.data.pubDate.getTime() - a.data.pubDate.getTime()
 );
 
-const postsByYear = sortedPosts.reduce((acc, post) => {
-  const year = post.data.pubDate.getFullYear();
+const entriesByYear = sortedEntries.reduce((acc, entry) => {
+  const year = entry.data.pubDate.getFullYear();
   if (!acc[year]) {
     acc[year] = [];
   }
-  acc[year].push(post);
+  acc[year].push(entry);
   return acc;
-}, {} as Record<number, typeof sortedPosts>);
+}, {} as Record<number, typeof sortedEntries>);
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="generator" content={Astro.generator} />
-    <title>Blog | DocuBase</title>
-    <meta name="description" content="Read the latest updates, tutorials, and insights about DocuBase" />
-  </head>
-  <body class="min-h-screen flex flex-col bg-white text-gray-900">
-    <Header currentPath="/blog" />
+<BaseLayout title="Blog" description="Read the latest updates, tutorials, and insights about DocuBase">
+  <Header currentPath="/blog" />
 
     <main class="flex-1">
       <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div class="max-w-3xl mx-auto">
-          {Object.entries(postsByYear)
+          {Object.entries(entriesByYear)
             .sort(([a], [b]) => Number(b) - Number(a))
-            .map(([year, posts]) => (
+            .map(([year, entries]) => (
               <div class="flex gap-12 mb-12">
                 <h2 class="text-2xl font-bold text-gray-900 shrink-0 sticky top-24 self-start">
                   {year}
                 </h2>
 
                 <div class="flex-1 space-y-4">
-                  {posts.map((post) => (
+                  {entries.map((entry) => (
                     <BlogCard
-                      title={post.data.title}
-                      description={post.data.description || ''}
-                      date={post.data.pubDate.toLocaleDateString('en-US', {
+                      title={entry.data.title}
+                      description={entry.data.description || ''}
+                      date={entry.data.pubDate.toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'short',
                         day: 'numeric'
                       })}
-                      readTime={`${calculateReadTime(post.body || '')} min read`}
-                      href={`/blog/${post.id}`}
+                      readTime={entry.isSeries
+                        ? `${entry.pageCount} chapters · ${entry.totalReadTime} min read`
+                        : `${entry.totalReadTime} min read`
+                      }
+                      image={entry.data.image}
+                      href={`/blog/${getCleanSlug(entry.id)}`}
                     />
                   ))}
                 </div>
@@ -64,7 +96,7 @@ const postsByYear = sortedPosts.reduce((acc, post) => {
             ))
           }
 
-          {sortedPosts.length === 0 && (
+          {sortedEntries.length === 0 && (
             <p class="text-center text-gray-600">No blog posts yet. Check back soon!</p>
           )}
         </div>
@@ -72,5 +104,4 @@ const postsByYear = sortedPosts.reduce((acc, post) => {
     </main>
 
     <Footer />
-  </body>
-</html>
+</BaseLayout>

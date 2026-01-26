@@ -1,24 +1,18 @@
 ---
-import '../styles/global.css';
+import BaseLayout from './BaseLayout.astro';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import TableOfContents from '@/components/TableOfContents.astro';
 import Breadcrumb from '@/components/Breadcrumb.astro';
 import ReadTime from '@/components/ReadTime.astro';
-import type { DocsLayoutProps } from '@/types';
-import { SITE_TITLE, WORDS_PER_MINUTE } from '@/types/constants';
+import type { ExtendedDocsLayoutProps } from '@/types/layout';
+import { WORDS_PER_MINUTE, LAYOUT } from '@/types/constants';
 import { calculateReadTime } from '@/utils/helpers';
 
-interface ExtendedDocsLayoutProps extends DocsLayoutProps {
-  entry?: any;
-  headings?: any[];
-  Content?: any;
-}
-
-const { title: propTitle, description: propDescription, type = 'docs', entry, headings = [], Content } = Astro.props as ExtendedDocsLayoutProps;
-const siteTitle = SITE_TITLE;
+const { title: propTitle, description: propDescription, type = 'docs', entry, headings = [], Content, customBreadcrumbs } = Astro.props as ExtendedDocsLayoutProps;
 
 const isContentBased = !!entry && !!headings && !!Content;
+const hasSidebarSlot = Astro.slots.has('sidebar');
 
 let title = propTitle;
 let description = propDescription;
@@ -62,34 +56,32 @@ if (isContentBased) {
 
   readTime = calculateReadTime(entry.body, WORDS_PER_MINUTE);
 
-  const typeLabel = type.charAt(0).toUpperCase() + type.slice(1);
-  breadcrumbItems = [
-    { label: typeLabel, href: `/${type}` },
-    { label: entry.data.title },
-  ];
+  if (customBreadcrumbs) {
+    breadcrumbItems = customBreadcrumbs;
+  } else {
+    const typeLabel = type.charAt(0).toUpperCase() + type.slice(1);
+    breadcrumbItems = [
+      { label: typeLabel, href: `/${type}` },
+      { label: entry.data.title },
+    ];
+  }
 }
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="generator" content={Astro.generator} />
-    <meta name="description" content={description || `${title} - ${siteTitle}`} />
-    <title>{title} | {siteTitle}</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  </head>
-  <body class="min-h-screen flex flex-col bg-white text-gray-900">
-    <Header currentPath={Astro.url.pathname} />
+<BaseLayout title={title} description={description}>
+  <Header currentPath={Astro.url.pathname} />
 
     <div class="flex-1 container mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex gap-8 py-12 layout-container">
         {isContentBased ? (
           <>
             <aside class="hidden lg:block shrink-0 sidebar-slot">
-              <div class="sticky top-28">
-                <TableOfContents items={leftTocItems} title={entry.data.title} showBorder={false} centered={false} collapsible={true} />
+              <div class={LAYOUT.stickyTop}>
+                {hasSidebarSlot ? (
+                  <slot name="sidebar" />
+                ) : (
+                  <TableOfContents items={leftTocItems} title={entry.data.title} showBorder={false} centered={false} collapsible={true} />
+                )}
               </div>
             </aside>
 
@@ -129,11 +121,15 @@ if (isContentBased) {
                 <article class="prose prose-gray max-w-none">
                   <Content />
                 </article>
+
+                {Astro.slots.has('footer') && (
+                  <slot name="footer" />
+                )}
               </div>
             </main>
 
             <aside class="hidden xl:block w-48 shrink-0">
-              <div class="sticky top-28">
+              <div class={LAYOUT.stickyTop}>
                 <TableOfContents items={rightTocItems} nested={true} />
               </div>
             </aside>
@@ -141,7 +137,7 @@ if (isContentBased) {
         ) : (
           <>
             <aside class="hidden lg:block shrink-0 sidebar-slot">
-              <div class="sticky top-28">
+              <div class={LAYOUT.stickyTop}>
                 <slot name="sidebar" />
               </div>
             </aside>
@@ -154,7 +150,7 @@ if (isContentBased) {
             </main>
 
             <aside class="hidden xl:block w-48 shrink-0">
-              <div class="sticky top-28">
+              <div class={LAYOUT.stickyTop}>
                 <slot name="toc" />
               </div>
             </aside>
@@ -186,10 +182,8 @@ if (isContentBased) {
 
         if (!sidebarSlot || !tocBox) return;
 
-        // Initially collapse the sidebar
         sidebarSlot.classList.add('collapsed');
 
-        // Handle hover events
         tocBox.addEventListener('mouseenter', () => {
           sidebarSlot.classList.remove('collapsed');
         });
@@ -203,9 +197,12 @@ if (isContentBased) {
     <script>
       import 'iconify-icon';
 
+      const COPY_ICON = 'mdi:content-copy';
+      const CHECK_ICON = 'mdi:check';
+      const COPY_RESET_DELAY = 2000;
+
       (function() {
         function addCopyButtons() {
-          // Check if clipboard API is available
           if (!window.isSecureContext || !navigator.clipboard?.writeText) {
             return;
           }
@@ -216,7 +213,7 @@ if (isContentBased) {
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.className = 'code-copy-btn';
-            btn.innerHTML = '<iconify-icon icon="mdi:content-copy"></iconify-icon>';
+            btn.innerHTML = `<iconify-icon icon="${COPY_ICON}"></iconify-icon>`;
             btn.setAttribute('aria-label', 'Copy code');
 
             btn.addEventListener('click', async () => {
@@ -225,13 +222,13 @@ if (isContentBased) {
 
               try {
                 await navigator.clipboard.writeText(code.textContent || '');
-                btn.innerHTML = '<iconify-icon icon="mdi:check"></iconify-icon>';
+                btn.innerHTML = `<iconify-icon icon="${CHECK_ICON}"></iconify-icon>`;
                 btn.classList.add('copied');
 
                 setTimeout(() => {
-                  btn.innerHTML = '<iconify-icon icon="mdi:content-copy"></iconify-icon>';
+                  btn.innerHTML = `<iconify-icon icon="${COPY_ICON}"></iconify-icon>`;
                   btn.classList.remove('copied');
-                }, 2000);
+                }, COPY_RESET_DELAY);
               } catch (err) {
                 console.error('Failed to copy:', err);
               }
@@ -245,5 +242,4 @@ if (isContentBased) {
         document.addEventListener('astro:page-load', addCopyButtons);
       })();
     </script>
-  </body>
-</html>
+</BaseLayout>

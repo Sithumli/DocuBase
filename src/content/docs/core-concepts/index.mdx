@@ -1,0 +1,249 @@
+---
+title: Core Concepts
+description: Understand the fundamental concepts that power DocuBase
+order: 3
+category: Introduction
+---
+
+import Callout from '@/components/Callout.astro';
+import Tabs from '@/components/Tabs.astro';
+import Collapsible from '@/components/Collapsible.astro';
+import Table from '@/components/Table.astro';
+
+DocuBase is built on a few core concepts that make it powerful and flexible. Understanding these will help you get the most out of your documentation site.
+
+## Content Collections
+
+Content collections are the heart of DocuBase. They provide type-safe content management with automatic schema validation.
+
+### What are Content Collections?
+
+Content collections are groups of related content files (like documentation pages, blog posts, or tutorials) that share the same structure and schema.
+
+```
+src/content/
+├── docs/           # Documentation collection
+├── blog/           # Blog posts collection
+└── tutorials/      # Tutorials collection
+```
+
+### Why Use Collections?
+
+<Tabs labels={["Type Safety", "Organization", "Flexibility"]}>
+  <div>
+    Collections enforce a consistent frontmatter schema. If you forget a required field or use the wrong type, you'll get a helpful error at build time instead of a broken page in production.
+
+    ```typescript
+    // Schema ensures title is always present
+    schema: z.object({
+      title: z.string(),
+      description: z.string().optional(),
+    })
+    ```
+  </div>
+  <div>
+    Collections keep your content organized logically. Each collection can have its own schema, its own rendering template, and its own URL structure.
+
+    - `/docs/*` → Documentation pages
+    - `/blog/*` → Blog posts with dates
+    - `/tutorials/*` → Step-by-step guides
+  </div>
+  <div>
+    Need to add a new type of content? Create a new collection with its own schema. Want to query all posts by a certain author? Collections make that easy.
+
+    ```typescript
+    const posts = await getCollection('blog',
+      ({ data }) => data.author === 'DocuBase Team'
+    );
+    ```
+  </div>
+</Tabs>
+
+## MDX Components
+
+MDX lets you use React/Astro components directly in your markdown content. This is what makes DocuBase documentation interactive and visually rich.
+
+### Available Components
+
+DocuBase includes a library of pre-built components:
+
+<Table
+  headers={["Component", "Purpose"]}
+  rows={[
+    ["Callout", "Highlight important information"],
+    ["Tabs", "Organize content into tabbed sections"],
+    ["Table", "Display structured data in rows and columns"],
+    ["Steps", "Create numbered step-by-step guides"],
+    ["Collapsible", "Hide/show content on demand"]
+  ]}
+/>
+
+### Using Components
+
+Import and use components in any MDX file:
+
+```mdx
+import Callout from '@/components/Callout.astro';
+
+<Callout type="tip" title="Pro tip">
+  Components make your docs more engaging!
+</Callout>
+```
+
+<Callout type="info" title="Component documentation">
+See the [Components](/docs/components) page for detailed usage of each component.
+</Callout>
+
+## Layouts and Templates
+
+DocuBase uses layouts to provide consistent structure across pages.
+
+### Layout Hierarchy
+
+```
+BaseLayout
+├── DocsLayout (for documentation pages)
+├── BlogLayout (for blog posts)
+└── Page-specific layouts
+```
+
+### The Base Layout
+
+Every page uses `BaseLayout` which provides:
+
+- HTML document structure
+- Meta tags and SEO
+- Global styles
+- Header and footer slots
+
+### The Docs Layout
+
+Documentation pages use `DocsLayout` which adds:
+
+- Sidebar navigation
+- Table of contents
+- Breadcrumbs
+- Previous/Next navigation
+
+## Routing
+
+DocuBase uses file-based routing powered by Astro.
+
+### How Routes Work
+
+The file path determines the URL:
+
+<Table
+  headers={["File", "URL"]}
+  rows={[
+    ["src/content/docs/getting-started.mdx", "/docs/getting-started"],
+    ["src/content/blog/welcome.mdx", "/blog/welcome"],
+    ["src/content/docs/guides/advanced.mdx", "/docs/guides/advanced"]
+  ]}
+/>
+
+### Dynamic Routes
+
+DocuBase uses dynamic routes to render content collections:
+
+```
+src/pages/
+├── docs/[...slug].astro    # Renders all docs
+├── blog/[...slug].astro    # Renders all blog posts
+└── tutorials/[...slug].astro
+```
+
+<Collapsible title="How dynamic routes work">
+The `[...slug]` syntax creates a catch-all route that matches any path. The page component fetches the correct content based on the URL and renders it with the appropriate layout.
+
+```astro
+---
+export async function getStaticPaths() {
+  const docs = await getCollection('docs');
+  return docs.map(doc => ({
+    params: { slug: doc.id },
+    props: { doc },
+  }));
+}
+---
+```
+</Collapsible>
+
+## Frontmatter
+
+Every content file starts with frontmatter—YAML metadata between `---` markers.
+
+### Required vs Optional Fields
+
+<Tabs labels={["Docs", "Blog", "Tutorials"]}>
+  <div>
+    **Documentation frontmatter:**
+
+    ```yaml
+    ---
+    title: Page Title        # Required
+    description: Brief desc  # Optional
+    order: 1                 # Optional - sort order
+    category: Getting Started # Optional - for grouping
+    ---
+    ```
+  </div>
+  <div>
+    **Blog post frontmatter:**
+
+    ```yaml
+    ---
+    title: Post Title        # Required
+    description: Summary     # Required
+    pubDate: 2024-01-15     # Required
+    author: Author Name      # Required
+    tags: [tag1, tag2]      # Optional
+    draft: false            # Optional
+    ---
+    ```
+  </div>
+  <div>
+    **Tutorial frontmatter:**
+
+    ```yaml
+    ---
+    title: Tutorial Title    # Required
+    description: What you learn # Required
+    difficulty: beginner     # Required
+    duration: 30 minutes     # Required
+    prerequisites: [...]     # Optional
+    tags: [topic1, topic2]  # Optional
+    ---
+    ```
+  </div>
+</Tabs>
+
+## Static Site Generation
+
+DocuBase builds to static HTML for maximum performance and easy deployment.
+
+### Build Process
+
+1. **Content Collection** - All MDX files are parsed and validated
+2. **Page Generation** - Each route generates HTML files
+3. **Asset Optimization** - CSS, JS, and images are optimized
+4. **Output** - Everything goes to the `dist/` folder
+
+### Benefits of Static Generation
+
+- **Fast** - Pre-built HTML loads instantly
+- **Secure** - No server-side code to exploit
+- **Scalable** - Serve from any CDN
+- **Reliable** - No database or runtime dependencies
+
+<Callout type="tip" title="Deployment">
+Deploy the `dist/` folder to any static host: Cloudflare Pages, Vercel, Netlify, GitHub Pages, or your own server.
+</Callout>
+
+## Next Steps
+
+Now that you understand the core concepts:
+
+- [Install DocuBase](/docs/installation) on your machine
+- Learn how to use [Components](/docs/components)
+- Check out the [Tutorials](/tutorials) for hands-on practice

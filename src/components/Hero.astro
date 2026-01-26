@@ -1,5 +1,6 @@
 ---
 import Cloud from './Cloud.astro';
+import Button from './Button.astro';
 import type { HeroProps } from '@/types';
 import { DEFAULTS } from '@/types/constants';
 
@@ -13,8 +14,8 @@ const {
 } = Astro.props as HeroProps;
 ---
 
-  <section class="py-16 md:py-24">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+  <section class="py-16 md:py-24 relative overflow-hidden">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
       {subtitle && (
         <p class="text-sm font-medium text-gray-600 mb-4">{subtitle}</p>
       )}
@@ -33,12 +34,9 @@ const {
           </p>
         </Cloud>
 
-        <a
-          href={buttonHref}
-          class="inline-flex items-center justify-center px-6 py-2.5 bg-cyan-500 text-white text-sm font-medium rounded-full hover:bg-cyan-600 transition-colors"
-        >
+        <Button href={buttonHref} variant="primary">
           {buttonText}
-        </a>
+        </Button>
       </div>
     </div>
   </section>
