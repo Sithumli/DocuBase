@@ -9,7 +9,7 @@ import mdx from '@astrojs/mdx';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  site: 'https://your-site.com', 
+  site: 'https://docubase-docs.vercel.app', 
   output: 'static',
   vite: {
     plugins: [tailwindcss()],
