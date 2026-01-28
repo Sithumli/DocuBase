@@ -2,9 +2,10 @@
 interface Props {
   title: string;
   description: string;
+  icon?: string;
 }
 
-const { title, description } = Astro.props;
+const { title, description, icon } = Astro.props;
 ---
 
 <div class="flip-card">
@@ -14,7 +15,10 @@ const { title, description } = Astro.props;
 
     <!-- Front of card -->
     <div class="flip-card-front">
-      <h3 class="text-xl font-semibold">{title}</h3>
+      <div class="flex flex-col items-center gap-3">
+        {icon && <iconify-icon icon={icon} width="32" height="32" class="text-cyan-500"></iconify-icon>}
+        <h3 class="text-xl font-semibold">{title}</h3>
+      </div>
     </div>
     <!-- Back of card -->
     <div class="flip-card-back">
@@ -170,3 +174,7 @@ const { title, description } = Astro.props;
     z-index: 1;
   }
 </style>
+
+<script>
+  import 'iconify-icon';
+</script>
