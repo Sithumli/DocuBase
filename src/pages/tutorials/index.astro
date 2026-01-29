@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
+import PageBanner from '@/components/PageBanner.astro';
 import BlogCard from '@/components/BlogCard.astro';
 import { calculateReadTime } from '@/utils/helpers';
 import { WORDS_PER_MINUTE } from '@/types/constants';
@@ -23,6 +24,7 @@ const tutorialsByYear = {
 
 <BaseLayout title="Tutorials" description="Step-by-step tutorials to help you learn DocuBase">
   <Header currentPath="/tutorials" />
+  <PageBanner image="/TutBanner.png" alt="Tutorials" />
 
     <main class="flex-1">
       <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
