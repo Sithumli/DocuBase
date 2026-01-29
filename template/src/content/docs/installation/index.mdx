@@ -48,55 +48,54 @@ git --version
 
 ## Quick Installation
 
+The fastest way to get started is using the CLI:
+
 <Steps>
-  <Step title="Clone the repository">
-    Clone DocuBase to your local machine:
+  <Step title="Create your project">
+    Run the create command using your preferred package manager:
 
-    ```bash
-    git clone https://github.com/Sithumli/DocuBase.git my-docs
-    cd my-docs
-    ```
-  </Step>
-
-  <Step title="Install dependencies">
-    Choose your preferred package manager:
-
-    <Tabs labels={["pnpm", "npm", "yarn", "bun"]}>
+    <Tabs labels={["npx", "pnpm", "yarn"]}>
       <div>
         ```bash
-        pnpm install
+        npx create-docubase my-docs
         ```
       </div>
       <div>
         ```bash
-        npm install
+        pnpm create docubase my-docs
         ```
       </div>
       <div>
         ```bash
-        yarn install
-        ```
-      </div>
-      <div>
-        ```bash
-        bun install
+        yarn create docubase my-docs
         ```
       </div>
     </Tabs>
+
+    The CLI will:
+    - Create a new directory with your project name
+    - Copy the DocuBase template files
+    - Prompt you to install dependencies
+  </Step>
+
+  <Step title="Navigate to your project">
+    ```bash
+    cd my-docs
+    ```
   </Step>
 
   <Step title="Start development server">
     Launch the development server:
 
-    <Tabs labels={["pnpm", "npm", "yarn", "bun"]}>
+    <Tabs labels={["npm", "pnpm", "yarn", "bun"]}>
       <div>
         ```bash
-        pnpm dev
+        npm run dev
         ```
       </div>
       <div>
         ```bash
-        npm run dev
+        pnpm dev
         ```
       </div>
       <div>
@@ -115,6 +114,16 @@ git --version
   </Step>
 </Steps>
 
+## Alternative: Clone from GitHub
+
+You can also clone the repository directly:
+
+```bash
+git clone https://github.com/Sithumli/DocuBase.git my-docs
+cd my-docs
+npm install
+```
+
 ## Manual Installation
 
 If you prefer to set up DocuBase from scratch or integrate it into an existing project:
@@ -128,7 +137,7 @@ npm create astro@latest my-docs
 ### 2. Install required dependencies
 
 ```bash
-pnpm add @astrojs/mdx @astrojs/tailwind tailwindcss
+npm install @astrojs/mdx @astrojs/tailwind tailwindcss
 ```
 
 ### 3. Configure Astro
@@ -200,7 +209,7 @@ rm -rf node_modules
 rm -f pnpm-lock.yaml package-lock.json yarn.lock bun.lockb
 
 # Reinstall dependencies
-pnpm install
+npm install
 ```
 </Collapsible>
 
@@ -211,7 +220,7 @@ Another process is using the default port. You can either:
 2. Or run on a different port:
 
 ```bash
-pnpm dev --port 3000
+npm run dev -- --port 3000
 ```
 </Collapsible>
 
@@ -259,19 +268,19 @@ Variables prefixed with `PUBLIC_` are exposed to the client-side. Keep sensitive
 
 ## Updating DocuBase
 
-To update to the latest version:
+To update to the latest version (if you cloned from GitHub):
 
-<Tabs labels={["pnpm", "npm", "yarn", "bun"]}>
+<Tabs labels={["npm", "pnpm", "yarn", "bun"]}>
   <div>
     ```bash
     git pull origin main
-    pnpm install
+    npm install
     ```
   </div>
   <div>
     ```bash
     git pull origin main
-    npm install
+    pnpm install
     ```
   </div>
   <div>
@@ -293,7 +302,7 @@ If you've customized DocuBase and encounter merge conflicts:
 
 1. Backup your changes before updating
 2. Resolve conflicts in your editor
-3. Run `pnpm install` after resolving conflicts
+3. Run `npm install` after resolving conflicts
 4. Test thoroughly before deploying
 
 ```bash
@@ -301,7 +310,7 @@ If you've customized DocuBase and encounter merge conflicts:
 git checkout -b backup/my-customizations
 git checkout main
 git pull origin main
-pnpm install
+npm install
 ```
 </Collapsible>
 

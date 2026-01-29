@@ -17,43 +17,69 @@ Welcome to DocuBase! This guide will help you get started with creating document
 Before you begin, make sure you have the following installed:
 
 - Node.js 18 or higher
-- pnpm package manager
 - A code editor (VS Code recommended)
-
-<Callout type="tip" title="Using a different package manager?">
-While we recommend pnpm, you can also use npm or yarn. Just replace `pnpm` commands with your preferred package manager.
-</Callout>
 
 ## Installation
 
-<Steps>
-  <Step title="Clone the repository">
-    Start by cloning the DocuBase template to your local machine:
+The fastest way to create a new DocuBase site is using the CLI:
 
-    ```bash
-    git clone https://github.com/Sithumli/DocuBase.git my-docs
-    cd my-docs
-    ```
+<Steps>
+  <Step title="Create your project">
+    Run the create command to scaffold a new project:
+
+    <Tabs labels={["npx", "pnpm", "yarn"]}>
+      <div>
+        ```bash
+        npx create-docubase my-docs
+        ```
+      </div>
+      <div>
+        ```bash
+        pnpm create docubase my-docs
+        ```
+      </div>
+      <div>
+        ```bash
+        yarn create docubase my-docs
+        ```
+      </div>
+    </Tabs>
   </Step>
 
-  <Step title="Install dependencies">
-    Install all required dependencies using pnpm:
-
+  <Step title="Navigate to your project">
     ```bash
-    pnpm install
+    cd my-docs
     ```
   </Step>
 
   <Step title="Start the development server">
     Run the development server to see your documentation site:
 
-    ```bash
-    pnpm dev
-    ```
+    <Tabs labels={["npm", "pnpm", "yarn"]}>
+      <div>
+        ```bash
+        npm run dev
+        ```
+      </div>
+      <div>
+        ```bash
+        pnpm dev
+        ```
+      </div>
+      <div>
+        ```bash
+        yarn dev
+        ```
+      </div>
+    </Tabs>
 
     Your site will be available at `http://localhost:4321`.
   </Step>
 </Steps>
+
+<Callout type="tip" title="Alternative: Clone from GitHub">
+You can also clone the repository directly: `git clone https://github.com/Sithumli/DocuBase.git my-docs`
+</Callout>
 
 ## Project Structure
 
@@ -164,9 +190,23 @@ DocuBase includes several built-in components for your MDX content:
 
 When you're ready to deploy, build your site:
 
-```bash
-pnpm build
-```
+<Tabs labels={["npm", "pnpm", "yarn"]}>
+  <div>
+    ```bash
+    npm run build
+    ```
+  </div>
+  <div>
+    ```bash
+    pnpm build
+    ```
+  </div>
+  <div>
+    ```bash
+    yarn build
+    ```
+  </div>
+</Tabs>
 
 The output will be in the `dist/` directory, ready to deploy to any static hosting provider.
 

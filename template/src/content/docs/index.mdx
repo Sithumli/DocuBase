@@ -15,16 +15,16 @@ Welcome to DocuBase! This quick start guide will have you up and running with a 
 ## One-Minute Setup
 
 <Steps>
-  <Step title="Clone and install">
+  <Step title="Create your project">
     ```bash
-    git clone https://github.com/Sithumli/DocuBase.git my-docs
-    cd my-docs && pnpm install
+    npx create-docubase my-docs
+    cd my-docs
     ```
   </Step>
 
   <Step title="Start the dev server">
     ```bash
-    pnpm dev
+    npm run dev
     ```
 
     Open `http://localhost:4321` in your browser.
@@ -85,19 +85,19 @@ src/
   <div>
     ```bash
     # Start development server with hot reload
-    pnpm dev
+    npm run dev
     ```
   </div>
   <div>
     ```bash
     # Build for production
-    pnpm build
+    npm run build
     ```
   </div>
   <div>
     ```bash
     # Preview production build locally
-    pnpm preview
+    npm run preview
     ```
   </div>
 </Tabs>
