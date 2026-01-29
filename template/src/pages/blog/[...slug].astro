@@ -39,7 +39,7 @@ if (hasSeries) {
     depth: 2,
   }));
 
-  seriesTitle = entry.data.series
+  seriesTitle = entry.data.series!
     .split('-')
     .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
