@@ -10,6 +10,9 @@ import Steps from '@/components/Steps.astro';
 import Step from '@/components/Step.astro';
 import Tabs from '@/components/Tabs.astro';
 import Table from '@/components/Table.astro';
+import Collapsible from '@/components/Collapsible.astro';
+import Button from '@/components/Button.astro';
+import Example from '@/components/Example.astro';
 
 This guide covers multiple installation methods for DocuBase, from quick setup to manual configuration.
 
@@ -30,6 +33,19 @@ Before installing DocuBase, ensure your system meets these requirements:
 Run `node --version` in your terminal to verify your Node.js installation.
 </Callout>
 
+<Example title="Verify Prerequisites" description="Run these commands to check your system readiness">
+```bash
+# Check Node.js version
+node --version
+
+# Check npm version
+npm --version
+
+# Check git version
+git --version
+```
+</Example>
+
 ## Quick Installation
 
 <Steps>
@@ -37,7 +53,7 @@ Run `node --version` in your terminal to verify your Node.js installation.
     Clone DocuBase to your local machine:
 
     ```bash
-    git clone https://github.com/your-repo/docubase.git my-docs
+    git clone https://github.com/Sithumli/DocuBase.git my-docs
     cd my-docs
     ```
   </Step>
@@ -173,24 +189,121 @@ After installation, verify everything works correctly:
 If you see dependency errors, try deleting `node_modules` and your lockfile, then reinstalling.
 </Callout>
 
+## Troubleshooting
+
+<Collapsible title="Error: Cannot find module or dependency errors">
+This usually happens when dependencies aren't installed correctly. Try:
+
+```bash
+# Remove existing installations
+rm -rf node_modules
+rm -f pnpm-lock.yaml package-lock.json yarn.lock bun.lockb
+
+# Reinstall dependencies
+pnpm install
+```
+</Collapsible>
+
+<Collapsible title="Port 4321 is already in use">
+Another process is using the default port. You can either:
+
+1. Stop the other process using port 4321
+2. Or run on a different port:
+
+```bash
+pnpm dev --port 3000
+```
+</Collapsible>
+
+<Collapsible title="MDX files not rendering correctly">
+Ensure you have the MDX integration properly configured:
+
+1. Check that `@astrojs/mdx` is installed
+2. Verify it's included in your `astro.config.mjs` integrations array
+3. Restart the development server after configuration changes
+</Collapsible>
+
+<Collapsible title="Styles not applying correctly">
+If Tailwind styles aren't working:
+
+1. Ensure `tailwindcss` and `@astrojs/tailwind` are installed
+2. Check that the Tailwind integration is in your config
+3. Verify your `tailwind.config.cjs` includes the correct content paths
+</Collapsible>
+
 ## Environment Configuration
 
 DocuBase works out of the box, but you can customize it with environment variables:
 
+<Table
+  headers={["Variable", "Description", "Default"]}
+  rows={[
+    ["PUBLIC_SITE_URL", "Your site's public URL", "http://localhost:4321"],
+    ["PUBLIC_SITE_NAME", "Display name for your docs", "DocuBase"],
+    ["PUBLIC_SITE_DESCRIPTION", "Site meta description", "Documentation site"]
+  ]}
+/>
+
+<Example title="Example .env file" description="Create a .env file in your project root">
 ```bash
-# .env.example
-PUBLIC_SITE_URL=https://your-docs.com
+# Site Configuration
+PUBLIC_SITE_URL=https://your-docs.vercel.app
 PUBLIC_SITE_NAME=My Documentation
+PUBLIC_SITE_DESCRIPTION=Documentation for my awesome project
 ```
+</Example>
+
+<Callout type="tip" title="Environment variables">
+Variables prefixed with `PUBLIC_` are exposed to the client-side. Keep sensitive values without this prefix.
+</Callout>
 
 ## Updating DocuBase
 
 To update to the latest version:
 
+<Tabs labels={["pnpm", "npm", "yarn", "bun"]}>
+  <div>
+    ```bash
+    git pull origin main
+    pnpm install
+    ```
+  </div>
+  <div>
+    ```bash
+    git pull origin main
+    npm install
+    ```
+  </div>
+  <div>
+    ```bash
+    git pull origin main
+    yarn install
+    ```
+  </div>
+  <div>
+    ```bash
+    git pull origin main
+    bun install
+    ```
+  </div>
+</Tabs>
+
+<Collapsible title="Handling merge conflicts" defaultOpen={false}>
+If you've customized DocuBase and encounter merge conflicts:
+
+1. Backup your changes before updating
+2. Resolve conflicts in your editor
+3. Run `pnpm install` after resolving conflicts
+4. Test thoroughly before deploying
+
 ```bash
+# Create a backup branch before updating
+git checkout -b backup/my-customizations
+git checkout main
 git pull origin main
 pnpm install
 ```
+</Collapsible>
 
 <Callout type="info">
 Check the changelog before updating to review any breaking changes.
@@ -198,6 +311,20 @@ Check the changelog before updating to review any breaking changes.
 
 ## Next Steps
 
-- Learn the [Core Concepts](/docs/core-concepts) of DocuBase
-- Explore available [Components](/docs/components)
-- Follow the [Getting Started](/docs/getting-started) guide
+Now that you have DocuBase installed, here's what to do next:
+
+<div class="flex flex-wrap gap-3 mt-4">
+  <Button href="/docs/getting-started" variant="primary" icon="mdi:rocket-launch">
+    Getting Started
+  </Button>
+  <Button href="/docs/core-concepts" variant="secondary" icon="mdi:book-open-page-variant">
+    Core Concepts
+  </Button>
+  <Button href="/docs/components" variant="secondary" icon="mdi:puzzle">
+    Components
+  </Button>
+</div>
+
+<Callout type="info" title="Need help?">
+If you run into any issues during installation, check the troubleshooting section above or visit our [GitHub repository](https://github.com/Sithumli/DocuBase/issues) to report a bug.
+</Callout>
