@@ -5,11 +5,11 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@/components": ["src/components"],
-      "@/types": ["src/types"],
-      "@/utils": ["src/utils"],
-      "@/styles": ["src/styles"]
+      "@/*": ["template/src/*"],
+      "@/components": ["template/src/components"],
+      "@/types": ["template/src/types"],
+      "@/utils": ["template/src/utils"],
+      "@/styles": ["template/src/styles"]
     }
   }
 }
