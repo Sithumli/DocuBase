@@ -1,0 +1,22 @@
+{
+  "name": "my-docubase-site",
+  "type": "module",
+  "version": "0.0.1",
+  "description": "A DocuBase documentation site",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.6",
+    "@astrojs/mdx": "^4.3.13",
+    "@tailwindcss/vite": "^4.1.18",
+    "astro": "^5.16.11",
+    "iconify-icon": "^3.0.2",
+    "rehype-slug": "^6.0.0",
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.9.3"
+  }
+}

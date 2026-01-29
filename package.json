@@ -1,22 +1,50 @@
 {
-  "name": "docubase",
+  "name": "create-docubase",
+  "version": "1.0.0",
+  "description": "Create a new DocuBase documentation site",
   "type": "module",
-  "version": "0.0.1",
-  "description": "A general-purpose documentation template for web projects",
+  "bin": {
+    "create-docubase": "./bin/cli.js"
+  },
+  "files": [
+    "bin",
+    "template"
+  ],
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "astro check",
+    "check-version": "node scripts/check-version.js",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
+  "keywords": [
+    "documentation",
+    "astro",
+    "template",
+    "cli",
+    "create",
+    "docubase"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sithumli/DocuBase"
+  },
+  "author": "",
+  "license": "MIT",
   "dependencies": {
     "@astrojs/check": "^0.9.6",
     "@astrojs/mdx": "^4.3.13",
     "@tailwindcss/vite": "^4.1.18",
     "astro": "^5.16.11",
+    "fs-extra": "^11.2.0",
     "iconify-icon": "^3.0.2",
+    "picocolors": "^1.1.1",
+    "prompts": "^2.4.2",
     "rehype-slug": "^6.0.0",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3"
@@ -29,7 +57,10 @@
     "@storybook/html": "^8.4.0",
     "@storybook/html-vite": "^8.4.0",
     "@storybook/test": "^8.4.0",
+    "@types/fs-extra": "^11.0.4",
     "@types/node": "^25.0.10",
-    "storybook": "^8.4.0"
+    "@types/prompts": "^2.4.9",
+    "storybook": "^8.4.0",
+    "vitest": "^3.0.0"
   }
 }
