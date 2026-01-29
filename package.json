@@ -18,7 +18,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "astro check",
-    "check-version": "node scripts/check-version.js",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "changeset publish",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
@@ -50,6 +52,7 @@
     "typescript": "^5.9.3"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.27.0",
     "@storybook/addon-essentials": "^8.4.0",
     "@storybook/addon-interactions": "^8.4.0",
     "@storybook/addon-links": "^8.4.0",
