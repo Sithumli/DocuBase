@@ -3,7 +3,7 @@ interface Props {
   image: string;
   alt: string;
 }
-const { image, alt } = Astro.props;
+const { image, alt } = Astro.props as Props;
 ---
 
 <div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
