@@ -2,6 +2,8 @@
 
 A general-purpose documentation template for web projects. Framework-agnostic, content-first, and ready to deploy.
 
+**Live Demo:** [https://docubase-docs.vercel.app](https://docubase-docs.vercel.app)
+
 ## Features
 
 - **Content-First**: Write documentation in MDX with full component support
@@ -30,7 +32,7 @@ A general-purpose documentation template for web projects. Framework-agnostic, c
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-repo/docubase.git my-docs
+git clone https://github.com/Sithumli/DocuBase.git my-docs
 cd my-docs
 
 # Install dependencies
@@ -307,7 +309,7 @@ Update the `site` option in `astro.config.mjs`:
 
 ```js
 export default defineConfig({
-  site: 'https://your-site.com',
+  site: 'https://docubase-docs.vercel.app',
   // ...
 });
 ```
