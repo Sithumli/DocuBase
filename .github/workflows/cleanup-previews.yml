@@ -1,13 +1,15 @@
 name: Cleanup Vercel Previews
 
 on:
-  pull_request:
+  pull_request_target:
     types: [closed]
 
 jobs:
   cleanup:
     name: Delete Preview Deployment
     runs-on: ubuntu-latest
+    permissions: {}
+
 
     steps:
       - name: Delete Vercel Preview
@@ -16,38 +18,94 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
           VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
         run: |
+          # Skip if required secrets are not set
+          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
+            echo "Required secrets not set, skipping cleanup"
+            exit 0
+          fi
+
           # Get deployments for this PR's branch
           BRANCH_NAME="${{ github.head_ref }}"
           echo "Cleaning up preview deployments for branch: $BRANCH_NAME"
 
-          # Build team parameter if VERCEL_TEAM_ID is set
-          TEAM_PARAM=""
+          # Build team parameter args if VERCEL_TEAM_ID is set
+          TEAM_PARAM_ARGS=""
+          TEAM_QUERY=""
           if [ -n "$VERCEL_TEAM_ID" ]; then
-            TEAM_PARAM="&teamId=$VERCEL_TEAM_ID"
+            TEAM_PARAM_ARGS="--data-urlencode teamId=$VERCEL_TEAM_ID"
+            TEAM_QUERY="?teamId=$VERCEL_TEAM_ID"
           fi
 
-          # List deployments for this branch
-          DEPLOYMENTS=$(curl -s -X GET \
-            "https://api.vercel.com/v6/deployments?projectId=$VERCEL_PROJECT_ID&meta-githubCommitRef=$BRANCH_NAME$TEAM_PARAM" \
-            -H "Authorization: Bearer $VERCEL_TOKEN" \
-            -H "Content-Type: application/json")
+          # List deployments for this branch (with URL encoding and pagination)
+          DEPLOYMENT_IDS=""
+          NEXT_CURSOR=""
 
-          # Extract deployment IDs
-          DEPLOYMENT_IDS=$(echo "$DEPLOYMENTS" | jq -r '.deployments[].uid // empty')
+          while true; do
+            CURSOR_PARAM=""
+            if [ -n "$NEXT_CURSOR" ]; then
+              CURSOR_PARAM="--data-urlencode until=$NEXT_CURSOR"
+            fi
 
-          if [ -z "$DEPLOYMENT_IDS" ]; then
+            # Fetch deployments with HTTP status check
+            HTTP_RESPONSE=$(curl -s -w "\n%{http_code}" -G \
+              "https://api.vercel.com/v6/deployments" \
+              --data-urlencode "projectId=$VERCEL_PROJECT_ID" \
+              --data-urlencode "meta-githubCommitRef=$BRANCH_NAME" \
+              --data-urlencode "limit=100" \
+              $TEAM_PARAM_ARGS \
+              $CURSOR_PARAM \
+              -H "Authorization: Bearer $VERCEL_TOKEN" \
+              -H "Content-Type: application/json")
+
+            # Extract HTTP status (last line) and response body
+            HTTP_STATUS=$(echo "$HTTP_RESPONSE" | tail -n 1)
+            RESPONSE=$(echo "$HTTP_RESPONSE" | sed '$d')
+
+            # Check for API errors
+            if [ "$HTTP_STATUS" -lt 200 ] || [ "$HTTP_STATUS" -ge 300 ]; then
+              echo "Failed to list deployments (HTTP status: $HTTP_STATUS)" >&2
+              echo "Response: $RESPONSE" >&2
+              exit 1
+            fi
+
+            # Extract deployment IDs from this page
+            PAGE_IDS=$(echo "$RESPONSE" | jq -r '.deployments[].uid // empty')
+            if [ -n "$PAGE_IDS" ]; then
+              DEPLOYMENT_IDS="$DEPLOYMENT_IDS $PAGE_IDS"
+            fi
+
+            # Check for next page
+            NEXT_CURSOR=$(echo "$RESPONSE" | jq -r '.pagination.next // empty')
+            if [ -z "$NEXT_CURSOR" ]; then
+              break
+            fi
+          done
+
+          if [ -z "$(echo "$DEPLOYMENT_IDS" | tr -d ' ')" ]; then
             echo "No preview deployments found for branch: $BRANCH_NAME"
             exit 0
           fi
 
-          # Delete each deployment
+          # Delete each deployment with proper error handling
+          EXIT_CODE=0
           for DEPLOYMENT_ID in $DEPLOYMENT_IDS; do
             echo "Deleting deployment: $DEPLOYMENT_ID"
-            curl -s -X DELETE \
-              "https://api.vercel.com/v13/deployments/$DEPLOYMENT_ID$( [ -n "$VERCEL_TEAM_ID" ] && echo "?teamId=$VERCEL_TEAM_ID" )" \
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE \
+              "https://api.vercel.com/v13/deployments/$DEPLOYMENT_ID$TEAM_QUERY" \
               -H "Authorization: Bearer $VERCEL_TOKEN" \
-              -H "Content-Type: application/json"
-            echo "Deleted deployment: $DEPLOYMENT_ID"
+              -H "Content-Type: application/json")
+
+            if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
+              echo "Deleted deployment: $DEPLOYMENT_ID"
+            else
+              echo "Failed to delete deployment: $DEPLOYMENT_ID (HTTP status: $HTTP_STATUS)" >&2
+              EXIT_CODE=1
+            fi
           done
+
+          if [ "$EXIT_CODE" -ne 0 ]; then
+            echo "One or more deployments failed to delete." >&2
+            exit "$EXIT_CODE"
+          fi
 
           echo "Cleanup complete!"
