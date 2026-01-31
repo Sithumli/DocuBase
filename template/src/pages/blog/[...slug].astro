@@ -1,0 +1,71 @@
+---
+import { getCollection, render } from 'astro:content';
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import TableOfContents from '@/components/TableOfContents.astro';
+import BottomNav from '@/components/BottomNav.astro';
+import { getBlogNavigation } from '@/utils/navigation';
+import { getCleanSlug } from '@/utils';
+
+export async function getStaticPaths() {
+  const cleanSlug = (id: string) => id.replace(/\/index$/, '');
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+
+  return posts.map((entry) => ({
+    params: { slug: cleanSlug(entry.id) },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+
+let blogPages: any[] = [];
+let seriesTitle = '';
+let firstPostId = '';
+const hasSeries = !!entry.data.series;
+
+if (hasSeries) {
+  const seriesPosts = allPosts
+    .filter(({ data }) => data.series === entry.data.series)
+    .sort((a, b) => (a.data.order || 999) - (b.data.order || 999));
+
+  firstPostId = getCleanSlug(seriesPosts[0].id);
+
+  blogPages = seriesPosts.map((post) => ({
+    title: post.data.title,
+    href: `/blog/${getCleanSlug(post.id)}`,
+    depth: 2,
+  }));
+
+  seriesTitle = entry.data.series!
+    .split('-')
+    .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+} else {
+  blogPages = [{
+    title: entry.data.title,
+    href: `/blog/${getCleanSlug(entry.id)}`,
+    depth: 2,
+  }];
+  seriesTitle = entry.data.title;
+}
+
+const customBreadcrumbs = hasSeries ? [
+  { label: 'Blog', href: '/blog' },
+  { label: seriesTitle, href: `/blog/${firstPostId}` },
+  { label: entry.data.title },
+] : undefined;
+
+const navData = await getBlogNavigation(getCleanSlug(entry.id), entry.data.series);
+---
+
+<DocsLayout entry={entry} headings={headings} Content={Content} type="blog" customBreadcrumbs={customBreadcrumbs}>
+  <div slot="sidebar">
+    <TableOfContents items={blogPages} title={seriesTitle} showBorder={false} collapsible={true} isPageNav={hasSeries} />
+  </div>
+  <div slot="footer">
+    <BottomNav nav={navData} />
+  </div>
+</DocsLayout>

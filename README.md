@@ -4,6 +4,18 @@ A general-purpose documentation template for web projects. Framework-agnostic, c
 
 **Live Demo:** [https://docubase-docs.vercel.app](https://docubase-docs.vercel.app)
 
+## Quick Start
+
+The fastest way to create a new DocuBase documentation site:
+
+```bash
+npx create-docubase my-docs
+cd my-docs
+npm run dev
+```
+
+Your site will be available at `http://localhost:4321`.
+
 ## Features
 
 - **Content-First**: Write documentation in MDX with full component support
@@ -21,25 +33,60 @@ A general-purpose documentation template for web projects. Framework-agnostic, c
 - [Tailwind CSS](https://tailwindcss.com/) - Styling
 - [Storybook](https://storybook.js.org/) - Component playground (optional)
 
-## Getting Started
+## Installation
 
 ### Prerequisites
 
 - Node.js 18 or higher
-- pnpm (`npm install -g pnpm`)
 
-### Installation
+### Using npx (Recommended)
+
+Run the CLI directly without installing:
 
 ```bash
-# Clone the repository
+npx create-docubase my-docs
+```
+
+The CLI will:
+1. Create a new directory with your project name
+2. Copy the DocuBase template files
+3. Prompt you to install dependencies
+4. Provide next steps to get started
+
+### Using npm global install
+
+Install the CLI globally for repeated use:
+
+```bash
+npm install -g create-docubase
+create-docubase my-docs
+```
+
+### Using pnpm
+
+```bash
+pnpm create docubase my-docs
+```
+
+### Using yarn
+
+```bash
+yarn create docubase my-docs
+```
+
+### Manual Clone (Alternative)
+
+You can also clone the template directly:
+
+```bash
 git clone https://github.com/Sithumli/DocuBase.git my-docs
 cd my-docs
 
 # Install dependencies
-pnpm install
+npm install
 
 # Start development server
-pnpm dev
+npm run dev
 ```
 
 Your site will be available at `http://localhost:4321`.
@@ -229,11 +276,8 @@ import Example from '../../components/Example.astro';
 DocuBase includes an optional Storybook setup for developing and showcasing components:
 
 ```bash
-# Install Storybook dependencies
-pnpm install
-
 # Start Storybook
-pnpm storybook
+npm run storybook
 ```
 
 Storybook will be available at `http://localhost:6006`.
@@ -247,10 +291,10 @@ The Storybook setup is completely separable from the documentation site. You can
 
 ```bash
 # Build the static site
-pnpm build
+npm run build
 
 # Preview the build
-pnpm preview
+npm run preview
 ```
 
 The output will be in the `dist/` directory.
@@ -262,7 +306,7 @@ DocuBase generates a static site that can be deployed to any hosting provider:
 ### Cloudflare Pages
 
 1. Connect your repository to Cloudflare Pages
-2. Set build command: `pnpm build`
+2. Set build command: `npm run build`
 3. Set output directory: `dist`
 
 ### GitHub Pages
@@ -282,15 +326,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: pnpm
-      - run: pnpm install
-      - run: pnpm build
+          cache: npm
+      - run: npm install
+      - run: npm run build
       - uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

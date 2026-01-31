@@ -1,0 +1,61 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import PageBanner from '@/components/PageBanner.astro';
+import BlogCard from '@/components/BlogCard.astro';
+import { getCleanSlug } from '@/utils';
+
+const allDocs = await getCollection('docs', ({ data }) => !data.draft);
+
+const sortedDocs = allDocs
+  .filter((doc) => doc.id !== 'index')
+  .sort((a, b) => (a.data.order || 999) - (b.data.order || 999));
+
+const currentYear = new Date().getFullYear();
+
+const docsByYear = {
+  [currentYear]: sortedDocs
+};
+---
+
+<BaseLayout title="Documentation" description="Browse all documentation pages for DocuBase">
+  <Header currentPath="/docs" />
+  <PageBanner image="/DocsBanner.webp" alt="Documentation" />
+
+    <main class="flex-1">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="max-w-3xl mx-auto">
+          {Object.entries(docsByYear)
+            .sort(([a], [b]) => Number(b) - Number(a))
+            .map(([year, docs]) => (
+              <div class="flex gap-12 mb-12">
+                <h2 class="text-2xl font-bold text-gray-900 shrink-0 sticky top-24 self-start">
+                  {year}
+                </h2>
+
+                <div class="flex-1 space-y-4">
+                  {docs.map((doc) => (
+                    <BlogCard
+                      title={doc.data.title}
+                      description={doc.data.description || ''}
+                      date={`Page ${doc.data.order}`}
+                      readTime=""
+                      href={`/docs/${getCleanSlug(doc.id)}`}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))
+          }
+
+          {sortedDocs.length === 0 && (
+            <p class="text-center text-gray-600">No documentation pages yet.</p>
+          )}
+        </div>
+      </div>
+    </main>
+
+    <Footer />
+</BaseLayout>
