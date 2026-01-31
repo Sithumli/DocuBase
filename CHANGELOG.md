@@ -1,5 +1,11 @@
 # create-docubase
 
+## 1.0.2
+
+### Patch Changes
+
+- 7564bff: Reduce package size by hosting images externally
+
 ## 1.0.1
 
 ### Patch Changes
