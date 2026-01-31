@@ -10,6 +10,10 @@ import { execSync } from 'child_process';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const cliPkgPath = path.resolve(__dirname, '..', 'package.json');
+const cliPkg = fs.readJsonSync(cliPkgPath);
+const CLI_VERSION = cliPkg.version;
+
 async function main() {
   console.log();
   console.log(pc.bold(pc.cyan('create-docubase')) + ' - Create a new DocuBase documentation site');
@@ -85,6 +89,15 @@ async function main() {
     let contentConfig = await fs.readFile(contentConfigPath, 'utf-8');
     contentConfig = contentConfig.replace(/\.\/template\/src\/content\//g, './src/content/');
     await fs.writeFile(contentConfigPath, contentConfig);
+  } catch (err) {
+  }
+
+  // Pin CDN assets to the installed CLI version
+  const constantsPath = path.join(targetDir, 'src', 'types', 'constants.ts');
+  try {
+    let constants = await fs.readFile(constantsPath, 'utf-8');
+    constants = constants.replace(/__DOCUBASE_VERSION__/g, `v${CLI_VERSION}`);
+    await fs.writeFile(constantsPath, constants);
   } catch (err) {
   }
 

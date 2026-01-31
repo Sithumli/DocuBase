@@ -2,12 +2,12 @@ export const SITE_TITLE = 'DocuBase';
 export const SITE_DESCRIPTION = 'Beautiful documentation that scales with your product';
 export const GITHUB_URL = 'https://github.com/Sithumli/DocuBase';
 
-export const ASSETS_CDN_BASE = 'https://cdn.jsdelivr.net/gh/Sithumli/DocuBase@main/assets';
+export const ASSETS_CDN_BASE = 'https://cdn.jsdelivr.net/gh/Sithumli/DocuBase@__DOCUBASE_VERSION__/assets';
 
-export const PLACEHOLDER_IMAGES = {
-  docsBanner: `${ASSETS_CDN_BASE}/DocsBanner.webp`,
-  tutorialsBanner: `${ASSETS_CDN_BASE}/TutBanner.webp`,
-  blogBanner: `${ASSETS_CDN_BASE}/BlogBanner.webp`,
+export const BANNER_IMAGES = {
+  docs: `${ASSETS_CDN_BASE}/DocsBanner.webp`,
+  tutorials: `${ASSETS_CDN_BASE}/TutBanner.webp`,
+  blog: `${ASSETS_CDN_BASE}/BlogBanner.webp`,
 } as const;
 
 export const WORDS_PER_MINUTE = 200;

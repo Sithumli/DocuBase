@@ -6,7 +6,7 @@ import Footer from '@/components/Footer.astro';
 import PageBanner from '@/components/PageBanner.astro';
 import BlogCard from '@/components/BlogCard.astro';
 import { calculateReadTime } from '@/utils/helpers';
-import { WORDS_PER_MINUTE, PLACEHOLDER_IMAGES } from '@/types/constants';
+import { WORDS_PER_MINUTE, BANNER_IMAGES } from '@/types/constants';
 import { getCleanSlug } from '@/utils';
 
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
@@ -62,7 +62,7 @@ const entriesByYear = sortedEntries.reduce((acc, entry) => {
 
 <BaseLayout title="Blog" description="Read the latest updates, tutorials, and insights about DocuBase">
   <Header currentPath="/blog" />
-  <PageBanner image={PLACEHOLDER_IMAGES.blogBanner} alt="Blog" />
+  <PageBanner image={BANNER_IMAGES.blog} alt="Blog" />
 
     <main class="flex-1">
       <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
