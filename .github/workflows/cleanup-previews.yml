@@ -46,7 +46,8 @@ jobs:
               CURSOR_PARAM="--data-urlencode until=$NEXT_CURSOR"
             fi
 
-            RESPONSE=$(curl -s -G \
+            # Fetch deployments with HTTP status check
+            HTTP_RESPONSE=$(curl -s -w "\n%{http_code}" -G \
               "https://api.vercel.com/v6/deployments" \
               --data-urlencode "projectId=$VERCEL_PROJECT_ID" \
               --data-urlencode "meta-githubCommitRef=$BRANCH_NAME" \
@@ -55,6 +56,17 @@ jobs:
               $CURSOR_PARAM \
               -H "Authorization: Bearer $VERCEL_TOKEN" \
               -H "Content-Type: application/json")
+
+            # Extract HTTP status (last line) and response body
+            HTTP_STATUS=$(echo "$HTTP_RESPONSE" | tail -n 1)
+            RESPONSE=$(echo "$HTTP_RESPONSE" | sed '$d')
+
+            # Check for API errors
+            if [ "$HTTP_STATUS" -lt 200 ] || [ "$HTTP_STATUS" -ge 300 ]; then
+              echo "Failed to list deployments (HTTP status: $HTTP_STATUS)" >&2
+              echo "Response: $RESPONSE" >&2
+              exit 1
+            fi
 
             # Extract deployment IDs from this page
             PAGE_IDS=$(echo "$RESPONSE" | jq -r '.deployments[].uid // empty')
