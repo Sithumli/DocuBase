@@ -1,7 +1,7 @@
 name: Cleanup Vercel Previews
 
 on:
-  pull_request:
+  pull_request_target:
     types: [closed]
 
 jobs:
@@ -9,7 +9,7 @@ jobs:
     name: Delete Preview Deployment
     runs-on: ubuntu-latest
     permissions: {}
-    if: github.event.pull_request.head.repo.fork == false
+
 
     steps:
       - name: Delete Vercel Preview
