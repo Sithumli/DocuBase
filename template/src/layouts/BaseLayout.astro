@@ -20,6 +20,8 @@ const siteTitle = SITE_TITLE;
     <meta name="description" content={description || `${title} - ${siteTitle}`} />
     <title>{title} | {siteTitle}</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
     <slot name="head" />
   </head>
   <body class="min-h-screen flex flex-col bg-white text-gray-900">

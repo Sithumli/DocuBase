@@ -6,6 +6,7 @@ import Footer from '@/components/Footer.astro';
 import PageBanner from '@/components/PageBanner.astro';
 import BlogCard from '@/components/BlogCard.astro';
 import { getCleanSlug } from '@/utils';
+import { BANNER_IMAGES } from '@/types/constants';
 
 const allDocs = await getCollection('docs', ({ data }) => !data.draft);
 
@@ -22,7 +23,7 @@ const docsByYear = {
 
 <BaseLayout title="Documentation" description="Browse all documentation pages for DocuBase">
   <Header currentPath="/docs" />
-  <PageBanner image="/DocsBanner.webp" alt="Documentation" />
+  <PageBanner image={BANNER_IMAGES.docs} alt="Documentation" />
 
     <main class="flex-1">
       <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
