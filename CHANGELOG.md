@@ -1,5 +1,11 @@
 # create-docubase
 
+## 1.1.0
+
+### Minor Changes
+
+- 6420e72: Add dark mode support with theme toggle functionality
+
 ## 1.0.2
 
 ### Patch Changes
