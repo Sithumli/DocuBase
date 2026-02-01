@@ -17,19 +17,19 @@ const {
   <section class="py-16 md:py-24 relative overflow-hidden">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
       {subtitle && (
-        <p class="text-sm font-medium text-gray-600 mb-4">{subtitle}</p>
+        <p class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-4">{subtitle}</p>
       )}
 
-      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-20">
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-20">
         {title}{" "}
         {highlightedText && (
-          <span class="text-cyan-500">{highlightedText}</span>
+          <span class="text-cyan-500 dark:text-cyan-400">{highlightedText}</span>
         )}
       </h1>
 
       <div class="flex flex-col items-center">
         <Cloud class="mb-20">
-          <p class="text-base md:text-lg text-gray-700 leading-relaxed">
+          <p class="text-base md:text-lg text-gray-700 dark:text-gray-200 leading-relaxed">
             {description}
           </p>
         </Cloud>
