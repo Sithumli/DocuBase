@@ -96,41 +96,69 @@ const navLinks = NAV_LINKS;
   import 'iconify-icon';
 </script>
 
-<script is:inline>
+<script>
   (function() {
-    // Theme toggle
-    document.getElementById('theme-toggle')?.addEventListener('click', function() {
-      const html = document.documentElement;
-      const isDark = html.classList.contains('dark');
-      html.classList.toggle('dark', !isDark);
-      localStorage.setItem('theme', isDark ? 'light' : 'dark');
-    });
+    if ((window as any).__headerInitialized) return;
+    (window as any).__headerInitialized = true;
 
-    // Mobile menu
-    const mobileToggle = document.getElementById('mobile-menu-toggle');
-    const mobileMenu = document.getElementById('mobile-menu');
+    function closeMobileMenu() {
+      const mobileToggle = document.getElementById('mobile-menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      if (!mobileToggle || !mobileMenu) return;
 
-    if (mobileToggle && mobileMenu) {
       const menuIcon = mobileToggle.querySelector('.menu-icon');
       const closeIcon = mobileToggle.querySelector('.close-icon');
 
-      mobileToggle.addEventListener('click', function(e) {
+      mobileMenu.classList.add('hidden');
+      menuIcon?.classList.remove('hidden');
+      closeIcon?.classList.add('hidden');
+      mobileToggle.setAttribute('aria-expanded', 'false');
+    }
+
+    function initHeader() {
+      closeMobileMenu();
+    }
+
+    // Theme toggle - using event delegation
+    document.addEventListener('click', function(e) {
+      const toggle = (e.target as HTMLElement).closest('#theme-toggle');
+      if (!toggle) return;
+
+      const isDark = document.documentElement.classList.contains('dark');
+      document.documentElement.classList.toggle('dark', !isDark);
+      localStorage.setItem('theme', isDark ? 'light' : 'dark');
+    });
+
+    // Mobile menu toggle - using event delegation
+    document.addEventListener('click', function(e) {
+      const toggle = (e.target as HTMLElement).closest('#mobile-menu-toggle');
+      if (toggle) {
         e.stopPropagation();
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (!mobileMenu) return;
+
+        const menuIcon = toggle.querySelector('.menu-icon');
+        const closeIcon = toggle.querySelector('.close-icon');
         const isOpen = !mobileMenu.classList.contains('hidden');
+
         mobileMenu.classList.toggle('hidden');
         menuIcon?.classList.toggle('hidden');
         closeIcon?.classList.toggle('hidden');
-        mobileToggle.setAttribute('aria-expanded', String(!isOpen));
-      });
+        toggle.setAttribute('aria-expanded', String(!isOpen));
+        return;
+      }
 
-      document.addEventListener('click', function(e) {
-        if (!mobileToggle.contains(e.target) && !mobileMenu.contains(e.target)) {
-          mobileMenu.classList.add('hidden');
-          menuIcon?.classList.remove('hidden');
-          closeIcon?.classList.add('hidden');
-          mobileToggle.setAttribute('aria-expanded', 'false');
+      // Close mobile menu when clicking outside
+      const mobileToggle = document.getElementById('mobile-menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      if (mobileToggle && mobileMenu) {
+        if (!mobileToggle.contains(e.target as Node) && !mobileMenu.contains(e.target as Node)) {
+          closeMobileMenu();
         }
-      });
-    }
+      }
+    });
+
+    initHeader();
+    document.addEventListener('astro:page-load', initHeader);
   })();
 </script>
