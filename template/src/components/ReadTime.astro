@@ -4,7 +4,7 @@ import type { ReadTimeProps } from '@/types';
 const { minutes } = Astro.props as ReadTimeProps;
 ---
 
-<div class="flex items-center gap-1.5 text-sm text-gray-500">
+<div class="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
   <iconify-icon icon="mdi:clock-outline" width="16" height="16"></iconify-icon>
   <span>{minutes} min read</span>
 </div>

@@ -5,22 +5,40 @@ const { class: className = "" } = Astro.props as CloudProps;
 ---
 
 <div class={`relative ${className}`}>
-  <!-- Mobile cloud (simplified, fewer circles) -->
-  <svg class="absolute -inset-4 w-[calc(100%+2rem)] h-[calc(100%+2rem)] overflow-visible md:hidden" viewBox="0 0 300 140" preserveAspectRatio="xMidYMid slice" style="filter: blur(4px);">
+  <!-- Mobile cloud (simplified, fewer circles) - Light mode -->
+  <svg class="absolute -inset-4 w-[calc(100%+2rem)] h-[calc(100%+2rem)] overflow-visible md:hidden dark:hidden" viewBox="0 0 300 140" preserveAspectRatio="xMidYMid slice" style="filter: blur(4px);">
     <circle cx="40" cy="75" r="60" fill="#d4eef7" />
     <circle cx="120" cy="60" r="65" fill="#d4eef7" />
     <circle cx="200" cy="75" r="60" fill="#d4eef7" />
     <circle cx="270" cy="60" r="55" fill="#d4eef7" />
   </svg>
 
-  <!-- Desktop cloud (full version) -->
-  <svg class="absolute inset-0 w-full h-full overflow-visible hidden md:block" viewBox="0 0 600 160" preserveAspectRatio="xMidYMid meet" style="filter: blur(4px);">
+  <!-- Mobile cloud (simplified, fewer circles) - Dark mode -->
+  <svg class="absolute -inset-4 w-[calc(100%+2rem)] h-[calc(100%+2rem)] overflow-visible hidden dark:block dark:md:hidden" viewBox="0 0 300 140" preserveAspectRatio="xMidYMid slice" style="filter: blur(4px);">
+    <circle cx="40" cy="75" r="60" fill="#1e3a5f" />
+    <circle cx="120" cy="60" r="65" fill="#1e3a5f" />
+    <circle cx="200" cy="75" r="60" fill="#1e3a5f" />
+    <circle cx="270" cy="60" r="55" fill="#1e3a5f" />
+  </svg>
+
+  <!-- Desktop cloud (full version) - Light mode -->
+  <svg class="absolute inset-0 w-full h-full overflow-visible hidden md:block dark:md:hidden" viewBox="0 0 600 160" preserveAspectRatio="xMidYMid meet" style="filter: blur(4px);">
     <circle cx="50" cy="85" r="80" fill="#d4eef7" />
     <circle cx="150" cy="65" r="85" fill="#d4eef7" />
     <circle cx="260" cy="85" r="90" fill="#d4eef7" />
     <circle cx="380" cy="70" r="95" fill="#d4eef7" />
     <circle cx="490" cy="85" r="90" fill="#d4eef7" />
     <circle cx="570" cy="65" r="85" fill="#d4eef7" />
+  </svg>
+
+  <!-- Desktop cloud (full version) - Dark mode -->
+  <svg class="absolute inset-0 w-full h-full overflow-visible hidden dark:md:block" viewBox="0 0 600 160" preserveAspectRatio="xMidYMid meet" style="filter: blur(4px);">
+    <circle cx="50" cy="85" r="80" fill="#1e3a5f" />
+    <circle cx="150" cy="65" r="85" fill="#1e3a5f" />
+    <circle cx="260" cy="85" r="90" fill="#1e3a5f" />
+    <circle cx="380" cy="70" r="95" fill="#1e3a5f" />
+    <circle cx="490" cy="85" r="90" fill="#1e3a5f" />
+    <circle cx="570" cy="65" r="85" fill="#1e3a5f" />
   </svg>
 
   <div class="relative z-10 flex items-center justify-center min-h-[120px] md:min-h-[160px] px-6 sm:px-10 md:px-16 py-6 md:py-10">

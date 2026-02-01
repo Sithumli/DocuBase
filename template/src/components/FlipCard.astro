@@ -78,6 +78,14 @@ const { title, description, icon } = Astro.props as Props;
     );
   }
 
+  :global(html.dark) .neon-border::before {
+    background: linear-gradient(
+      135deg,
+      rgba(17, 24, 39, 0.98) 0%,
+      rgba(31, 41, 55, 0.95) 100%
+    );
+  }
+
   /* Glow effect */
   .neon-border::after {
     content: '';
@@ -141,6 +149,20 @@ const { title, description, icon } = Astro.props as Props;
       inset 0 -1px 0 rgba(0, 0, 0, 0.05);
   }
 
+  :global(html.dark) .flip-card-front,
+  :global(html.dark) .flip-card-back {
+    color: #f3f4f6;
+    background: linear-gradient(
+      135deg,
+      rgba(17, 24, 39, 0.95) 0%,
+      rgba(31, 41, 55, 0.9) 50%,
+      rgba(17, 24, 39, 0.95) 100%
+    );
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  }
+
   .flip-card-front::before,
   .flip-card-back::before {
     content: '';
@@ -158,6 +180,15 @@ const { title, description, icon } = Astro.props as Props;
     pointer-events: none;
   }
 
+  :global(html.dark) .flip-card-front::before,
+  :global(html.dark) .flip-card-back::before {
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
+
   .flip-card-back {
     transform: rotateY(180deg);
     background: linear-gradient(
@@ -165,6 +196,15 @@ const { title, description, icon } = Astro.props as Props;
       rgba(245, 245, 245, 0.98) 0%,
       rgba(255, 255, 255, 0.95) 50%,
       rgba(245, 245, 245, 0.98) 100%
+    );
+  }
+
+  :global(html.dark) .flip-card-back {
+    background: linear-gradient(
+      135deg,
+      rgba(31, 41, 55, 0.98) 0%,
+      rgba(17, 24, 39, 0.95) 50%,
+      rgba(31, 41, 55, 0.98) 100%
     );
   }
 

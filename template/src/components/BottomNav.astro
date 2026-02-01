@@ -20,20 +20,20 @@ const defaultFallbackLinks: NavTarget[] = fallbackLinks || [
 ];
 ---
 
-<div class="bottom-nav pt-8 mt-8 not-prose" style="border-top: 1px solid rgb(229 231 235) !important;">
+<div class="bottom-nav pt-8 mt-8 not-prose border-t border-gray-200 dark:border-gray-700">
   {showProgress && (
-    <div class="mb-4 text-xs font-medium" style="color: rgb(55 65 81) !important;">
+    <div class="mb-4 text-xs font-medium">
       <div class="flex items-center justify-between mb-1.5">
-        <span style="color: rgb(55 65 81) !important;">
+        <span class="text-gray-600 dark:text-gray-400">
           Page {context.currentIndex} of {context.totalInBlock}
           {context.blockTitle && ` in ${context.blockTitle}`}
         </span>
-        <span style="color: rgb(55 65 81) !important;">{Math.round((context.currentIndex / context.totalInBlock) * 100)}% complete</span>
+        <span class="text-gray-600 dark:text-gray-400">{Math.round((context.currentIndex / context.totalInBlock) * 100)}% complete</span>
       </div>
-      <div class="w-full rounded-full h-1" style="background-color: rgb(229 231 235) !important;">
+      <div class="w-full rounded-full h-1 bg-gray-200 dark:bg-gray-700">
         <div
-          class="h-1 rounded-full transition-all duration-300"
-          style={`width: ${(context.currentIndex / context.totalInBlock) * 100}%; background-color: rgb(79 70 229) !important;`}
+          class="h-1 rounded-full transition-all duration-300 bg-indigo-600 dark:bg-indigo-500"
+          style={`width: ${(context.currentIndex / context.totalInBlock) * 100}%;`}
         ></div>
       </div>
     </div>
@@ -44,13 +44,12 @@ const defaultFallbackLinks: NavTarget[] = fallbackLinks || [
       {prev ? (
         <a
           href={prev.href}
-          class="group flex items-center gap-3 px-4 py-3 rounded-lg transition-all"
-          style="border: 1px solid rgb(229 231 235) !important;"
+          class="group flex items-center gap-3 px-4 py-3 rounded-lg transition-all border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
         >
-          <iconify-icon icon="mdi:chevron-left" width="20" height="20" style="color: rgb(17 24 39) !important;" class="shrink-0"></iconify-icon>
+          <iconify-icon icon="mdi:chevron-left" width="20" height="20" class="shrink-0 text-gray-900 dark:text-gray-100"></iconify-icon>
           <div class="flex flex-col">
-            <span class="text-xs" style="color: rgb(55 65 81) !important;">Previous</span>
-            <span class="text-sm font-semibold transition-colors" style="color: rgb(17 24 39) !important;">
+            <span class="text-xs text-gray-600 dark:text-gray-400">Previous</span>
+            <span class="text-sm font-semibold transition-colors text-gray-900 dark:text-gray-100">
               {prev.title}
             </span>
           </div>
@@ -62,16 +61,15 @@ const defaultFallbackLinks: NavTarget[] = fallbackLinks || [
       {next ? (
         <a
           href={next.href}
-          class="group flex items-center gap-3 px-4 py-3 rounded-lg transition-all ml-auto"
-          style="border: 1px solid rgb(229 231 235) !important;"
+          class="group flex items-center gap-3 px-4 py-3 rounded-lg transition-all ml-auto border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
         >
           <div class="flex flex-col text-right">
-            <span class="text-xs" style="color: rgb(55 65 81) !important;">Next</span>
-            <span class="text-sm font-semibold transition-colors" style="color: rgb(17 24 39) !important;">
+            <span class="text-xs text-gray-600 dark:text-gray-400">Next</span>
+            <span class="text-sm font-semibold transition-colors text-gray-900 dark:text-gray-100">
               {next.title}
             </span>
           </div>
-          <iconify-icon icon="mdi:chevron-right" width="20" height="20" style="color: rgb(17 24 39) !important;" class="shrink-0"></iconify-icon>
+          <iconify-icon icon="mdi:chevron-right" width="20" height="20" class="shrink-0 text-gray-900 dark:text-gray-100"></iconify-icon>
         </a>
       ) : (
         <div></div>
@@ -79,27 +77,26 @@ const defaultFallbackLinks: NavTarget[] = fallbackLinks || [
     </nav>
   ) : showFallback ? (
     <div class="text-center py-6">
-      <div class="inline-flex items-center justify-center w-12 h-12 rounded-full mb-3" style="background-color: rgb(224 231 255) !important;">
-        <iconify-icon icon="mdi:check-circle" width="24" height="24" style="color: rgb(79 70 229) !important;"></iconify-icon>
+      <div class="inline-flex items-center justify-center w-12 h-12 rounded-full mb-3 bg-indigo-100 dark:bg-indigo-900/50">
+        <iconify-icon icon="mdi:check-circle" width="24" height="24" class="text-indigo-600 dark:text-indigo-400"></iconify-icon>
       </div>
-      <h3 class="text-lg font-semibold mb-1" style="color: rgb(17 24 39) !important;">
+      <h3 class="text-lg font-semibold mb-1 text-gray-900 dark:text-gray-100">
         You've reached the end!
       </h3>
-      <p class="text-sm mb-4" style="color: rgb(55 65 81) !important;">
+      <p class="text-sm mb-4 text-gray-600 dark:text-gray-400">
         Explore other content to continue your journey
       </p>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-3 max-w-2xl mx-auto">
         {defaultFallbackLinks.map((link) => (
           <a
             href={link.href}
-            class="group p-3 rounded-lg transition-all"
-            style="border: 1px solid rgb(229 231 235) !important;"
+            class="group p-3 rounded-lg transition-all border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
           >
-            <div class="text-sm font-semibold transition-colors mb-0.5" style="color: rgb(17 24 39) !important;">
+            <div class="text-sm font-semibold transition-colors mb-0.5 text-gray-900 dark:text-gray-100">
               {link.title}
             </div>
             {link.description && (
-              <div class="text-xs" style="color: rgb(55 65 81) !important;">
+              <div class="text-xs text-gray-600 dark:text-gray-400">
                 {link.description}
               </div>
             )}
@@ -113,41 +110,24 @@ const defaultFallbackLinks: NavTarget[] = fallbackLinks || [
     <div class="mt-4">
       <a
         href={nextBlock.href}
-        class="group flex items-center gap-3 px-4 py-3 rounded-lg transition-all"
-        style="border: 2px dashed rgb(199 210 254) !important;"
+        class="group flex items-center gap-3 px-4 py-3 rounded-lg transition-all border-2 border-dashed border-indigo-200 dark:border-indigo-800 hover:border-indigo-300 dark:hover:border-indigo-700"
       >
         <div class="flex-1">
-          <div class="text-xs mb-0.5 font-semibold" style="color: rgb(79 70 229) !important;">Up Next</div>
-          <div class="text-sm font-semibold transition-colors" style="color: rgb(17 24 39) !important;">
+          <div class="text-xs mb-0.5 font-semibold text-indigo-600 dark:text-indigo-400">Up Next</div>
+          <div class="text-sm font-semibold transition-colors text-gray-900 dark:text-gray-100">
             {nextBlock.title}
           </div>
           {nextBlock.description && (
-            <div class="text-xs mt-0.5" style="color: rgb(55 65 81) !important;">
+            <div class="text-xs mt-0.5 text-gray-600 dark:text-gray-400">
               {nextBlock.description}
             </div>
           )}
         </div>
-        <iconify-icon icon="mdi:arrow-right" width="20" height="20" style="color: rgb(79 70 229) !important;" class="shrink-0"></iconify-icon>
+        <iconify-icon icon="mdi:arrow-right" width="20" height="20" class="shrink-0 text-indigo-600 dark:text-indigo-400"></iconify-icon>
       </a>
     </div>
   )}
 </div>
-
-<style>
-  .bottom-nav * {
-    color: rgb(17 24 39) !important;
-  }
-  .bottom-nav span,
-  .bottom-nav div:not(.bg-indigo-600):not(.bg-indigo-500) {
-    color: rgb(17 24 39) !important;
-  }
-  .bottom-nav .text-xs {
-    color: rgb(55 65 81) !important;
-  }
-  .bottom-nav a {
-    text-decoration: none !important;
-  }
-</style>
 
 <script>
   import 'iconify-icon';

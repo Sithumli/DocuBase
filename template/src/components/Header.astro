@@ -9,8 +9,8 @@ const navLinks = NAV_LINKS;
 
 <header class="sticky top-4 z-50 w-full">
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="relative flex h-14 items-center justify-between bg-white/50 backdrop-blur-xl border border-white/30 shadow-lg shadow-black/5 rounded-full px-6">
-      <a href="/" class="flex items-center gap-1 font-semibold text-lg">
+    <div class="relative flex h-14 items-center justify-between bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl border border-white/30 dark:border-gray-700/50 shadow-lg shadow-black/5 dark:shadow-black/20 rounded-full px-6">
+      <a href="/" class="flex items-center gap-1 font-semibold text-lg text-gray-900 dark:text-white">
           <img src="/favicon.svg" alt="DocuBase logo" class="w-8 h-8 -mt-1.5" />
           DocuBase
         </a>
@@ -20,10 +20,10 @@ const navLinks = NAV_LINKS;
           <a
             href={link.href}
             class:list={[
-              "text-sm font-medium transition-colors hover:text-gray-900",
+              "text-sm font-medium transition-colors hover:text-gray-900 dark:hover:text-white",
               currentPath === link.href || (link.href !== "/" && (currentPath === link.href || currentPath.startsWith(link.href + "/")))
-                ? "text-gray-900"
-                : "text-gray-600",
+                ? "text-gray-900 dark:text-white"
+                : "text-gray-600 dark:text-gray-400",
             ]}
           >
             {link.label}
@@ -31,16 +31,16 @@ const navLinks = NAV_LINKS;
         ))}
       </nav>
 
-      <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2 sm:gap-4">
         <div class="relative hidden sm:block">
           <input
             type="text"
             placeholder="Search..."
             disabled
             title="Search coming soon"
-            class="w-40 lg:w-48 h-9 pl-3 pr-8 text-sm border-b border-gray-200 bg-transparent focus:outline-none focus:border-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="w-40 lg:w-48 h-9 pl-3 pr-8 text-sm border-b border-gray-200 dark:border-gray-700 bg-transparent text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed"
           />
-          <iconify-icon icon="mdi:magnify" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400" width="16" height="16"></iconify-icon>
+          <iconify-icon icon="mdi:magnify" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" width="16" height="16"></iconify-icon>
         </div>
 
         <button
@@ -51,8 +51,44 @@ const navLinks = NAV_LINKS;
           <iconify-icon icon="mdi:weather-sunny" class="hidden dark:block" width="20" height="20"></iconify-icon>
           <iconify-icon icon="mdi:weather-night" class="block dark:hidden" width="20" height="20"></iconify-icon>
         </button>
+
+        <button
+          id="mobile-menu-toggle"
+          class="p-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors md:hidden"
+          aria-label="Toggle mobile menu"
+          aria-expanded="false"
+        >
+          <svg class="menu-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="6" y1="6" x2="18" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="6" y1="18" x2="18" y2="18"></line>
+          </svg>
+          <iconify-icon icon="mdi:close" class="close-icon hidden" width="20" height="20"></iconify-icon>
+        </button>
       </div>
     </div>
+
+    <!-- Mobile Navigation Menu -->
+    <nav
+      id="mobile-menu"
+      class="mobile-menu hidden md:hidden mt-2 py-4 px-6 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border border-white/30 dark:border-gray-700/50 shadow-lg shadow-black/5 dark:shadow-black/20 rounded-2xl"
+    >
+      <div class="flex flex-col gap-2">
+        {navLinks.map((link) => (
+          <a
+            href={link.href}
+            class:list={[
+              "block py-2 px-3 text-sm font-medium transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800",
+              currentPath === link.href || (link.href !== "/" && (currentPath === link.href || currentPath.startsWith(link.href + "/")))
+                ? "text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-800"
+                : "text-gray-600 dark:text-gray-400",
+            ]}
+          >
+            {link.label}
+          </a>
+        ))}
+      </div>
+    </nav>
   </div>
 </header>
 
@@ -82,6 +118,45 @@ const navLinks = NAV_LINKS;
       setTheme(getThemePreference());
     }
 
+    function initMobileMenu() {
+      const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+
+      if (!mobileMenuToggle || !mobileMenu) return;
+
+      const menuIcon = mobileMenuToggle.querySelector('.menu-icon');
+      const closeIcon = mobileMenuToggle.querySelector('.close-icon');
+
+      mobileMenuToggle.addEventListener('click', () => {
+        const isExpanded = mobileMenuToggle.getAttribute('aria-expanded') === 'true';
+        mobileMenuToggle.setAttribute('aria-expanded', String(!isExpanded));
+        mobileMenu.classList.toggle('hidden');
+        menuIcon?.classList.toggle('hidden');
+        closeIcon?.classList.toggle('hidden');
+      });
+
+      // Close menu when clicking a link
+      mobileMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          mobileMenu.classList.add('hidden');
+          mobileMenuToggle.setAttribute('aria-expanded', 'false');
+          menuIcon?.classList.remove('hidden');
+          closeIcon?.classList.add('hidden');
+        });
+      });
+
+      // Close menu when clicking outside
+      document.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        if (!mobileMenuToggle.contains(target) && !mobileMenu.contains(target)) {
+          mobileMenu.classList.add('hidden');
+          mobileMenuToggle.setAttribute('aria-expanded', 'false');
+          menuIcon?.classList.remove('hidden');
+          closeIcon?.classList.add('hidden');
+        }
+      });
+    }
+
     document.addEventListener('click', (e) => {
       const toggle = (e.target as HTMLElement).closest('#theme-toggle');
       if (!toggle) return;
@@ -91,6 +166,10 @@ const navLinks = NAV_LINKS;
     });
 
     initTheme();
-    document.addEventListener('astro:page-load', initTheme);
+    initMobileMenu();
+    document.addEventListener('astro:page-load', () => {
+      initTheme();
+      initMobileMenu();
+    });
   })();
 </script>

@@ -8,12 +8,12 @@ const { githubUrl = GITHUB_URL } = Astro.props;
 const currentYear = new Date().getFullYear();
 ---
 
-<footer class="border-t border-gray-200 bg-white">
+<footer class="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex flex-col items-center gap-4 py-6 md:flex-row md:h-16 md:py-0 md:justify-between">
-      <a href="/" class="font-semibold text-lg">DocuBase</a>
+      <a href="/" class="font-semibold text-lg text-gray-900 dark:text-white">DocuBase</a>
 
-      <p class="text-xs text-gray-500 text-center order-last md:order-none">
+      <p class="text-xs text-gray-500 dark:text-gray-400 text-center order-last md:order-none">
         {currentYear} DocuBase All Rights Reserved
       </p>
 
@@ -21,7 +21,7 @@ const currentYear = new Date().getFullYear();
         href={githubUrl}
         target="_blank"
         rel="noopener noreferrer"
-        class="text-gray-600 hover:text-gray-900 transition-colors"
+        class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
         aria-label="GitHub"
       >
         <iconify-icon icon="mdi:github" width="20" height="20"></iconify-icon>
