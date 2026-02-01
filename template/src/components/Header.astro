@@ -9,8 +9,8 @@ const navLinks = NAV_LINKS;
 
 <header class="sticky top-4 z-50 w-full">
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="relative flex h-14 items-center justify-between bg-white/50 backdrop-blur-xl border border-white/30 shadow-lg shadow-black/5 rounded-full px-6">
-      <a href="/" class="flex items-center gap-1 font-semibold text-lg">
+    <div class="relative flex h-14 items-center justify-between bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl border border-white/30 dark:border-gray-700/50 shadow-lg shadow-black/5 dark:shadow-black/20 rounded-full px-6">
+      <a href="/" class="flex items-center gap-1 font-semibold text-lg text-gray-900 dark:text-white">
           <img src="/favicon.svg" alt="DocuBase logo" class="w-8 h-8 -mt-1.5" />
           DocuBase
         </a>
@@ -20,10 +20,10 @@ const navLinks = NAV_LINKS;
           <a
             href={link.href}
             class:list={[
-              "text-sm font-medium transition-colors hover:text-gray-900",
+              "text-sm font-medium transition-colors hover:text-gray-900 dark:hover:text-white",
               currentPath === link.href || (link.href !== "/" && (currentPath === link.href || currentPath.startsWith(link.href + "/")))
-                ? "text-gray-900"
-                : "text-gray-600",
+                ? "text-gray-900 dark:text-white"
+                : "text-gray-600 dark:text-gray-400",
             ]}
           >
             {link.label}
@@ -31,16 +31,16 @@ const navLinks = NAV_LINKS;
         ))}
       </nav>
 
-      <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2 sm:gap-4">
         <div class="relative hidden sm:block">
           <input
             type="text"
             placeholder="Search..."
             disabled
             title="Search coming soon"
-            class="w-40 lg:w-48 h-9 pl-3 pr-8 text-sm border-b border-gray-200 bg-transparent focus:outline-none focus:border-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="w-40 lg:w-48 h-9 pl-3 pr-8 text-sm border-b border-gray-200 dark:border-gray-700 bg-transparent text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed"
           />
-          <iconify-icon icon="mdi:magnify" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400" width="16" height="16"></iconify-icon>
+          <iconify-icon icon="mdi:magnify" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" width="16" height="16"></iconify-icon>
         </div>
 
         <button
@@ -51,46 +51,114 @@ const navLinks = NAV_LINKS;
           <iconify-icon icon="mdi:weather-sunny" class="hidden dark:block" width="20" height="20"></iconify-icon>
           <iconify-icon icon="mdi:weather-night" class="block dark:hidden" width="20" height="20"></iconify-icon>
         </button>
+
+        <button
+          id="mobile-menu-toggle"
+          class="p-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors md:hidden"
+          aria-label="Toggle mobile menu"
+          aria-expanded="false"
+        >
+          <svg class="menu-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="6" y1="6" x2="18" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="6" y1="18" x2="18" y2="18"></line>
+          </svg>
+          <iconify-icon icon="mdi:close" class="close-icon hidden" width="20" height="20"></iconify-icon>
+        </button>
       </div>
     </div>
+
+    <!-- Mobile Navigation Menu -->
+    <nav
+      id="mobile-menu"
+      class="mobile-menu hidden md:hidden mt-2 py-4 px-6 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border border-white/30 dark:border-gray-700/50 shadow-lg shadow-black/5 dark:shadow-black/20 rounded-2xl"
+    >
+      <div class="flex flex-col gap-2">
+        {navLinks.map((link) => (
+          <a
+            href={link.href}
+            class:list={[
+              "block py-2 px-3 text-sm font-medium transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800",
+              currentPath === link.href || (link.href !== "/" && (currentPath === link.href || currentPath.startsWith(link.href + "/")))
+                ? "text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-800"
+                : "text-gray-600 dark:text-gray-400",
+            ]}
+          >
+            {link.label}
+          </a>
+        ))}
+      </div>
+    </nav>
   </div>
 </header>
 
 <script>
   import 'iconify-icon';
+</script>
 
-  const THEME_STORAGE_KEY = 'theme';
-  const THEME_DARK = 'dark';
-  const THEME_LIGHT = 'light';
-
+<script>
   (function() {
-    if ((window as any).__themeToggleInitialized) return;
-    (window as any).__themeToggleInitialized = true;
+    if ((window as any).__headerInitialized) return;
+    (window as any).__headerInitialized = true;
 
-    function getThemePreference(): 'dark' | 'light' {
-      const stored = localStorage.getItem(THEME_STORAGE_KEY);
-      if (stored === THEME_DARK || stored === THEME_LIGHT) return stored;
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? THEME_DARK : THEME_LIGHT;
+    function closeMobileMenu() {
+      const mobileToggle = document.getElementById('mobile-menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      if (!mobileToggle || !mobileMenu) return;
+
+      const menuIcon = mobileToggle.querySelector('.menu-icon');
+      const closeIcon = mobileToggle.querySelector('.close-icon');
+
+      mobileMenu.classList.add('hidden');
+      menuIcon?.classList.remove('hidden');
+      closeIcon?.classList.add('hidden');
+      mobileToggle.setAttribute('aria-expanded', 'false');
     }
 
-    function setTheme(theme: 'dark' | 'light') {
-      document.documentElement.classList.toggle(THEME_DARK, theme === THEME_DARK);
-      localStorage.setItem(THEME_STORAGE_KEY, theme);
+    function initHeader() {
+      closeMobileMenu();
     }
 
-    function initTheme() {
-      setTheme(getThemePreference());
-    }
-
-    document.addEventListener('click', (e) => {
+    // Theme toggle - using event delegation
+    document.addEventListener('click', function(e) {
       const toggle = (e.target as HTMLElement).closest('#theme-toggle');
       if (!toggle) return;
 
-      const isDark = document.documentElement.classList.contains(THEME_DARK);
-      setTheme(isDark ? THEME_LIGHT : THEME_DARK);
+      const isDark = document.documentElement.classList.contains('dark');
+      document.documentElement.classList.toggle('dark', !isDark);
+      localStorage.setItem('theme', isDark ? 'light' : 'dark');
     });
 
-    initTheme();
-    document.addEventListener('astro:page-load', initTheme);
+    // Mobile menu toggle - using event delegation
+    document.addEventListener('click', function(e) {
+      const toggle = (e.target as HTMLElement).closest('#mobile-menu-toggle');
+      if (toggle) {
+        e.stopPropagation();
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (!mobileMenu) return;
+
+        const menuIcon = toggle.querySelector('.menu-icon');
+        const closeIcon = toggle.querySelector('.close-icon');
+        const isOpen = !mobileMenu.classList.contains('hidden');
+
+        mobileMenu.classList.toggle('hidden');
+        menuIcon?.classList.toggle('hidden');
+        closeIcon?.classList.toggle('hidden');
+        toggle.setAttribute('aria-expanded', String(!isOpen));
+        return;
+      }
+
+      // Close mobile menu when clicking outside
+      const mobileToggle = document.getElementById('mobile-menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      if (mobileToggle && mobileMenu) {
+        if (!mobileToggle.contains(e.target as Node) && !mobileMenu.contains(e.target as Node)) {
+          closeMobileMenu();
+        }
+      }
+    });
+
+    initHeader();
+    document.addEventListener('astro:page-load', initHeader);
   })();
 </script>

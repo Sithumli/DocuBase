@@ -10,11 +10,11 @@ const { items, title = DEFAULTS.TOC.title, showBorder = true, nested = false, co
 
 <div class:list={[
   "text-sm",
-  showBorder && "border-l border-gray-200 pl-4",
+  showBorder && "border-l border-gray-200 dark:border-gray-700 pl-4",
   collapsible && "toc-collapsible-wrapper"
 ]} data-toc data-toc-contextual={nested ? "true" : "false"} data-page-nav={isPageNav ? "true" : undefined}>
   {collapsible ? (
-    <div class="toc-collapsible-box border border-gray-200 rounded-[20px] p-4">
+    <div class="toc-collapsible-box border border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-[20px] p-4">
       <div class="toc-icon">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -23,14 +23,14 @@ const { items, title = DEFAULTS.TOC.title, showBorder = true, nested = false, co
         </svg>
       </div>
       <div class="toc-content">
-        <p class="font-semibold mb-4 text-base text-gray-900">{title}</p>
+        <p class="font-semibold mb-4 text-base text-gray-900 dark:text-gray-100">{title}</p>
         <nav class="space-y-2.5">
           {nested ? (
             items.map((item) => (
               <div data-h2-section data-h2-id={item.href.slice(1)}>
                 <a
                   href={item.href}
-                  class="toc-link block transition-all duration-200 transform font-medium text-gray-900 hover:text-blue-600"
+                  class="toc-link block transition-all duration-200 transform font-medium text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400"
                   data-toc-link={item.href}
                 >
                   {item.title}
@@ -40,7 +40,7 @@ const { items, title = DEFAULTS.TOC.title, showBorder = true, nested = false, co
                     {item.children.map((child) => (
                       <a
                         href={child.href}
-                        class="toc-link block transition-all duration-200 transform text-sm text-gray-900 hover:text-blue-600"
+                        class="toc-link block transition-all duration-200 transform text-sm text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400"
                         data-toc-link={child.href}
                       >
                         {child.title}
@@ -55,7 +55,7 @@ const { items, title = DEFAULTS.TOC.title, showBorder = true, nested = false, co
               <a
                 href={item.href}
                 class:list={[
-                  "toc-link block transition-all duration-200 transform text-gray-900 hover:text-blue-600",
+                  "toc-link block transition-all duration-200 transform text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400",
                   item.depth === 2 && "font-medium",
                   item.depth === 3 && "ml-4 text-sm",
                 ]}
@@ -71,14 +71,14 @@ const { items, title = DEFAULTS.TOC.title, showBorder = true, nested = false, co
     </div>
   ) : (
     <>
-      <p class="font-semibold mb-4 text-base text-gray-900">{title}</p>
+      <p class="font-semibold mb-4 text-base text-gray-900 dark:text-gray-100">{title}</p>
       <nav class="space-y-2.5">
         {nested ? (
           items.map((item) => (
             <div data-h2-section data-h2-id={item.href.slice(1)}>
               <a
                 href={item.href}
-                class="toc-link block transition-all duration-200 transform font-medium text-gray-900 hover:text-blue-600"
+                class="toc-link block transition-all duration-200 transform font-medium text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400"
                 data-toc-link={item.href}
               >
                 {item.title}
@@ -88,7 +88,7 @@ const { items, title = DEFAULTS.TOC.title, showBorder = true, nested = false, co
                   {item.children.map((child) => (
                     <a
                       href={child.href}
-                      class="toc-link block transition-all duration-200 transform text-sm text-gray-900 hover:text-blue-600"
+                      class="toc-link block transition-all duration-200 transform text-sm text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400"
                       data-toc-link={child.href}
                     >
                       {child.title}
@@ -103,7 +103,7 @@ const { items, title = DEFAULTS.TOC.title, showBorder = true, nested = false, co
             <a
               href={item.href}
               class:list={[
-                "toc-link block transition-all duration-200 transform text-gray-900 hover:text-blue-600",
+                "toc-link block transition-all duration-200 transform text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400",
                 item.depth === 2 && "font-medium",
                 item.depth === 3 && "ml-4 text-sm",
               ]}
@@ -144,6 +144,10 @@ const { items, title = DEFAULTS.TOC.title, showBorder = true, nested = false, co
     transition: opacity 0.2s ease-in-out;
     color: rgb(107 114 128);
     pointer-events: none;
+  }
+
+  :global(html.dark) .toc-icon {
+    color: rgb(156 163 175);
   }
 
   .toc-collapsible-box:not(:hover) .toc-icon {

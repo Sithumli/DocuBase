@@ -11,14 +11,14 @@ const Tag = href ? 'a' : 'div';
 <Tag
   href={href}
   class:list={[
-    'block p-6 bg-white border border-gray-200 rounded-2xl transition-all w-[250px] h-[225px]',
-    href && 'hover:border-gray-300 hover:shadow-sm cursor-pointer',
+    'block p-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl transition-all w-[250px] h-[225px]',
+    href && 'hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-sm cursor-pointer',
   ]}
 >
   <div class="flex flex-col items-center text-center">
-    <div class="text-gray-700 mb-4" set:html={iconHtml} />
-    <h3 class="font-semibold text-gray-900 mb-4">{title}</h3>
-    <div class="w-full h-px bg-gray-200 mb-5"></div>
-    <p class="text-sm text-gray-600 leading-relaxed">{description}</p>
+    <div class="text-gray-700 dark:text-gray-300" set:html={iconHtml} />
+    <h3 class="font-semibold text-gray-900 dark:text-white mb-4">{title}</h3>
+    <div class="w-full h-px bg-gray-200 dark:bg-gray-700 mb-5"></div>
+    <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{description}</p>
   </div>
 </Tag>

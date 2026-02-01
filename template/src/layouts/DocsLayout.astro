@@ -89,12 +89,12 @@ if (isContentBased) {
               <Breadcrumb items={breadcrumbItems} />
 
               <div class="mt-4">
-                <h1 class="text-4xl font-bold text-gray-900 mb-2">{entry.data.title}</h1>
+                <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-2">{entry.data.title}</h1>
                 {entry.data.description && (
-                  <p class="text-lg text-gray-600 mb-4">{entry.data.description}</p>
+                  <p class="text-lg text-gray-600 dark:text-gray-400 mb-4">{entry.data.description}</p>
                 )}
 
-                <div class="flex items-center gap-4 text-sm text-gray-500 mb-8">
+                <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mb-8">
                   {entry.data.pubDate && (
                     <time datetime={entry.data.pubDate.toISOString()}>
                       {entry.data.pubDate.toLocaleDateString('en-US', {
@@ -111,7 +111,7 @@ if (isContentBased) {
                 {entry.data.tags && entry.data.tags.length > 0 && (
                   <div class="flex gap-2 mb-8">
                     {entry.data.tags.map((tag: string) => (
-                      <span class="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">
+                      <span class="px-3 py-1 text-xs bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full">
                         {tag}
                       </span>
                     ))}

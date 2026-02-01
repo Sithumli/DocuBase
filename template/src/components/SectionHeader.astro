@@ -4,4 +4,4 @@ import type { SectionHeaderProps } from '@/types';
 const { title, class: className = "" } = Astro.props as SectionHeaderProps;
 ---
 
-<h2 class={`text-sm font-medium text-gray-500 mb-6 ${className}`}>{title}</h2>
+<h2 class={`text-sm font-medium text-gray-500 dark:text-gray-400 mb-6 ${className}`}>{title}</h2>
