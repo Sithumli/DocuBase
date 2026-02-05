@@ -4,10 +4,10 @@ import type { TableProps } from '@/types';
 const { headers, rows, striped = true } = Astro.props as TableProps;
 ---
 
-<div class="my-6 inline-block min-w-[280px] max-w-full overflow-x-auto rounded-xl border border-white/20 dark:border-white/10 bg-white/60 dark:bg-gray-900/40 backdrop-blur-md shadow-lg shadow-gray-200/50 dark:shadow-black/20">
+<div class="my-6 inline-block min-w-[280px] max-w-full overflow-x-auto rounded-xl border border-gray-300/60 dark:border-white/10 bg-white/60 dark:bg-gray-900/40 backdrop-blur-md shadow-lg shadow-gray-200/50 dark:shadow-black/20">
   <table class="text-sm border-collapse">
     <thead>
-      <tr class="bg-white/50 dark:bg-white/5">
+      <tr class="bg-gray-100/80 dark:bg-white/5">
         {headers.map((header, i) => (
           <th class={`px-5 py-3 text-left font-semibold text-gray-950 dark:text-white whitespace-nowrap ${i === 0 ? 'rounded-tl-xl' : ''} ${i === headers.length - 1 ? 'rounded-tr-xl' : ''}`}>
             {header}
@@ -21,7 +21,7 @@ const { headers, rows, striped = true } = Astro.props as TableProps;
           {rowIndex !== 0 && !striped && (
             <tr>
               <td colspan={row.length} class="px-5 py-0">
-                <div class="border-t border-gray-300/40 dark:border-white/10"></div>
+                <div class="border-t border-gray-300/70 dark:border-white/10"></div>
               </td>
             </tr>
           )}

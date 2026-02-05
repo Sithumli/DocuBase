@@ -86,27 +86,6 @@ const { title, description, icon } = Astro.props as Props;
     );
   }
 
-  /* Glow effect */
-  .neon-border::after {
-    content: '';
-    position: absolute;
-    inset: -4px;
-    border-radius: 1.2rem;
-    background: conic-gradient(
-      from var(--angle, 0deg),
-      transparent 0%,
-      transparent 75%,
-      #06b6d4 80%,
-      #22d3ee 85%,
-      #06b6d4 90%,
-      transparent 95%,
-      transparent 100%
-    );
-    filter: blur(15px);
-    opacity: 0.5;
-    z-index: -1;
-  }
-
   @keyframes rotate-border {
     0% {
       --angle: 0deg;
@@ -214,7 +193,3 @@ const { title, description, icon } = Astro.props as Props;
     z-index: 1;
   }
 </style>
-
-<script>
-  import 'iconify-icon';
-</script>

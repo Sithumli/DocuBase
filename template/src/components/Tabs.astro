@@ -24,7 +24,7 @@ const tabsId = id || `tabs-${hashString(labels.join('-'))}`;
             'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset',
             index === defaultIndex
               ? 'text-primary-600 dark:text-white bg-gray-100 dark:bg-gray-800'
-              : 'text-gray-700 dark:text-gray-400 bg-transparent hover:text-gray-900 dark:hover:text-gray-200',
+              : 'text-gray-700 dark:text-gray-400 bg-transparent hover:text-primary-700 dark:hover:text-gray-200',
           ]}
           data-tab-index={index}
           aria-selected={index === defaultIndex}
@@ -53,7 +53,7 @@ const tabsId = id || `tabs-${hashString(labels.join('-'))}`;
     (window as any).__tabsInitialized = true;
 
     const TAB_ACTIVE_CLASSES = ['text-primary-600', 'dark:text-white', 'bg-gray-100', 'dark:bg-gray-800'];
-    const TAB_INACTIVE_CLASSES = ['text-gray-700', 'dark:text-gray-400'];
+    const TAB_INACTIVE_CLASSES = ['text-gray-700', 'dark:text-gray-400', 'bg-transparent'];
 
     function activateTab(container: Element, index: number) {
       const tabs = Array.from(container.querySelectorAll('.tab-button')) as HTMLElement[];

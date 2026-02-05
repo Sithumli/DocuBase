@@ -68,14 +68,21 @@ html, body {
   line-height: 1.75;
 }
 
-:where(article.prose) a {
+:where(article.prose) a:not(.btn) {
   color: rgb(6 182 212);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
-:where(article.prose) a:hover {
+:where(article.prose) a:not(.btn):hover {
   color: rgb(8 145 178);
+}
+
+:where(article.prose) .btn,
+:where(article.prose) a.btn {
+  text-decoration: none;
+  margin: 0;
+  padding: 0.5rem 1.25rem;
 }
 
 :where(article.prose) strong {
@@ -104,26 +111,27 @@ html, body {
   margin: 2rem 0;
 }
 
-:where(article.prose) table {
+/* Exclude custom Table component from prose table styles */
+:where(article.prose) table:not(.text-sm) {
   width: 100%;
   border-collapse: collapse;
   margin: 1.5rem 0;
 }
 
-:where(article.prose) th,
-:where(article.prose) td {
+:where(article.prose) table:not(.text-sm) th,
+:where(article.prose) table:not(.text-sm) td {
   border: 1px solid rgb(229 231 235);
   padding: 0.75rem;
   text-align: left;
 }
 
-:where(article.prose) th {
+:where(article.prose) table:not(.text-sm) th {
   background: rgb(249 250 251);
   font-weight: 600;
   color: rgb(17 24 39);
 }
 
-:where(article.prose) td {
+:where(article.prose) table:not(.text-sm) td {
   color: rgb(55 65 81);
 }
 
@@ -164,12 +172,18 @@ html, body {
   color: rgb(209 213 219);
 }
 
-:where(html.dark article.prose) a {
+:where(html.dark article.prose) a:not(.btn) {
   color: rgb(34 211 238);
 }
 
-:where(html.dark article.prose) a:hover {
+:where(html.dark article.prose) a:not(.btn):hover {
   color: rgb(103 232 249);
+}
+
+/* Protect buttons from prose styles in dark mode */
+:where(html.dark article.prose) .btn,
+:where(html.dark article.prose) a.btn {
+  text-decoration: none;
 }
 
 :where(html.dark article.prose) strong {
@@ -190,17 +204,18 @@ html, body {
   border-color: rgb(55 65 81);
 }
 
-:where(html.dark article.prose) th,
-:where(html.dark article.prose) td {
+/* Exclude custom Table component from prose table styles in dark mode */
+:where(html.dark article.prose) table:not(.text-sm) th,
+:where(html.dark article.prose) table:not(.text-sm) td {
   border-color: rgb(55 65 81);
 }
 
-:where(html.dark article.prose) th {
+:where(html.dark article.prose) table:not(.text-sm) th {
   background: rgb(31 41 55);
   color: rgb(243 244 246);
 }
 
-:where(html.dark article.prose) td {
+:where(html.dark article.prose) table:not(.text-sm) td {
   color: rgb(209 213 219);
 }
 
