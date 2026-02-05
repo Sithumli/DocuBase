@@ -31,8 +31,8 @@ const Tag = href ? 'a' : 'button';
   )}
 </Tag>
 
-<style>
-  .btn :global(p) {
+<style is:global>
+  .btn :is(p) {
     margin-bottom: 0 !important;
   }
 
