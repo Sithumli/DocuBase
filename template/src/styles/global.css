@@ -118,20 +118,20 @@ html, body {
   margin: 1.5rem 0;
 }
 
-:where(article.prose) th:not(.text-sm th),
-:where(article.prose) td:not(.text-sm td) {
+:where(article.prose) table:not(.text-sm) th,
+:where(article.prose) table:not(.text-sm) td {
   border: 1px solid rgb(229 231 235);
   padding: 0.75rem;
   text-align: left;
 }
 
-:where(article.prose) th:not(.text-sm th) {
+:where(article.prose) table:not(.text-sm) th {
   background: rgb(249 250 251);
   font-weight: 600;
   color: rgb(17 24 39);
 }
 
-:where(article.prose) td:not(.text-sm td) {
+:where(article.prose) table:not(.text-sm) td {
   color: rgb(55 65 81);
 }
 
@@ -205,17 +205,17 @@ html, body {
 }
 
 /* Exclude custom Table component from prose table styles in dark mode */
-:where(html.dark article.prose) th:not(.text-sm th),
-:where(html.dark article.prose) td:not(.text-sm td) {
+:where(html.dark article.prose) table:not(.text-sm) th,
+:where(html.dark article.prose) table:not(.text-sm) td {
   border-color: rgb(55 65 81);
 }
 
-:where(html.dark article.prose) th:not(.text-sm th) {
+:where(html.dark article.prose) table:not(.text-sm) th {
   background: rgb(31 41 55);
   color: rgb(243 244 246);
 }
 
-:where(html.dark article.prose) td:not(.text-sm td) {
+:where(html.dark article.prose) table:not(.text-sm) td {
   color: rgb(209 213 219);
 }
 
