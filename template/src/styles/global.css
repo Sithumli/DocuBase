@@ -1,17 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
-abbr[title],
-a {
-  -webkit-text-decoration-line: inherit;
-  text-decoration: inherit;
-}
-
-abbr[title] {
-  -webkit-text-decoration-line: underline dotted;
-  text-decoration: underline dotted;
-}
-
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
