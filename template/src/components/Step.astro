@@ -6,7 +6,7 @@ const { title } = Astro.props as StepProps;
 
 <div class="step relative [counter-increment:step]">
   <div class="absolute -left-[calc(1.5rem+1px)] -translate-x-1/2 w-8 h-8 rounded-full bg-transparent border-2 border-primary-500 flex items-center justify-center text-sm font-semibold text-primary-700 dark:text-primary-300 before:content-[counter(step)] z-10" />
-  <div class="step-line absolute -left-[calc(1.5rem+1px)] -translate-x-1/2 top-10 w-0.5 rounded-full bg-gray-300 dark:bg-gray-700" style="height: calc(100% - 0.5rem);" />
+  <div class="step-line absolute -left-[calc(1.5rem+1px)] -translate-x-1/2 top-10 w-0.5 rounded-full bg-gray-300 dark:bg-gray-700" style="height: calc(100% - 2rem);" />
   <div>
     <h3 class="font-semibold text-lg mb-2 mt-0 leading-8">{title}</h3>
     <div class="text-gray-700 dark:text-gray-300 [&>p]:mb-3 [&>p:last-child]:mb-0">
@@ -16,7 +16,7 @@ const { title } = Astro.props as StepProps;
 </div>
 
 <style>
-  .step:last-child .step-line {
+  .step:last-of-type .step-line {
     display: none;
   }
 </style>

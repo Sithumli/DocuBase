@@ -23,16 +23,16 @@ const Tag = href ? 'a' : 'button';
   class:list={['btn', `btn-${variant}`, className]}
 >
   {icon && iconPosition === 'left' && (
-    <iconify-icon icon={icon} class="mr-1.5" width="14" height="14" />
+    <iconify-icon icon={icon} class="mr-2" width="18" height="18" />
   )}
   <slot />
   {icon && iconPosition === 'right' && (
-    <iconify-icon icon={icon} class="ml-1.5" width="14" height="14" />
+    <iconify-icon icon={icon} class="ml-2" width="18" height="18" />
   )}
 </Tag>
 
-<style>
-  .btn :global(p) {
+<style is:global>
+  .btn :is(p) {
     margin-bottom: 0 !important;
   }
 
@@ -45,6 +45,15 @@ const Tag = href ? 'a' : 'button';
     font-weight: 500;
     border-radius: 9999px;
     transition: all 0.2s ease;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .btn iconify-icon {
+    display: inline-flex;
+    flex-shrink: 0;
   }
 
   .btn-primary {
@@ -118,7 +127,3 @@ const Tag = href ? 'a' : 'button';
       inset 0 1px 0 rgba(255, 255, 255, 0.15);
   }
 </style>
-
-<script>
-  import 'iconify-icon';
-</script>

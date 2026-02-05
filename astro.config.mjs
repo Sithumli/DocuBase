@@ -34,7 +34,6 @@ export default defineConfig({
     rehypePlugins: [rehypeSlug],
     shikiConfig: {
       theme: 'github-dark',
-      wrap: true,
     },
   },
 });
