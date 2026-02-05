@@ -1,5 +1,11 @@
 # create-docubase
 
+## 1.1.1
+
+### Patch Changes
+
+- 707a3c8: UI Update website
+
 ## 1.1.0
 
 ### Minor Changes
