@@ -1,5 +1,11 @@
 # create-docubase
 
+## 1.1.2
+
+### Patch Changes
+
+- 820c898: Search fuctionality
+
 ## 1.1.1
 
 ### Patch Changes
