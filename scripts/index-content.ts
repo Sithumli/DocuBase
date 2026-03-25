@@ -235,7 +235,7 @@ async function main() {
       const vectors = batch.map((chunk) => ({
         id: chunk.id,
         data: chunk.content,
-        metadata: chunk.metadata,
+        metadata: chunk.metadata as unknown as Record<string, unknown>,
       }));
 
       await vectorIndex.upsert(vectors);

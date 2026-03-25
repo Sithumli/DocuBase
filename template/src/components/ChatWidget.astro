@@ -129,10 +129,19 @@ import { CHAT } from '@/types/constants';
       return wrapper;
     }
 
+    function sanitizeUrl(url) {
+      if (!url) return '';
+      var trimmed = url.trim().toLowerCase();
+      if (trimmed.startsWith('javascript:') || trimmed.startsWith('data:') || trimmed.startsWith('vbscript:')) {
+        return '';
+      }
+      return url;
+    }
+
     function parseMarkdown(text) {
       if (!text) return '';
 
-      let html = text
+      var html = text
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
@@ -144,7 +153,11 @@ import { CHAT } from '@/types/constants';
       html = html.replace(/`([^`]+)`/g, '<code class="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">$1</code>');
       html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
       html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-      html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-blue-600 dark:text-blue-400 underline hover:no-underline">$1</a>');
+      html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function(_, linkText, url) {
+        var safeUrl = sanitizeUrl(url);
+        if (!safeUrl) return linkText;
+        return '<a href="' + safeUrl + '" class="text-blue-600 dark:text-blue-400 underline hover:no-underline" rel="noopener noreferrer">' + linkText + '</a>';
+      });
       html = html.replace(/\n/g, '<br>');
 
       return html;
@@ -219,21 +232,14 @@ import { CHAT } from '@/types/constants';
           const chunk = decoder.decode(value);
           const lines = chunk.split('\n');
 
-          for (const line of lines) {
+          for (var i = 0; i < lines.length; i++) {
+            var line = lines[i];
             if (!line.trim()) continue;
+            if (line === 'data: [DONE]') continue;
 
-            if (line.startsWith('0:')) {
+            if (line.startsWith('data: ')) {
               try {
-                const text = JSON.parse(line.slice(2));
-                fullContent += text;
-                if (textElement) {
-                  textElement.innerHTML = parseMarkdown(fullContent);
-                }
-                scrollToBottom();
-              } catch (e) {}
-            } else if (line.startsWith('data: ')) {
-              try {
-                const data = JSON.parse(line.slice(6));
+                var data = JSON.parse(line.slice(6));
                 if (data.type === 'text-delta' && data.textDelta) {
                   fullContent += data.textDelta;
                   if (textElement) {
@@ -261,16 +267,21 @@ import { CHAT } from '@/types/constants';
       }
     }
 
+    var INIT_FLAG = '__chatWidgetInitialized';
+
     function initChat() {
+      if (window[INIT_FLAG]) return;
+      window[INIT_FLAG] = true;
+
       if (abortController) {
         abortController.abort();
       }
 
-      const trigger = document.getElementById('chat-trigger');
-      const backdrop = document.getElementById('chat-backdrop');
-      const closeBtn = document.getElementById('chat-close');
-      const form = document.getElementById('chat-form');
-      const input = document.getElementById('chat-input');
+      var trigger = document.getElementById('chat-trigger');
+      var backdrop = document.getElementById('chat-backdrop');
+      var closeBtn = document.getElementById('chat-close');
+      var form = document.getElementById('chat-form');
+      var input = document.getElementById('chat-input');
 
       if (trigger) trigger.addEventListener('click', openModal);
       if (backdrop) backdrop.addEventListener('click', closeModal);
@@ -284,14 +295,19 @@ import { CHAT } from '@/types/constants';
       }
 
       document.addEventListener('keydown', function(e) {
-        const modal = document.getElementById('chat-modal');
+        var modal = document.getElementById('chat-modal');
         if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
           closeModal();
         }
       });
     }
 
+    function reset() {
+      window[INIT_FLAG] = false;
+      initChat();
+    }
+
     initChat();
-    document.addEventListener('astro:page-load', initChat);
+    document.addEventListener('astro:page-load', reset);
   })();
 </script>

@@ -54,6 +54,8 @@ const {
 
 <script is:inline define:vars={{ TEXTAREA_MAX_HEIGHT: CHAT.TEXTAREA_MAX_HEIGHT }}>
   (function() {
+    var INIT_FLAG = '__askAnythingInitialized';
+
     function generateUID() {
       return 'xxxx-xxxx-xxxx'.replace(/x/g, function() {
         return Math.floor(Math.random() * 16).toString(16);
@@ -62,15 +64,18 @@ const {
 
     function navigateToChat(message) {
       if (!message.trim()) return;
-      const uid = generateUID();
-      sessionStorage.setItem(`chat-${uid}-initial`, message);
-      window.location.href = `/chat/${uid}`;
+      var uid = generateUID();
+      sessionStorage.setItem('chat-' + uid + '-initial', message);
+      window.location.href = '/chat/' + uid;
     }
 
     function init() {
-      const form = document.getElementById('ask-form');
-      const input = document.getElementById('ask-input');
-      const chips = document.querySelectorAll('.suggestion-chip');
+      if (window[INIT_FLAG]) return;
+      window[INIT_FLAG] = true;
+
+      var form = document.getElementById('ask-form');
+      var input = document.getElementById('ask-input');
+      var chips = document.querySelectorAll('.suggestion-chip');
 
       if (form && input) {
         form.addEventListener('submit', function(e) {
@@ -93,13 +98,18 @@ const {
 
       chips.forEach(function(chip) {
         chip.addEventListener('click', function() {
-          const text = chip.textContent.trim();
+          var text = chip.textContent.trim();
           navigateToChat(text);
         });
       });
     }
 
+    function reset() {
+      window[INIT_FLAG] = false;
+      init();
+    }
+
     init();
-    document.addEventListener('astro:page-load', init);
+    document.addEventListener('astro:page-load', reset);
   })();
 </script>

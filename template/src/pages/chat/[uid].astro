@@ -125,10 +125,19 @@ const { uid } = Astro.params;
       return wrapper;
     }
 
+    function sanitizeUrl(url) {
+      if (!url) return '';
+      var trimmed = url.trim().toLowerCase();
+      if (trimmed.startsWith('javascript:') || trimmed.startsWith('data:') || trimmed.startsWith('vbscript:')) {
+        return '';
+      }
+      return url;
+    }
+
     function parseMarkdown(text) {
       if (!text) return '';
 
-      let html = text
+      var html = text
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
@@ -147,8 +156,12 @@ const { uid } = Astro.params;
       // Italic
       html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
 
-      // Links
-      html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-blue-600 dark:text-blue-400 underline hover:no-underline">$1</a>');
+      // Links - with URL sanitization
+      html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function(_, linkText, url) {
+        var safeUrl = sanitizeUrl(url);
+        if (!safeUrl) return linkText;
+        return '<a href="' + safeUrl + '" class="text-blue-600 dark:text-blue-400 underline hover:no-underline" rel="noopener noreferrer">' + linkText + '</a>';
+      });
 
       // Line breaks
       html = html.replace(/\n/g, '<br>');
@@ -172,14 +185,10 @@ const { uid } = Astro.params;
 
     function setLoading(loading) {
       isStreaming = loading;
-      const submitBtn = document.getElementById('chat-submit');
-      const sendIcon = document.getElementById('send-icon');
-      const loadingIcon = document.getElementById('loading-icon');
-      const input = document.getElementById('chat-input');
+      var submitBtn = document.getElementById('chat-submit');
+      var input = document.getElementById('chat-input');
 
       if (submitBtn) submitBtn.disabled = loading;
-      if (sendIcon) sendIcon.classList.toggle('hidden', loading);
-      if (loadingIcon) loadingIcon.classList.toggle('hidden', !loading);
       if (input) input.disabled = loading;
     }
 
@@ -249,17 +258,21 @@ const { uid } = Astro.params;
           const chunk = decoder.decode(value);
           const lines = chunk.split('\n');
 
-          for (const line of lines) {
+          for (var i = 0; i < lines.length; i++) {
+            var line = lines[i];
             if (!line.trim()) continue;
+            if (line === 'data: [DONE]') continue;
 
-            if (line.startsWith('0:')) {
+            if (line.startsWith('data: ')) {
               try {
-                const text = JSON.parse(line.slice(2));
-                fullContent += text;
-                if (textElement) {
-                  textElement.innerHTML = parseMarkdown(fullContent);
+                var data = JSON.parse(line.slice(6));
+                if (data.type === 'text-delta' && data.textDelta) {
+                  fullContent += data.textDelta;
+                  if (textElement) {
+                    textElement.innerHTML = parseMarkdown(fullContent);
+                  }
+                  scrollToBottom();
                 }
-                scrollToBottom();
               } catch (e) {
                 // Skip malformed JSON
               }

@@ -166,4 +166,4 @@ export const CHAT_ROLES = {
   model: 'model',
 } as const;
 
-export type ChatRole = 'user' | 'assistant';
+export type ChatRole = (typeof CHAT_ROLES)[keyof typeof CHAT_ROLES];

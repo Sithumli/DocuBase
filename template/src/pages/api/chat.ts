@@ -6,12 +6,18 @@ import { CHAT, SITE_TITLE } from '@/types/constants';
 
 export const prerender = false;
 
-const vectorIndex = new Index({
-  url: import.meta.env.UPSTASH_VECTOR_REST_URL,
-  token: import.meta.env.UPSTASH_VECTOR_REST_TOKEN,
-});
+function getVectorIndex(): Index | null {
+  const url = import.meta.env.UPSTASH_VECTOR_REST_URL;
+  const token = import.meta.env.UPSTASH_VECTOR_REST_TOKEN;
 
-async function searchSimilarContent(query: string, topK: number = CHAT.VECTOR_TOP_K): Promise<ChatContext[]> {
+  if (!url || !token) {
+    return null;
+  }
+
+  return new Index({ url, token });
+}
+
+async function searchSimilarContent(vectorIndex: Index, query: string, topK: number = CHAT.VECTOR_TOP_K): Promise<ChatContext[]> {
   const results = await vectorIndex.query({
     data: query,
     topK,
@@ -20,9 +26,10 @@ async function searchSimilarContent(query: string, topK: number = CHAT.VECTOR_TO
   });
 
   return results.map((result) => {
-    const metadata = result.metadata as VectorMetadata;
+    const metadata = result.metadata as unknown as VectorMetadata;
+    const chunkContent = typeof result.data === 'string' ? result.data : '';
     return {
-      content: `Title: ${metadata.title}\nSection: ${metadata.section}\nURL: ${metadata.url}`,
+      content: chunkContent || `Title: ${metadata.title}\nSection: ${metadata.section}\nURL: ${metadata.url}`,
       title: metadata.title,
       section: metadata.section,
       url: metadata.url,
@@ -65,6 +72,16 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
+    const vectorIndex = getVectorIndex();
+    if (!vectorIndex) {
+      return new Response(JSON.stringify({
+        error: 'Upstash Vector credentials are not configured'
+      }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
     const { message, history = [] } = await request.json();
 
     if (!message || typeof message !== 'string') {
@@ -74,7 +91,7 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    const contexts = await searchSimilarContent(message);
+    const contexts = await searchSimilarContent(vectorIndex, message);
     const systemPrompt = buildSystemPrompt(contexts);
 
     const genAI = new GoogleGenerativeAI(apiKey);
@@ -98,9 +115,10 @@ export const POST: APIRoute = async ({ request }) => {
           for await (const chunk of result.stream) {
             const text = chunk.text();
             if (text) {
-              controller.enqueue(encoder.encode(`0:${JSON.stringify(text)}\n`));
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'text-delta', textDelta: text })}\n\n`));
             }
           }
+          controller.enqueue(encoder.encode(`data: [DONE]\n\n`));
           controller.close();
         } catch (streamError) {
           console.error('Stream error:', streamError);

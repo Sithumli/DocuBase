@@ -1,6 +1,5 @@
 ---
 import Cloud from './Cloud.astro';
-import Button from './Button.astro';
 import type { HeroProps } from '@/types';
 import { DEFAULTS } from '@/types/constants';
 
@@ -9,8 +8,6 @@ const {
   title,
   highlightedText,
   description,
-  buttonText = DEFAULTS.HERO.buttonText,
-  buttonHref = DEFAULTS.HERO.buttonHref,
 } = Astro.props as HeroProps;
 ---
 

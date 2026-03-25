@@ -8,7 +8,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import matter from 'gray-matter';
 import { Index } from '@upstash/vector';
-import type { Frontmatter, ChunkSection, VectorMetadata } from '../template/src/types/chat';
+import type { Frontmatter, ChunkSection } from '../template/src/types/chat';
 import { INDEXING } from '../template/src/types/constants';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -118,7 +118,7 @@ async function indexFile(filePath: string): Promise<void> {
       url,
       collection,
       description: frontmatter.description as string | undefined,
-    } as VectorMetadata,
+    } as Record<string, unknown>,
   }));
 
   if (vectors.length > 0) {
@@ -130,13 +130,18 @@ async function indexFile(filePath: string): Promise<void> {
 
 async function deleteFileFromIndex(filePath: string): Promise<void> {
   const url = getUrlFromPath(filePath);
+  const maxChunks = 100; // Support up to 100 chunks per document
+  const idsToDelete: string[] = [];
 
-  for (let i = 0; i < 20; i++) {
-    try {
-      await vectorIndex.delete(`${url}-${i}`);
-    } catch {
-      break;
-    }
+  for (let i = 0; i < maxChunks; i++) {
+    idsToDelete.push(`${url}-${i}`);
+  }
+
+  // Delete in batches, ignoring errors for non-existent IDs
+  try {
+    await vectorIndex.delete(idsToDelete);
+  } catch {
+    // Some IDs may not exist, which is expected
   }
 
   console.log(`[${new Date().toLocaleTimeString()}] Removed from index: ${path.relative(contentDir, filePath)}`);

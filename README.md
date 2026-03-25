@@ -309,7 +309,7 @@ GOOGLE_GENERATIVE_AI_API_KEY=your_key_here
 ### Components
 
 - **AskAnything**: Homepage input for starting a chat
-- **ChatWidget**: Floating chat button available on all pages
+- **ChatWidget**: Floating chat button (can be added to any layout)
 
 ## Storybook (Optional)
 
