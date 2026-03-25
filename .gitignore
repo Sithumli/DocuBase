@@ -54,6 +54,7 @@ coverage/
 # Cache
 .cache/
 *.tsbuildinfo
+.index-manifest.json
 
 # Temporary files
 tmp/

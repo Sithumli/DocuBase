@@ -5,12 +5,14 @@ import { fileURLToPath } from 'node:url';
 
 import tailwindcss from '@tailwindcss/vite';
 import mdx from '@astrojs/mdx';
+import vercel from '@astrojs/vercel';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   site: 'https://docubase-docs.vercel.app',
   output: 'static',
+  adapter: vercel(),
   srcDir: './template/src',
   publicDir: './template/public',
   vite: {

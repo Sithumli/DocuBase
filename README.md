@@ -21,6 +21,7 @@ Your site will be available at `http://localhost:4321`.
 - **Content-First**: Write documentation in MDX with full component support
 - **Framework-Agnostic**: Works with any UI library or none at all
 - **Multiple Content Types**: Documentation, blog posts, and tutorials out of the box
+- **AI Chat Assistant**: Built-in RAG-powered chat that answers questions about your docs
 - **Static Site Generation**: Fast, SEO-friendly pages that deploy anywhere
 - **Type-Safe**: Full TypeScript support with Astro Content Collections
 - **Dark Mode**: Automatic dark mode support via CSS media queries
@@ -31,6 +32,8 @@ Your site will be available at `http://localhost:4321`.
 - [MDX](https://mdxjs.com/) - Markdown with components
 - [TypeScript](https://www.typescriptlang.org/) - Type safety
 - [Tailwind CSS](https://tailwindcss.com/) - Styling
+- [Google Gemini](https://ai.google.dev/) - AI chat responses
+- [Upstash Vector](https://upstash.com/vector) - Vector search for RAG
 - [Storybook](https://storybook.js.org/) - Component playground (optional)
 
 ## Installation
@@ -270,6 +273,43 @@ import Example from '../../components/Example.astro';
   Interactive content here
 </Example>
 ```
+
+## AI Chat Assistant
+
+DocuBase includes a built-in AI chat assistant that uses RAG (Retrieval-Augmented Generation) to answer questions about your documentation.
+
+### Setup
+
+1. Copy the environment file:
+
+```bash
+cp .env.example .env
+```
+
+2. Add your API keys to `.env`:
+
+```env
+# Upstash Vector (https://console.upstash.com/vector)
+UPSTASH_VECTOR_REST_URL=your_url_here
+UPSTASH_VECTOR_REST_TOKEN=your_token_here
+
+# Google Gemini (https://aistudio.google.com/apikey)
+GOOGLE_GENERATIVE_AI_API_KEY=your_key_here
+```
+
+3. That's it! Content is automatically indexed on every build.
+
+### How It Works
+
+- Content is automatically indexed when you run `pnpm run build`
+- Users can ask questions via the chat widget or "Ask Anything" input
+- The AI searches your docs and provides relevant answers with sources
+- No manual indexing required - just write docs and deploy
+
+### Components
+
+- **AskAnything**: Homepage input for starting a chat
+- **ChatWidget**: Floating chat button available on all pages
 
 ## Storybook (Optional)
 

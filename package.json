@@ -12,7 +12,8 @@
   ],
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && pagefind --site dist",
+    "build": "pnpm run index-content && astro build && pagefind --site dist",
+    "build:no-index": "astro build && pagefind --site dist",
     "preview": "astro preview",
     "astro": "astro",
     "test": "vitest run",
@@ -22,7 +23,9 @@
     "version": "changeset version",
     "release": "changeset publish",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "index-content": "npx tsx scripts/index-content.ts",
+    "index-content:watch": "npx tsx scripts/index-watch.ts"
   },
   "keywords": [
     "documentation",
@@ -39,11 +42,18 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@ai-sdk/google": "^1.2.22",
     "@astrojs/check": "^0.9.6",
     "@astrojs/mdx": "^4.3.13",
+    "@astrojs/vercel": "^8.0.0",
+    "@google/generative-ai": "^0.21.0",
     "@tailwindcss/vite": "^4.1.18",
+    "@upstash/vector": "^1.1.0",
+    "ai": "^4.3.19",
     "astro": "^5.16.11",
+    "dotenv": "^16.4.0",
     "fs-extra": "^11.2.0",
+    "gray-matter": "^4.0.3",
     "iconify-icon": "^3.0.2",
     "picocolors": "^1.1.1",
     "prompts": "^2.4.2",
@@ -63,8 +73,9 @@
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^25.0.10",
     "@types/prompts": "^2.4.9",
-    "storybook": "^8.4.0",
     "pagefind": "^1.4.0",
+    "storybook": "^8.4.0",
+    "tsx": "^4.19.0",
     "vitest": "^3.0.0"
   }
 }
