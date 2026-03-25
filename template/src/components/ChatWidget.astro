@@ -218,6 +218,10 @@ import { CHAT } from '@/types/constants';
         });
 
         if (!response.ok) {
+          if (response.status === 429) {
+            const data = await response.json();
+            throw new Error(data.message || "I've reached my daily limit. Please try again tomorrow!");
+          }
           throw new Error('Failed to get response');
         }
 
@@ -255,12 +259,15 @@ import { CHAT } from '@/types/constants';
         if (fullContent) {
           chatHistory.push({ role: 'assistant', content: fullContent });
         }
+        scrollToBottom();
       } catch (error) {
         if (error.name === 'AbortError') return;
         console.error('Chat error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Sorry, an error occurred. Please try again.';
         if (textElement) {
-          textElement.innerHTML = '<span class="text-red-500">Sorry, an error occurred. Please try again.</span>';
+          textElement.innerHTML = '<span class="text-red-500">' + errorMessage + '</span>';
         }
+        scrollToBottom();
       } finally {
         setLoading(false);
         abortController = null;

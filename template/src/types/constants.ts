@@ -116,11 +116,12 @@ export const LAYOUT = {
 
 export const CHAT = {
   API_ENDPOINT: '/api/chat',
-  MODEL: 'gemini-2.5-flash',
+  MODELS: ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-3.0-flash'],
   VECTOR_TOP_K: 5,
   TEXTAREA_MAX_HEIGHT: 150,
   WELCOME_MESSAGE: "Hi! I'm your DocuBase assistant. Ask me anything about the documentation, components, or how to get started.",
   ASSISTANT_NAME: 'DocuBase Assistant',
+  RATE_LIMIT_MESSAGE: "I've reached my daily limit. Please try again tomorrow!",
 } as const;
 
 export const INDEXING = {

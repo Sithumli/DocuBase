@@ -95,18 +95,45 @@ export const POST: APIRoute = async ({ request }) => {
     const systemPrompt = buildSystemPrompt(contexts);
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({
-      model: CHAT.MODEL,
-      systemInstruction: systemPrompt,
-    });
-
     const chatHistory: GeminiMessage[] = history.map((msg: { role: string; content: string }) => ({
       role: msg.role === 'assistant' ? 'model' : 'user',
       parts: [{ text: msg.content }],
     }));
 
-    const chat = model.startChat({ history: chatHistory });
-    const result = await chat.sendMessageStream(message);
+    let result;
+    let lastError;
+
+    for (const modelName of CHAT.MODELS) {
+      try {
+        const model = genAI.getGenerativeModel({
+          model: modelName,
+          systemInstruction: systemPrompt,
+        });
+        const chat = model.startChat({ history: chatHistory });
+        result = await chat.sendMessageStream(message);
+        console.log(`Using model: ${modelName}`);
+        break;
+      } catch (error) {
+        lastError = error;
+        const errorMessage = error instanceof Error ? error.message : '';
+        // Check for rate limit errors (429 or quota exceeded)
+        if (errorMessage.includes('429') || errorMessage.includes('quota') || errorMessage.includes('rate') || errorMessage.includes('RESOURCE_EXHAUSTED')) {
+          console.log(`Rate limited on ${modelName}, trying next...`);
+          continue;
+        }
+        throw error;
+      }
+    }
+
+    if (!result) {
+      return new Response(JSON.stringify({
+        error: 'rate_limit',
+        message: CHAT.RATE_LIMIT_MESSAGE,
+      }), {
+        status: 429,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
 
     const encoder = new TextEncoder();
     const stream = new ReadableStream({

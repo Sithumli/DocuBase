@@ -239,6 +239,10 @@ const { uid } = Astro.params;
         if (loadingMsg) loadingMsg.remove();
 
         if (!response.ok) {
+          if (response.status === 429) {
+            const data = await response.json();
+            throw new Error(data.message || "I've reached my daily limit. Please try again tomorrow!");
+          }
           throw new Error('Failed to get response');
         }
 
@@ -284,13 +288,18 @@ const { uid } = Astro.params;
         if (fullContent) {
           chatHistory.push({ role: 'assistant', content: fullContent });
         }
+
+        // Final scroll to ensure complete message is visible
+        scrollToBottom();
       } catch (error) {
         console.error('Chat error:', error);
         const loadingMsg = document.getElementById('loading-message');
         if (loadingMsg) loadingMsg.remove();
 
-        const errorMsg = createMessageElement('assistant', 'Sorry, an error occurred. Please try again.');
+        const errorMessage = error instanceof Error ? error.message : 'Sorry, an error occurred. Please try again.';
+        const errorMsg = createMessageElement('assistant', errorMessage);
         messagesContainer.appendChild(errorMsg);
+        scrollToBottom();
       } finally {
         setLoading(false);
         // Focus input after response
