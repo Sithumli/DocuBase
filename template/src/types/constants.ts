@@ -113,3 +113,58 @@ export const LAYOUT = {
   stickyTop: 'sticky top-28',
   collapsedMargin: '-12rem',
 } as const;
+
+export const CHAT = {
+  API_ENDPOINT: '/api/chat',
+  MODELS: ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-3.0-flash'],
+  VECTOR_TOP_K: 5,
+  TEXTAREA_MAX_HEIGHT: 150,
+  WELCOME_MESSAGE: "Hi! I'm your DocuBase assistant. Ask me anything about the documentation, components, or how to get started.",
+  ASSISTANT_NAME: 'DocuBase Assistant',
+  RATE_LIMIT_MESSAGE: "I've reached my daily limit. Please try again tomorrow!",
+} as const;
+
+export const INDEXING = {
+  BATCH_SIZE: 10,
+  BATCH_DELAY_MS: 500,
+  DEBOUNCE_MS: 1000,
+  MIN_CHUNK_LENGTH: 50,
+  COLLECTIONS: ['docs', 'blog', 'tutorials'],
+} as const;
+
+export const CHAT_DEFAULTS = {
+  ASK_ANYTHING: {
+    subtitle: 'Meet AI Chat Mode',
+    placeholder: 'Ask anything',
+    suggestions: [
+      'How do I get started with DocuBase?',
+      'What components are available?',
+      'How to deploy my docs?',
+    ],
+  },
+} as const;
+
+export const CHAT_SELECTORS = {
+  askForm: 'ask-form',
+  askInput: 'ask-input',
+  askSubmit: 'ask-submit',
+  suggestionChip: '.suggestion-chip',
+  chatTrigger: 'chat-trigger',
+  chatModal: 'chat-modal',
+  chatBackdrop: 'chat-backdrop',
+  chatClose: 'chat-close',
+  chatForm: 'chat-form',
+  chatInput: 'chat-input',
+  chatSubmit: 'chat-submit',
+  chatMessages: 'chat-messages',
+  sendIcon: 'send-icon',
+  loadingIcon: 'loading-icon',
+} as const;
+
+export const CHAT_ROLES = {
+  user: 'user',
+  assistant: 'assistant',
+  model: 'model',
+} as const;
+
+export type ChatRole = (typeof CHAT_ROLES)[keyof typeof CHAT_ROLES];

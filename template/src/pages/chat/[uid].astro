@@ -1,0 +1,347 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/Header.astro';
+
+export const prerender = false;
+
+const { uid } = Astro.params;
+---
+
+<BaseLayout title="Chat" description="Ask anything about DocuBase">
+  <Header currentPath="/chat" />
+
+  <main class="flex-1 flex flex-col h-[calc(100vh-64px)]">
+    <div class="flex-1 flex flex-col max-w-3xl w-full mx-auto px-4">
+      <!-- Messages Container -->
+      <div id="chat-messages" class="flex-1 overflow-y-auto pt-8 pb-2 space-y-4">
+        <!-- Messages will be added here -->
+      </div>
+
+      <!-- Input Form -->
+      <div class="sticky bottom-0 pb-6 pt-4 bg-gradient-to-t from-white dark:from-gray-950 via-white dark:via-gray-950">
+        <form id="chat-form" class="relative">
+          <input
+            id="chat-input"
+            type="text"
+            placeholder="Ask a follow-up..."
+            class="w-full px-5 py-4 pr-14 bg-gray-100 dark:bg-gray-800/80 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none text-base rounded-full border border-gray-200 dark:border-gray-700"
+            autocomplete="off"
+          />
+          <button
+            id="chat-submit"
+            type="submit"
+            class="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white rounded-full transition-colors"
+            aria-label="Send message"
+          >
+            <iconify-icon icon="mdi:send" width="18" height="18"></iconify-icon>
+          </button>
+        </form>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  @keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-4px); }
+  }
+  .animate-bounce {
+    animation: bounce 1s infinite;
+  }
+</style>
+
+<script is:inline define:vars={{ uid }}>
+  (function() {
+    let chatHistory = [];
+    let isStreaming = false;
+    let isFirstMessage = true;
+
+    function createMessageElement(role, content) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'flex gap-3 ' + (role === 'user' ? 'justify-end' : 'justify-start');
+
+      if (role === 'user') {
+        const bubble = document.createElement('div');
+        bubble.className = 'max-w-[80%] bg-blue-600 text-white rounded-2xl px-4 py-3';
+        const text = document.createElement('p');
+        text.className = 'text-sm';
+        text.textContent = content;
+        bubble.appendChild(text);
+        wrapper.appendChild(bubble);
+      } else {
+        const avatar = document.createElement('div');
+        avatar.className = 'flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center';
+        const icon = document.createElement('iconify-icon');
+        icon.setAttribute('icon', 'mdi:robot-happy-outline');
+        icon.className = 'text-blue-600 dark:text-blue-400';
+        icon.setAttribute('width', '18');
+        icon.setAttribute('height', '18');
+        avatar.appendChild(icon);
+
+        const bubble = document.createElement('div');
+        bubble.className = 'max-w-[80%] bg-gray-100 dark:bg-gray-800 rounded-2xl px-4 py-3';
+        const text = document.createElement('div');
+        text.className = 'text-sm text-gray-700 dark:text-gray-300 prose prose-sm dark:prose-invert max-w-none';
+        text.innerHTML = parseMarkdown(content);
+        bubble.appendChild(text);
+
+        wrapper.appendChild(avatar);
+        wrapper.appendChild(bubble);
+      }
+
+      return wrapper;
+    }
+
+    function createLoadingElement() {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'flex gap-3 justify-start';
+      wrapper.id = 'loading-message';
+
+      const avatar = document.createElement('div');
+      avatar.className = 'flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center';
+      const icon = document.createElement('iconify-icon');
+      icon.setAttribute('icon', 'mdi:robot-happy-outline');
+      icon.className = 'text-blue-600 dark:text-blue-400';
+      icon.setAttribute('width', '18');
+      icon.setAttribute('height', '18');
+      avatar.appendChild(icon);
+
+      const bubble = document.createElement('div');
+      bubble.className = 'bg-gray-100 dark:bg-gray-800 rounded-2xl px-4 py-3';
+
+      const dots = document.createElement('div');
+      dots.className = 'flex gap-1.5';
+      dots.innerHTML = `
+        <span class="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style="animation-delay: 0ms;"></span>
+        <span class="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style="animation-delay: 150ms;"></span>
+        <span class="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style="animation-delay: 300ms;"></span>
+      `;
+
+      bubble.appendChild(dots);
+      wrapper.appendChild(avatar);
+      wrapper.appendChild(bubble);
+
+      return wrapper;
+    }
+
+    function sanitizeUrl(url) {
+      if (!url) return '';
+      var trimmed = url.trim().toLowerCase();
+      if (trimmed.startsWith('javascript:') || trimmed.startsWith('data:') || trimmed.startsWith('vbscript:')) {
+        return '';
+      }
+      return url;
+    }
+
+    function parseMarkdown(text) {
+      if (!text) return '';
+
+      var html = text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+      // Code blocks
+      html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, function(_, _lang, code) {
+        return '<pre class="bg-gray-800 dark:bg-gray-900 p-3 rounded-lg overflow-x-auto my-2"><code class="text-gray-100 text-xs">' + code.trim() + '</code></pre>';
+      });
+
+      // Inline code
+      html = html.replace(/`([^`]+)`/g, '<code class="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">$1</code>');
+
+      // Bold
+      html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+      // Italic
+      html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+
+      // Links - with URL sanitization
+      html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function(_, linkText, url) {
+        var safeUrl = sanitizeUrl(url);
+        if (!safeUrl) return linkText;
+        return '<a href="' + safeUrl + '" class="text-blue-600 dark:text-blue-400 underline hover:no-underline" rel="noopener noreferrer">' + linkText + '</a>';
+      });
+
+      // Line breaks
+      html = html.replace(/\n/g, '<br>');
+
+      return html;
+    }
+
+    function scrollToTop() {
+      const messages = document.getElementById('chat-messages');
+      if (messages) {
+        messages.scrollTop = 0;
+      }
+    }
+
+    function scrollToBottom() {
+      const messages = document.getElementById('chat-messages');
+      if (messages) {
+        messages.scrollTop = messages.scrollHeight;
+      }
+    }
+
+    function setLoading(loading) {
+      isStreaming = loading;
+      var submitBtn = document.getElementById('chat-submit');
+      var input = document.getElementById('chat-input');
+
+      if (submitBtn) submitBtn.disabled = loading;
+      if (input) input.disabled = loading;
+    }
+
+    async function sendMessage(message) {
+      if (!message.trim() || isStreaming) return;
+
+      const messagesContainer = document.getElementById('chat-messages');
+      if (!messagesContainer) return;
+
+      // Add user message
+      const userMsg = createMessageElement('user', message);
+      messagesContainer.appendChild(userMsg);
+
+      // Scroll to top to show the user message on first message
+      if (isFirstMessage) {
+        scrollToTop();
+        isFirstMessage = false;
+      } else {
+        scrollToBottom();
+      }
+
+      // Add to history
+      chatHistory.push({ role: 'user', content: message });
+
+      // Clear input
+      const input = document.getElementById('chat-input');
+      if (input) input.value = '';
+
+      // Show loading dots
+      const loadingEl = createLoadingElement();
+      messagesContainer.appendChild(loadingEl);
+      scrollToBottom();
+
+      setLoading(true);
+
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: message,
+            history: chatHistory.slice(0, -1),
+          }),
+        });
+
+        // Remove loading indicator
+        const loadingMsg = document.getElementById('loading-message');
+        if (loadingMsg) loadingMsg.remove();
+
+        if (!response.ok) {
+          if (response.status === 429) {
+            const data = await response.json();
+            throw new Error(data.message || "I've reached my daily limit. Please try again tomorrow!");
+          }
+          throw new Error('Failed to get response');
+        }
+
+        // Create assistant message placeholder
+        const assistantMsg = createMessageElement('assistant', '');
+        messagesContainer.appendChild(assistantMsg);
+        const textElement = assistantMsg.querySelector('.prose');
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let fullContent = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value);
+          const lines = chunk.split('\n');
+
+          for (var i = 0; i < lines.length; i++) {
+            var line = lines[i];
+            if (!line.trim()) continue;
+            if (line === 'data: [DONE]') continue;
+
+            if (line.startsWith('data: ')) {
+              try {
+                var data = JSON.parse(line.slice(6));
+                if (data.type === 'text-delta' && data.textDelta) {
+                  fullContent += data.textDelta;
+                  if (textElement) {
+                    textElement.innerHTML = parseMarkdown(fullContent);
+                  }
+                  scrollToBottom();
+                }
+              } catch (e) {
+                // Skip malformed JSON
+              }
+            }
+          }
+        }
+
+        // Add to history
+        if (fullContent) {
+          chatHistory.push({ role: 'assistant', content: fullContent });
+        }
+
+        // Final scroll to ensure complete message is visible
+        scrollToBottom();
+      } catch (error) {
+        console.error('Chat error:', error);
+        const loadingMsg = document.getElementById('loading-message');
+        if (loadingMsg) loadingMsg.remove();
+
+        const errorMessage = error instanceof Error ? error.message : 'Sorry, an error occurred. Please try again.';
+        const errorMsg = createMessageElement('assistant', errorMessage);
+        messagesContainer.appendChild(errorMsg);
+        scrollToBottom();
+      } finally {
+        setLoading(false);
+        // Focus input after response
+        const input = document.getElementById('chat-input');
+        if (input) input.focus();
+      }
+    }
+
+    function init() {
+      const form = document.getElementById('chat-form');
+      const input = document.getElementById('chat-input');
+
+      if (form && input) {
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          sendMessage(input.value);
+        });
+
+        // Auto-focus input when user starts typing anywhere
+        document.addEventListener('keydown', function(e) {
+          // Ignore if already focused on input, or if modifier keys are pressed
+          if (document.activeElement === input) return;
+          if (e.ctrlKey || e.metaKey || e.altKey) return;
+          // Ignore special keys
+          if (e.key.length > 1 && e.key !== 'Backspace') return;
+
+          // Focus the input and let the key be typed
+          input.focus();
+        });
+      }
+
+      // Check for initial message from homepage
+      const initialMessage = sessionStorage.getItem('chat-' + uid + '-initial');
+      if (initialMessage) {
+        sessionStorage.removeItem('chat-' + uid + '-initial');
+        // Small delay to ensure DOM is ready
+        setTimeout(function() {
+          sendMessage(initialMessage);
+        }, 100);
+      }
+    }
+
+    init();
+  })();
+</script>

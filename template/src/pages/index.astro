@@ -5,6 +5,7 @@ import Footer from '@/components/Footer.astro';
 import Hero from '@/components/Hero.astro';
 import FeatureCard from '@/components/FeatureCard.astro';
 import SectionHeader from '@/components/SectionHeader.astro';
+import AskAnything from '@/components/AskAnything.astro';
 ---
 
 <BaseLayout title="Home" description="Build documentation that scales with your product">
@@ -16,6 +17,13 @@ import SectionHeader from '@/components/SectionHeader.astro';
         highlightedText="incredible"
         description="Build documentation that scales with your product. A modern, structured documentation template designed for clarity, consistency, and long-term growth."
       />
+
+      <!-- Ask Anything Section -->
+      <section class="-mt-8 md:-mt-12 pb-8 md:pb-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+          <AskAnything />
+        </div>
+      </section>
 
       <section class="pb-16 md:pb-24">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">

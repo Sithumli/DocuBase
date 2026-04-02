@@ -3,8 +3,6 @@ export interface HeroProps {
   title: string;
   highlightedText?: string;
   description: string;
-  buttonText?: string;
-  buttonHref?: string;
 }
 
 export interface CalloutProps {

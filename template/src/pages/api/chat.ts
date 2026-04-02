@@ -1,0 +1,177 @@
+import type { APIRoute } from 'astro';
+import { Index } from '@upstash/vector';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import type { ChatContext, VectorMetadata, GeminiMessage } from '@/types/chat';
+import { CHAT, SITE_TITLE } from '@/types/constants';
+
+export const prerender = false;
+
+function getVectorIndex(): Index | null {
+  const url = import.meta.env.UPSTASH_VECTOR_REST_URL;
+  const token = import.meta.env.UPSTASH_VECTOR_REST_TOKEN;
+
+  if (!url || !token) {
+    return null;
+  }
+
+  return new Index({ url, token });
+}
+
+async function searchSimilarContent(vectorIndex: Index, query: string, topK: number = CHAT.VECTOR_TOP_K): Promise<ChatContext[]> {
+  const results = await vectorIndex.query({
+    data: query,
+    topK,
+    includeMetadata: true,
+    includeData: true,
+  });
+
+  return results.map((result) => {
+    const metadata = result.metadata as unknown as VectorMetadata;
+    const chunkContent = typeof result.data === 'string' ? result.data : '';
+    return {
+      content: chunkContent || `Title: ${metadata.title}\nSection: ${metadata.section}\nURL: ${metadata.url}`,
+      title: metadata.title,
+      section: metadata.section,
+      url: metadata.url,
+    };
+  });
+}
+
+function buildSystemPrompt(contexts: ChatContext[]): string {
+  const contextText = contexts
+    .map((ctx, i) => `[${i + 1}] ${ctx.title} - ${ctx.section}\nURL: ${ctx.url}`)
+    .join('\n\n');
+
+  return `You are a helpful documentation assistant for ${SITE_TITLE}, a documentation template built with Astro.
+Your role is to answer questions based on the documentation content provided.
+
+Guidelines:
+- Be concise and helpful
+- Reference specific documentation sections when relevant
+- If the answer isn't in the provided context, say so honestly
+- Include relevant URLs when they would be helpful
+- Format responses using markdown for readability
+- For code examples, use proper code blocks with language tags
+
+Relevant documentation sections:
+${contextText}
+
+Answer the user's question based on the above context. If the question cannot be answered from the provided context, let them know and suggest they check the documentation directly.`;
+}
+
+export const POST: APIRoute = async ({ request }) => {
+  try {
+    const apiKey = import.meta.env.GOOGLE_GENERATIVE_AI_API_KEY;
+
+    if (!apiKey) {
+      return new Response(JSON.stringify({
+        error: 'GOOGLE_GENERATIVE_AI_API_KEY is not configured'
+      }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    const vectorIndex = getVectorIndex();
+    if (!vectorIndex) {
+      return new Response(JSON.stringify({
+        error: 'Upstash Vector credentials are not configured'
+      }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    const { message, history = [] } = await request.json();
+
+    if (!message || typeof message !== 'string') {
+      return new Response(JSON.stringify({ error: 'Message is required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    const contexts = await searchSimilarContent(vectorIndex, message);
+    const systemPrompt = buildSystemPrompt(contexts);
+
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const chatHistory: GeminiMessage[] = history.map((msg: { role: string; content: string }) => ({
+      role: msg.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: msg.content }],
+    }));
+
+    let result;
+    let lastError;
+
+    for (const modelName of CHAT.MODELS) {
+      try {
+        const model = genAI.getGenerativeModel({
+          model: modelName,
+          systemInstruction: systemPrompt,
+        });
+        const chat = model.startChat({ history: chatHistory });
+        result = await chat.sendMessageStream(message);
+        console.log(`Using model: ${modelName}`);
+        break;
+      } catch (error) {
+        lastError = error;
+        const errorMessage = error instanceof Error ? error.message : '';
+        // Check for rate limit errors (429 or quota exceeded)
+        if (errorMessage.includes('429') || errorMessage.includes('quota') || errorMessage.includes('rate') || errorMessage.includes('RESOURCE_EXHAUSTED')) {
+          console.log(`Rate limited on ${modelName}, trying next...`);
+          continue;
+        }
+        throw error;
+      }
+    }
+
+    if (!result) {
+      return new Response(JSON.stringify({
+        error: 'rate_limit',
+        message: CHAT.RATE_LIMIT_MESSAGE,
+      }), {
+        status: 429,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          for await (const chunk of result.stream) {
+            const text = chunk.text();
+            if (text) {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'text-delta', textDelta: text })}\n\n`));
+            }
+          }
+          controller.enqueue(encoder.encode(`data: [DONE]\n\n`));
+          controller.close();
+        } catch (streamError) {
+          console.error('Stream error:', streamError);
+          controller.error(streamError);
+        }
+      },
+    });
+
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
+    });
+  } catch (error) {
+    console.error('Chat API error:', error);
+    return new Response(
+      JSON.stringify({
+        error: 'An error occurred processing your request',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+  }
+};
