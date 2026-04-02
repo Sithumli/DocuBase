@@ -1,0 +1,320 @@
+---
+import { CHAT } from '@/types/constants';
+---
+
+<button
+  id="chat-trigger"
+  type="button"
+  class="fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+  aria-label="Open AI chat"
+>
+  <iconify-icon icon="mdi:robot-happy-outline" width="28" height="28"></iconify-icon>
+</button>
+
+<div
+  id="chat-modal"
+  class="fixed inset-0 z-[100] hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-label="AI Chat Assistant"
+>
+  <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" id="chat-backdrop"></div>
+  <div class="fixed inset-x-0 bottom-0 sm:inset-auto sm:right-6 sm:bottom-6 sm:w-[420px] sm:max-w-[calc(100vw-3rem)]">
+    <div class="flex flex-col h-[80vh] sm:h-[600px] sm:max-h-[80vh] bg-white dark:bg-gray-900 sm:rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+        <div class="flex items-center gap-2">
+          <iconify-icon icon="mdi:robot-happy-outline" class="text-blue-600 dark:text-blue-400" width="24" height="24"></iconify-icon>
+          <span class="font-medium text-gray-900 dark:text-gray-100">{CHAT.ASSISTANT_NAME}</span>
+        </div>
+        <button
+          id="chat-close"
+          type="button"
+          class="p-1 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors"
+          aria-label="Close chat"
+        >
+          <iconify-icon icon="mdi:close" width="24" height="24"></iconify-icon>
+        </button>
+      </div>
+
+      <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4">
+        <div class="flex gap-3">
+          <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+            <iconify-icon icon="mdi:robot-happy-outline" class="text-blue-600 dark:text-blue-400" width="18" height="18"></iconify-icon>
+          </div>
+          <div class="flex-1 bg-gray-100 dark:bg-gray-800 rounded-lg rounded-tl-none p-3">
+            <p class="text-sm text-gray-700 dark:text-gray-300">{CHAT.WELCOME_MESSAGE}</p>
+          </div>
+        </div>
+      </div>
+
+      <form id="chat-form" class="flex-shrink-0 p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+        <div class="flex gap-2">
+          <input
+            id="chat-input"
+            type="text"
+            placeholder="Ask a question..."
+            class="flex-1 px-4 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            autocomplete="off"
+          />
+          <button
+            id="chat-submit"
+            type="submit"
+            class="flex items-center justify-center w-10 h-10 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+            aria-label="Send message"
+          >
+            <iconify-icon id="send-icon" icon="mdi:send" width="20" height="20"></iconify-icon>
+            <iconify-icon id="loading-icon" icon="mdi:loading" class="hidden animate-spin" width="20" height="20"></iconify-icon>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script is:inline define:vars={{ API_ENDPOINT: CHAT.API_ENDPOINT }}>
+  (function() {
+    let chatHistory = [];
+    let isStreaming = false;
+    let abortController = null;
+
+    function openModal() {
+      const modal = document.getElementById('chat-modal');
+      const input = document.getElementById('chat-input');
+      if (!modal || !input) return;
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      input.focus();
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('chat-modal');
+      if (!modal) return;
+      modal.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    function createMessageElement(role, content) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'flex gap-3';
+
+      const avatar = document.createElement('div');
+      avatar.className = 'flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ' +
+        (role === 'user' ? 'bg-gray-200 dark:bg-gray-700' : 'bg-blue-100 dark:bg-blue-900/30');
+
+      const icon = document.createElement('iconify-icon');
+      icon.setAttribute('icon', role === 'user' ? 'mdi:account' : 'mdi:robot-happy-outline');
+      icon.className = role === 'user' ? 'text-gray-600 dark:text-gray-400' : 'text-blue-600 dark:text-blue-400';
+      icon.setAttribute('width', '18');
+      icon.setAttribute('height', '18');
+      avatar.appendChild(icon);
+
+      const bubble = document.createElement('div');
+      bubble.className = 'flex-1 rounded-lg p-3 ' +
+        (role === 'user' ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-gray-100 dark:bg-gray-800 rounded-tl-none');
+
+      const text = document.createElement('div');
+      text.className = 'text-sm prose prose-sm dark:prose-invert max-w-none ' +
+        (role === 'user' ? 'prose-invert' : 'text-gray-700 dark:text-gray-300');
+
+      if (role === 'assistant') {
+        text.innerHTML = parseMarkdown(content);
+      } else {
+        text.textContent = content;
+      }
+
+      bubble.appendChild(text);
+      wrapper.appendChild(avatar);
+      wrapper.appendChild(bubble);
+
+      return wrapper;
+    }
+
+    function sanitizeUrl(url) {
+      if (!url) return '';
+      var trimmed = url.trim().toLowerCase();
+      if (trimmed.startsWith('javascript:') || trimmed.startsWith('data:') || trimmed.startsWith('vbscript:')) {
+        return '';
+      }
+      return url;
+    }
+
+    function parseMarkdown(text) {
+      if (!text) return '';
+
+      var html = text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+      html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, function(_, _lang, code) {
+        return '<pre class="bg-gray-800 dark:bg-gray-900 p-3 rounded-lg overflow-x-auto my-2"><code class="text-gray-100 text-xs">' + code.trim() + '</code></pre>';
+      });
+
+      html = html.replace(/`([^`]+)`/g, '<code class="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">$1</code>');
+      html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+      html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function(_, linkText, url) {
+        var safeUrl = sanitizeUrl(url);
+        if (!safeUrl) return linkText;
+        return '<a href="' + safeUrl + '" class="text-blue-600 dark:text-blue-400 underline hover:no-underline" rel="noopener noreferrer">' + linkText + '</a>';
+      });
+      html = html.replace(/\n/g, '<br>');
+
+      return html;
+    }
+
+    function scrollToBottom() {
+      const messages = document.getElementById('chat-messages');
+      if (messages) {
+        messages.scrollTop = messages.scrollHeight;
+      }
+    }
+
+    function setLoading(loading) {
+      isStreaming = loading;
+      const submitBtn = document.getElementById('chat-submit');
+      const sendIcon = document.getElementById('send-icon');
+      const loadingIcon = document.getElementById('loading-icon');
+      const input = document.getElementById('chat-input');
+
+      if (submitBtn) submitBtn.disabled = loading;
+      if (sendIcon) sendIcon.classList.toggle('hidden', loading);
+      if (loadingIcon) loadingIcon.classList.toggle('hidden', !loading);
+      if (input) input.disabled = loading;
+    }
+
+    async function sendMessage(message) {
+      if (!message.trim() || isStreaming) return;
+
+      const messagesContainer = document.getElementById('chat-messages');
+      if (!messagesContainer) return;
+
+      const userMsg = createMessageElement('user', message);
+      messagesContainer.appendChild(userMsg);
+      scrollToBottom();
+
+      chatHistory.push({ role: 'user', content: message });
+
+      const input = document.getElementById('chat-input');
+      if (input) input.value = '';
+
+      setLoading(true);
+
+      const assistantMsg = createMessageElement('assistant', '');
+      messagesContainer.appendChild(assistantMsg);
+      const textElement = assistantMsg.querySelector('.prose');
+
+      try {
+        abortController = new AbortController();
+
+        const response = await fetch(API_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: message,
+            history: chatHistory.slice(0, -1),
+          }),
+          signal: abortController.signal,
+        });
+
+        if (!response.ok) {
+          if (response.status === 429) {
+            const data = await response.json();
+            throw new Error(data.message || "I've reached my daily limit. Please try again tomorrow!");
+          }
+          throw new Error('Failed to get response');
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let fullContent = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value);
+          const lines = chunk.split('\n');
+
+          for (var i = 0; i < lines.length; i++) {
+            var line = lines[i];
+            if (!line.trim()) continue;
+            if (line === 'data: [DONE]') continue;
+
+            if (line.startsWith('data: ')) {
+              try {
+                var data = JSON.parse(line.slice(6));
+                if (data.type === 'text-delta' && data.textDelta) {
+                  fullContent += data.textDelta;
+                  if (textElement) {
+                    textElement.innerHTML = parseMarkdown(fullContent);
+                  }
+                  scrollToBottom();
+                }
+              } catch (e) {}
+            }
+          }
+        }
+
+        if (fullContent) {
+          chatHistory.push({ role: 'assistant', content: fullContent });
+        }
+        scrollToBottom();
+      } catch (error) {
+        if (error.name === 'AbortError') return;
+        console.error('Chat error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Sorry, an error occurred. Please try again.';
+        if (textElement) {
+          textElement.innerHTML = '<span class="text-red-500">' + errorMessage + '</span>';
+        }
+        scrollToBottom();
+      } finally {
+        setLoading(false);
+        abortController = null;
+      }
+    }
+
+    var INIT_FLAG = '__chatWidgetInitialized';
+
+    function initChat() {
+      if (window[INIT_FLAG]) return;
+      window[INIT_FLAG] = true;
+
+      if (abortController) {
+        abortController.abort();
+      }
+
+      var trigger = document.getElementById('chat-trigger');
+      var backdrop = document.getElementById('chat-backdrop');
+      var closeBtn = document.getElementById('chat-close');
+      var form = document.getElementById('chat-form');
+      var input = document.getElementById('chat-input');
+
+      if (trigger) trigger.addEventListener('click', openModal);
+      if (backdrop) backdrop.addEventListener('click', closeModal);
+      if (closeBtn) closeBtn.addEventListener('click', closeModal);
+
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          if (input) sendMessage(input.value);
+        });
+      }
+
+      document.addEventListener('keydown', function(e) {
+        var modal = document.getElementById('chat-modal');
+        if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
+          closeModal();
+        }
+      });
+    }
+
+    function reset() {
+      window[INIT_FLAG] = false;
+      initChat();
+    }
+
+    initChat();
+    document.addEventListener('astro:page-load', reset);
+  })();
+</script>
